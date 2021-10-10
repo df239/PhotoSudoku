@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Size;
 import android.view.Window;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.jetbrains.annotations.NotNull;
+import org.opencv.android.OpenCVLoader;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -30,6 +32,16 @@ public class CameraPage extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     PreviewView previewView;
     TextView textview2;
+
+    private static String TAG = "MainActivity";
+    static{
+        if(OpenCVLoader.initDebug()){
+            Log.d(TAG, "OpenCV is connected or configured successfully.");
+        }
+        else{
+            Log.d(TAG, "OpenCV not working or loaded.");
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

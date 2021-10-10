@@ -1,2 +1,3 @@
 include ':app'
 rootProject.name = "PhotoSudoku"
+include ':openCVLibrary3414'
