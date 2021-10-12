@@ -4,26 +4,52 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
+import androidx.camera.core.impl.CameraCaptureMetaData;
+import androidx.camera.core.impl.ImageCaptureConfig;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Size;
+import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
@@ -32,8 +58,11 @@ public class CameraPage extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     PreviewView previewView;
     TextView textview2;
+    ImageView imageView;
 
-    private static String TAG = "MainActivity";
+    ImageCapture imageCapture;
+
+    private static String TAG = "CameraActivity";
     static{
         if(OpenCVLoader.initDebug()){
             Log.d(TAG, "OpenCV is connected or configured successfully.");
@@ -55,6 +84,7 @@ public class CameraPage extends AppCompatActivity {
 
         previewView = (PreviewView)findViewById(R.id.previewView);
         textview2 = (TextView)findViewById(R.id.textView2);
+        imageView = (ImageView)findViewById(R.id.imageView2);
 
         //matches camera process to a single camera process provider
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -80,9 +110,11 @@ public class CameraPage extends AppCompatActivity {
         //selects the camera to use for the use case
         CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
         //creates a preview object and conencts it to the layout element previewView
-        ImageAnalysis analysis = setAnalysis();
+        //ImageAnalysis analysis = setAnalysis();
         Preview preview = setPreview();
-        cameraProvider.bindToLifecycle(this, cameraSelector, analysis, preview);
+
+        imageCapture = setImageCapture();
+        cameraProvider.bindToLifecycle(this, cameraSelector, imageCapture, preview);
     }
 
     private Preview setPreview(){
@@ -91,6 +123,92 @@ public class CameraPage extends AppCompatActivity {
         return preview;
     }
 
+    private ImageCapture setImageCapture(){
+        ImageCapture capture = new ImageCapture.Builder().setTargetRotation(previewView.getDisplay().getRotation()).build();
+        return capture;
+    }
+
+    public void TakePicture(View view){
+        imageCapture.takePicture(getExecutor(), new ImageCapture.OnImageCapturedCallback() {
+            @Override
+            public void onCaptureSuccess(@NonNull ImageProxy image) {
+                int rotation = image.getImageInfo().getRotationDegrees();
+                Log.d(TAG,Integer.toString(rotation));
+                Bitmap bitmap = toBitmap(image);
+                Bitmap processed = processImage(bitmap,rotation);
+                imageView.setImageBitmap(processed);
+                image.close();
+            }
+
+            @Override
+            public void onError(@NonNull ImageCaptureException exception) {
+                super.onError(exception);
+            }
+        });
+    }
+
+
+    //https://gist.github.com/moshimore/dfe5cf0216a520a8fef55ebe58a7ebe4
+    private Bitmap toBitmap(ImageProxy image) {
+        ImageProxy.PlaneProxy planeProxy = image.getPlanes()[0];
+        ByteBuffer buffer = planeProxy.getBuffer();
+        byte[] bytes = new byte[buffer.remaining()];
+        buffer.get(bytes);
+
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    private Bitmap processImage(Bitmap bitmap, int rotation){
+        Mat mat = new Mat();
+        Utils.bitmapToMat(bitmap,mat);
+
+//        Mat original = new Mat();
+//        Utils.bitmapToMat(bitmap,original);
+//        int targetWidth = previewView.getWidth();
+//        int targetHeight = previewView.getHeight();
+//        org.opencv.core.Rect roi = new org.opencv.core.Rect(0,original.rows()/2, targetWidth,targetHeight);
+//        Bitmap tempBitmap = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888);
+//        Mat mat = new Mat(original,roi);
+
+        //image rotation: https://www.geeksforgeeks.org/rotating-images-using-opencv-in-java/
+        Point centre = new Point(mat.rows()/2.0,mat.cols()/2.0);
+        Mat rotationMatrix = Imgproc.getRotationMatrix2D(centre,360-rotation,1);
+        Imgproc.warpAffine(mat,mat,rotationMatrix,mat.size());
+
+
+        Mat copy = mat.clone();
+
+        //image processing
+        Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2GRAY);
+        //Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(3,3),5);
+        Imgproc.Canny(mat,mat,100,100);
+
+        //contour detection
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(mat,contours,hierarchy,Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_NONE);
+        double maxArea = -1;
+        int maxAreaIdx = -1;
+        for (int idx = 0; idx < contours.size(); idx++) {
+            Mat contour = contours.get(idx);
+            double contourarea = Imgproc.contourArea(contour);
+            if (contourarea > maxArea) {
+                maxArea = contourarea;
+                maxAreaIdx = idx;
+            }
+        }
+        Imgproc.drawContours(copy,contours,-1,new Scalar(255,255,255),10);
+
+
+//        Utils.matToBitmap(mat,tempBitmap);
+//        return tempBitmap;
+
+        Utils.matToBitmap(mat,bitmap);
+        return bitmap;
+    }
+
+
+    /*
     //https://developer.android.com/training/camerax/analyze
     private ImageAnalysis setAnalysis() {
         ImageAnalysis imageAnalysis =
@@ -102,9 +220,16 @@ public class CameraPage extends AppCompatActivity {
         imageAnalysis.setAnalyzer(getExecutor(), new ImageAnalysis.Analyzer() {
             @Override
             public void analyze(@NonNull ImageProxy image) {
-                int rotationDegrees = image.getImageInfo().getRotationDegrees();
+                int rotation = image.getImageInfo().getRotationDegrees();
+                //Log.d(TAG,Integer.toString(rotation));
+                Bitmap bitmap = toBitmap(image);
+                Bitmap processed = processImage(bitmap,rotation);
+                imageView.setImageBitmap(processed);
+                image.close();
             }
         });
         return imageAnalysis;
-    }
+    }*/
+
+
 }

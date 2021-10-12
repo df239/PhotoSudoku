@@ -4,7 +4,7 @@
 
     <uses-feature android:name="android.hardware.camera" />
 
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -13,9 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PhotoSudoku">
-        <activity android:name=".CameraPage"
-                  android:parentActivityName=".HomePage">
-        </activity>
+        <activity
+            android:name=".CameraPage"
+            android:parentActivityName=".HomePage"></activity>
         <activity android:name=".HomePage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
