@@ -44,6 +44,7 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.opencv.imgproc.CLAHE;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
@@ -124,7 +125,7 @@ public class CameraPage extends AppCompatActivity {
     }
 
     private ImageCapture setImageCapture(){
-        ImageCapture capture = new ImageCapture.Builder().setTargetRotation(previewView.getDisplay().getRotation()).build();
+        ImageCapture capture = new ImageCapture.Builder().setTargetRotation(previewView.getDisplay().getRotation()).setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY).build();
         return capture;
     }
 
@@ -175,13 +176,18 @@ public class CameraPage extends AppCompatActivity {
         Mat rotationMatrix = Imgproc.getRotationMatrix2D(centre,360-rotation,1);
         Imgproc.warpAffine(mat,mat,rotationMatrix,mat.size());
 
+        //applyCLAHE(mat,mat);
 
         Mat copy = mat.clone();
 
         //image processing
         Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2GRAY);
-        //Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(3,3),5);
-        Imgproc.Canny(mat,mat,100,100);
+        Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(7,7),1);
+        Imgproc.Canny(mat,mat,80,100);
+        Mat kernel = new Mat(10,10,0);
+
+        Imgproc.dilate(mat,mat,kernel);
+        Imgproc.erode(mat,mat,new Mat(4,4,0));
 
         //contour detection
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
@@ -197,14 +203,43 @@ public class CameraPage extends AppCompatActivity {
                 maxAreaIdx = idx;
             }
         }
-        Imgproc.drawContours(copy,contours,-1,new Scalar(255,255,255),10);
+        Imgproc.drawContours(copy,contours,maxAreaIdx,new Scalar(255,0,0),20);
 
 
 //        Utils.matToBitmap(mat,tempBitmap);
 //        return tempBitmap;
 
-        Utils.matToBitmap(mat,bitmap);
+        Utils.matToBitmap(copy,bitmap);
         return bitmap;
+    }
+
+    //https://stackoverflow.com/questions/24341114/simple-illumination-correction-in-images-opencv-c
+    private void applyCLAHE(Mat srcArry, Mat dstArry) {
+        //Function that applies the CLAHE algorithm to "dstArry".
+
+        if (srcArry.channels() >= 3) {
+            // READ RGB color image and convert it to Lab
+            Mat channel = new Mat();
+            Imgproc.cvtColor(srcArry, dstArry, Imgproc.COLOR_RGB2Lab);
+
+            // Extract the L channel
+            Core.extractChannel(dstArry, channel, 0);
+
+            // apply the CLAHE algorithm to the L channel
+            CLAHE clahe = Imgproc.createCLAHE();
+            clahe.setClipLimit(4);
+            clahe.apply(channel, channel);
+
+            // Merge the the color planes back into an Lab image
+            Core.insertChannel(channel, dstArry, 0);
+
+            // convert back to RGB
+            Imgproc.cvtColor(dstArry, dstArry, Imgproc.COLOR_Lab2RGB);
+
+            // Temporary Mat not reused, so release from memory.
+            channel.release();
+        }
+
     }
 
 

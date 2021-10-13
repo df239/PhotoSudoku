@@ -15,7 +15,7 @@
         android:theme="@style/Theme.PhotoSudoku">
         <activity
             android:name=".CameraPage"
-            android:parentActivityName=".HomePage"></activity>
+            android:parentActivityName=".HomePage"/>
         <activity android:name=".HomePage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
