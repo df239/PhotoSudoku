@@ -184,34 +184,18 @@ public class CameraPage extends AppCompatActivity {
 
         //image processing
         Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2GRAY);
-        Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(7,7),1);
+        Imgproc.adaptiveThreshold(mat,mat, 125, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 12);
+        Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(7,7),2);
         Imgproc.Canny(mat,mat,100,150);
 
-        Imgproc.dilate(mat,mat,new Mat(10,10,0));
-        Imgproc.erode(mat,mat,new Mat(5,5,0));
+
+        Imgproc.dilate(mat,mat,new Mat(15,15,0));
+        //Imgproc.erode(mat,mat,new Mat(3,3,0));
 
         //contour detection
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(mat,contours,hierarchy,Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_NONE);
-//        double maxArea = -1;
-//        int maxAreaIdx = -1;
-//        org.opencv.core.Rect contourRect = new Rect();
-//        MatOfPoint2f largestContour = new MatOfPoint2f();
-//        for (int idx = 0; idx < contours.size(); idx++) {
-//            Mat contour = contours.get(idx);
-//            double contourarea = Imgproc.contourArea(contour);
-//            if (contourarea > maxArea) {
-//                MatOfPoint2f curve = new MatOfPoint2f(contours.get(idx).toArray());
-//                Imgproc.approxPolyDP(curve, largestContour, 0.02 * Imgproc.arcLength(curve, true), true);
-//                int numberVertices = (int) largestContour.total();
-//                if(numberVertices >= 4 && numberVertices <= 6){
-//                    contourRect = Imgproc.boundingRect(largestContour);
-//                    maxArea = contourarea;
-//                    maxAreaIdx = idx;
-//                }
-//            }
-//        }
 
         //https://stackoverflow.com/questions/17637730/android-opencv-getperspectivetransform-and-warpperspective
         double maxArea = -1;
@@ -236,40 +220,40 @@ public class CameraPage extends AppCompatActivity {
                 }
             }
         }
-        //largestContour = new MatOfPoint2f(contours.get(maxAreaIdx));
-        Imgproc.drawContours(copy,contours,maxAreaIdx,new Scalar(255,0,0),20);
-        //https://stackoverflow.com/questions/17361693/cant-get-opencvs-warpperspective-to-work-on-android
-        //https://stackoverflow.com/questions/17637730/android-opencv-getperspectivetransform-and-warpperspective
-        List<Point> inputPoints = maxCurve.toList();
-        Log.d(TAG,inputPoints.toString());
-        int resultWidth = (int)(inputPoints.get(0).x - inputPoints.get(1).x);
-        int bottomWidth = (int)(inputPoints.get(3).x - inputPoints.get(2).x);
-        if(bottomWidth > resultWidth)
-            resultWidth = bottomWidth;
+//        //largestContour = new MatOfPoint2f(contours.get(maxAreaIdx));
+//        Imgproc.drawContours(copy,contours,maxAreaIdx,new Scalar(255,0,0),20);
+//        //https://stackoverflow.com/questions/17361693/cant-get-opencvs-warpperspective-to-work-on-android
+//        //https://stackoverflow.com/questions/17637730/android-opencv-getperspectivetransform-and-warpperspective
+//        List<Point> inputPoints = maxCurve.toList();
+//        Log.d(TAG,inputPoints.toString());
+//        int resultWidth = (int)(inputPoints.get(0).x - inputPoints.get(1).x);
+//        int bottomWidth = (int)(inputPoints.get(3).x - inputPoints.get(2).x);
+//        if(bottomWidth > resultWidth)
+//            resultWidth = bottomWidth;
+//
+//        int resultHeight = (int)(inputPoints.get(3).y - inputPoints.get(0).y);
+//        int bottomHeight = (int)(inputPoints.get(2).y - inputPoints.get(1).y);
+//        if(bottomHeight > resultHeight)
+//            resultHeight = bottomHeight;
+//
+//        List<Point> outputPoints = new ArrayList<Point>();
+//        outputPoints.add(new Point(resultWidth,0));
+//        outputPoints.add(new Point(0,0));
+//        outputPoints.add(new Point(0,resultHeight));
+//        outputPoints.add(new Point(resultWidth,resultHeight));
+//        Mat startM = Converters.vector_Point2f_to_Mat(inputPoints);
+//        Mat endM = Converters.vector_Point2f_to_Mat(outputPoints);
+//        Mat perspectiveTransform = Imgproc.getPerspectiveTransform(startM, endM);
+//        Mat outputMat = new Mat(resultWidth,resultHeight, CvType.CV_8UC4);
+//        Imgproc.warpPerspective(copy, outputMat, perspectiveTransform, new Size(resultWidth, resultHeight));
+//        Bitmap output = Bitmap.createBitmap(resultWidth,resultHeight,Bitmap.Config.ARGB_8888);
 
-        int resultHeight = (int)(inputPoints.get(3).y - inputPoints.get(0).y);
-        int bottomHeight = (int)(inputPoints.get(2).y - inputPoints.get(1).y);
-        if(bottomHeight > resultHeight)
-            resultHeight = bottomHeight;
 
-        List<Point> outputPoints = new ArrayList<Point>();
-        outputPoints.add(new Point(resultWidth,0));
-        outputPoints.add(new Point(0,0));
-        outputPoints.add(new Point(0,resultHeight));
-        outputPoints.add(new Point(resultWidth,resultHeight));
-        Mat startM = Converters.vector_Point2f_to_Mat(inputPoints);
-        Mat endM = Converters.vector_Point2f_to_Mat(outputPoints);
-        Mat perspectiveTransform = Imgproc.getPerspectiveTransform(startM, endM);
-        Mat outputMat = new Mat(resultWidth,resultHeight, CvType.CV_8UC4);
-        Imgproc.warpPerspective(copy, outputMat, perspectiveTransform, new Size(resultWidth, resultHeight));
-        Bitmap output = Bitmap.createBitmap(resultWidth,resultHeight,Bitmap.Config.ARGB_8888);
+        //Bitmap output = Bitmap.createBitmap(contourRect.width,contourRect.height,Bitmap.Config.ARGB_8888);
+        //Mat outputMat = new Mat(copy,contourRect);
 
-
-//        Bitmap output = Bitmap.createBitmap(contourRect.width,contourRect.height,Bitmap.Config.ARGB_8888);
-//        Mat outputMat = new Mat(copy,contourRect);
-
-        Utils.matToBitmap(outputMat,output);
-        return output;
+        Utils.matToBitmap(mat,tempBitmap);
+        return tempBitmap;
 
 //        Utils.matToBitmap(mat,bitmap);
 //        return bitmap;
