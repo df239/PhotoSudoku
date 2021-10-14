@@ -137,7 +137,6 @@ public class CameraPage extends AppCompatActivity {
             @Override
             public void onCaptureSuccess(@NonNull ImageProxy image) {
                 int rotation = image.getImageInfo().getRotationDegrees();
-                Log.d(TAG,Integer.toString(rotation));
                 Bitmap bitmap = toBitmap(image);
                 Bitmap processed = processImage(bitmap,rotation);
                 imageView.setImageBitmap(processed);
@@ -195,52 +194,79 @@ public class CameraPage extends AppCompatActivity {
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(mat,contours,hierarchy,Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_NONE);
+//        double maxArea = -1;
+//        int maxAreaIdx = -1;
+//        org.opencv.core.Rect contourRect = new Rect();
+//        MatOfPoint2f largestContour = new MatOfPoint2f();
+//        for (int idx = 0; idx < contours.size(); idx++) {
+//            Mat contour = contours.get(idx);
+//            double contourarea = Imgproc.contourArea(contour);
+//            if (contourarea > maxArea) {
+//                MatOfPoint2f curve = new MatOfPoint2f(contours.get(idx).toArray());
+//                Imgproc.approxPolyDP(curve, largestContour, 0.02 * Imgproc.arcLength(curve, true), true);
+//                int numberVertices = (int) largestContour.total();
+//                if(numberVertices >= 4 && numberVertices <= 6){
+//                    contourRect = Imgproc.boundingRect(largestContour);
+//                    maxArea = contourarea;
+//                    maxAreaIdx = idx;
+//                }
+//            }
+//        }
+
+        //https://stackoverflow.com/questions/17637730/android-opencv-getperspectivetransform-and-warpperspective
         double maxArea = -1;
         int maxAreaIdx = -1;
-        org.opencv.core.Rect contourRect = new Rect();
-        MatOfPoint2f largestContour = new MatOfPoint2f();
+        MatOfPoint temp_contour = contours.get(0); //the largest is at the index 0 for starting point
+        MatOfPoint2f approxCurve = new MatOfPoint2f();
+        MatOfPoint2f maxCurve = new MatOfPoint2f();
+
         for (int idx = 0; idx < contours.size(); idx++) {
-            Mat contour = contours.get(idx);
-            double contourarea = Imgproc.contourArea(contour);
+            temp_contour = contours.get(idx);
+            double contourarea = Imgproc.contourArea(temp_contour);
+            //compare this contour to the previous largest contour found
             if (contourarea > maxArea) {
-                MatOfPoint2f curve = new MatOfPoint2f(contours.get(idx).toArray());
-                Imgproc.approxPolyDP(curve, largestContour, 0.02 * Imgproc.arcLength(curve, true), true);
-                int numberVertices = (int) largestContour.total();
-                if(numberVertices >= 4 && numberVertices <= 6){
-                    contourRect = Imgproc.boundingRect(largestContour);
+                //check if this contour is a square
+                MatOfPoint2f new_mat = new MatOfPoint2f( temp_contour.toArray() );
+                int contourSize = (int)temp_contour.total();
+                Imgproc.approxPolyDP(new_mat, approxCurve, contourSize*0.05, true);
+                if (approxCurve.total() == 4) {
+                    maxCurve = approxCurve;
                     maxArea = contourarea;
                     maxAreaIdx = idx;
                 }
             }
         }
+        //largestContour = new MatOfPoint2f(contours.get(maxAreaIdx));
         Imgproc.drawContours(copy,contours,maxAreaIdx,new Scalar(255,0,0),20);
+        //https://stackoverflow.com/questions/17361693/cant-get-opencvs-warpperspective-to-work-on-android
+        //https://stackoverflow.com/questions/17637730/android-opencv-getperspectivetransform-and-warpperspective
+        List<Point> inputPoints = maxCurve.toList();
+        Log.d(TAG,inputPoints.toString());
+        int resultWidth = (int)(inputPoints.get(0).x - inputPoints.get(1).x);
+        int bottomWidth = (int)(inputPoints.get(3).x - inputPoints.get(2).x);
+        if(bottomWidth > resultWidth)
+            resultWidth = bottomWidth;
 
-//        List<Point> inputPoints = largestContour.toList();
-//        int resultWidth = (int)(inputPoints.get(0).x - inputPoints.get(1).x);
-//        int bottomWidth = (int)(inputPoints.get(2).x - inputPoints.get(3).x);
-//        if(bottomWidth > resultWidth)
-//            resultWidth = bottomWidth;
-//
-//        int resultHeight = (int)(inputPoints.get(2).y - inputPoints.get(0).y);
-//        int bottomHeight = (int)(inputPoints.get(3).y - inputPoints.get(1).y);
-//        if(bottomHeight > resultHeight)
-//            resultHeight = bottomHeight;
-//
-//        List<Point> outputPoints = new ArrayList<Point>();
-//        outputPoints.add(new Point(0,0));
-//        outputPoints.add(new Point(targetWidth,0));
-//        outputPoints.add(new Point(0,targetHeight));
-//        outputPoints.add(new Point(targetWidth,targetHeight));
-//        Mat startM = Converters.vector_Point2f_to_Mat(inputPoints);
-//        Mat endM = Converters.vector_Point2f_to_Mat(outputPoints);
-//        Mat perspectiveTransform = Imgproc.getPerspectiveTransform(startM, endM);
-//        Mat outputMat = new Mat(resultWidth,resultHeight, CvType.CV_8UC4);
-//        Imgproc.warpPerspective(copy, outputMat, perspectiveTransform, new Size(resultWidth, resultHeight));
-//        Bitmap output = Bitmap.createBitmap(resultWidth,resultHeight,Bitmap.Config.ARGB_8888);
+        int resultHeight = (int)(inputPoints.get(3).y - inputPoints.get(0).y);
+        int bottomHeight = (int)(inputPoints.get(2).y - inputPoints.get(1).y);
+        if(bottomHeight > resultHeight)
+            resultHeight = bottomHeight;
+
+        List<Point> outputPoints = new ArrayList<Point>();
+        outputPoints.add(new Point(resultWidth,0));
+        outputPoints.add(new Point(0,0));
+        outputPoints.add(new Point(0,resultHeight));
+        outputPoints.add(new Point(resultWidth,resultHeight));
+        Mat startM = Converters.vector_Point2f_to_Mat(inputPoints);
+        Mat endM = Converters.vector_Point2f_to_Mat(outputPoints);
+        Mat perspectiveTransform = Imgproc.getPerspectiveTransform(startM, endM);
+        Mat outputMat = new Mat(resultWidth,resultHeight, CvType.CV_8UC4);
+        Imgproc.warpPerspective(copy, outputMat, perspectiveTransform, new Size(resultWidth, resultHeight));
+        Bitmap output = Bitmap.createBitmap(resultWidth,resultHeight,Bitmap.Config.ARGB_8888);
 
 
-        Bitmap output = Bitmap.createBitmap(contourRect.width,contourRect.height,Bitmap.Config.ARGB_8888);
-        Mat outputMat = new Mat(copy,contourRect);
+//        Bitmap output = Bitmap.createBitmap(contourRect.width,contourRect.height,Bitmap.Config.ARGB_8888);
+//        Mat outputMat = new Mat(copy,contourRect);
 
         Utils.matToBitmap(outputMat,output);
         return output;
