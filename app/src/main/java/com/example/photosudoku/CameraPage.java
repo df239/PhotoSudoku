@@ -305,6 +305,31 @@ public class CameraPage extends AppCompatActivity {
         return ordered;
     }
 
+    private int[][] getMatrixFromBitmap(Bitmap bitmap){
+        Mat mat = new Mat();
+        Utils.bitmapToMat(bitmap,mat);
+
+        int[][] sudokuMatrix = new int[9][9];
+
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        int Wninth = width / 9 - 10;
+        int Hninth = height / 9 - 10;
+
+        for (int row = 0; row < 9; row++){
+            for (int col = 0; col < 9; col++){
+                Rect cellroi = new Rect(Wninth * col + 10, Hninth * row + 10, Wninth, Hninth);
+                Mat cellMat = new Mat(mat,cellroi);
+                Bitmap cellBmp = Bitmap.createBitmap(Wninth,Hninth,Bitmap.Config.ARGB_8888);
+                Utils.matToBitmap(cellMat,cellBmp);
+
+                //OCR here
+            }
+        }
+        return sudokuMatrix;
+    }
+
     //https://stackoverflow.com/questions/24341114/simple-illumination-correction-in-images-opencv-c
     private void applyCLAHE(Mat srcArry, Mat dstArry) {
         //Function that applies the CLAHE algorithm to "dstArry".
