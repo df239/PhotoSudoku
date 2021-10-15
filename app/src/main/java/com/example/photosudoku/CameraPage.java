@@ -14,9 +14,12 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -32,6 +35,7 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.jetbrains.annotations.NotNull;
@@ -137,10 +141,19 @@ public class CameraPage extends AppCompatActivity {
             @Override
             public void onCaptureSuccess(@NonNull ImageProxy image) {
                 int rotation = image.getImageInfo().getRotationDegrees();
-                Bitmap bitmap = toBitmap(image);
-                Bitmap processed = processImage(bitmap,rotation);
-                imageView.setImageBitmap(processed);
-                image.close();
+                try{
+                    Bitmap bitmap = toBitmap(image);
+                    Bitmap processed = processImage(bitmap,rotation);
+                    if (processed == null) throw new Exception();
+                    imageView.setImageBitmap(processed);
+                }
+                catch (Exception e){
+                    Snackbar bar = Snackbar.make(findViewById(R.id.imageView2),"Sorry, I could not locate any sudoku. Try again.",Snackbar.LENGTH_SHORT);
+                    bar.show();
+                }
+                finally{
+                    image.close();
+                }
             }
 
             @Override
@@ -221,6 +234,9 @@ public class CameraPage extends AppCompatActivity {
                 }
             }
         }
+
+        if(maxCurve.total() != 4) return null;
+
 //        //largestContour = new MatOfPoint2f(contours.get(maxAreaIdx));
         //Imgproc.drawContours(copy,contours,maxAreaIdx,new Scalar(255,0,0),20);
 //        //https://stackoverflow.com/questions/17361693/cant-get-opencvs-warpperspective-to-work-on-android
