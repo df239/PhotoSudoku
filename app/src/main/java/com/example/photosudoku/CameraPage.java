@@ -35,8 +35,17 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.Text;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.TextRecognizer;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.OpenCVLoader;
@@ -69,6 +78,7 @@ public class CameraPage extends AppCompatActivity {
     ImageView imageView;
 
     ImageCapture imageCapture;
+    TextRecognizer recognizer;
 
     private static String TAG = "CameraActivity";
     static{
@@ -93,6 +103,8 @@ public class CameraPage extends AppCompatActivity {
         previewView = (PreviewView)findViewById(R.id.previewView);
         textview2 = (TextView)findViewById(R.id.textView2);
         imageView = (ImageView)findViewById(R.id.imageView2);
+
+        recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
         //matches camera process to a single camera process provider
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -145,11 +157,14 @@ public class CameraPage extends AppCompatActivity {
                     Bitmap bitmap = toBitmap(image);
                     Bitmap processed = processImage(bitmap,rotation);
                     if (processed == null) throw new Exception();
+                    //int[][] sudoku = getMatrixFromBitmap(processed);
+                    //Log.d(TAG,sudoku.toString());
                     imageView.setImageBitmap(processed);
                 }
                 catch (Exception e){
                     Snackbar bar = Snackbar.make(findViewById(R.id.imageView2),"Sorry, I could not locate any sudoku. Try again.",Snackbar.LENGTH_SHORT);
                     bar.show();
+                    Log.d(TAG,e.getMessage());
                 }
                 finally{
                     image.close();
@@ -305,7 +320,7 @@ public class CameraPage extends AppCompatActivity {
         return ordered;
     }
 
-    private int[][] getMatrixFromBitmap(Bitmap bitmap){
+    private int[][] getMatrixFromBitmap(Bitmap bitmap) throws ExecutionException, InterruptedException {
         Mat mat = new Mat();
         Utils.bitmapToMat(bitmap,mat);
 
@@ -314,17 +329,26 @@ public class CameraPage extends AppCompatActivity {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
-        int Wninth = width / 9 - 10;
-        int Hninth = height / 9 - 10;
+        int Wninth = (int)(width / 9 * 0.8);
+        int Hninth = (int)(height / 9 * 0.8);
 
         for (int row = 0; row < 9; row++){
             for (int col = 0; col < 9; col++){
-                Rect cellroi = new Rect(Wninth * col + 10, Hninth * row + 10, Wninth, Hninth);
+                Rect cellroi = new Rect((int)(Wninth * col * 1.27)+20, (int)(Hninth * row * 1.27)+20, Wninth, Hninth);
                 Mat cellMat = new Mat(mat,cellroi);
                 Bitmap cellBmp = Bitmap.createBitmap(Wninth,Hninth,Bitmap.Config.ARGB_8888);
                 Utils.matToBitmap(cellMat,cellBmp);
 
                 //OCR here
+                InputImage image = InputImage.fromBitmap(cellBmp, 0);
+                Task<Text> result = recognizer.process(image);
+                Tasks.await(result);
+                String str = result.getResult().getText();
+                if (!str.equals("")){
+                    int number = Integer.parseInt(str);
+                    sudokuMatrix[row][col] = number;
+                }
+                //Log.d(TAG,str);
             }
         }
         return sudokuMatrix;
