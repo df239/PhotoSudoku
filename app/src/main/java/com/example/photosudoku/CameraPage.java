@@ -128,7 +128,7 @@ public class CameraPage extends AppCompatActivity {
     }
 
     private ImageCapture setImageCapture(){
-        ImageCapture capture = new ImageCapture.Builder().setTargetRotation(previewView.getDisplay().getRotation()).setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY).build();
+        ImageCapture capture = new ImageCapture.Builder().setTargetRotation(previewView.getDisplay().getRotation()).setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build();
         return capture;
     }
 
@@ -183,14 +183,15 @@ public class CameraPage extends AppCompatActivity {
         Mat copy = mat.clone();
 
         //image processing
+        //https://www.pyimagesearch.com/2020/08/10/opencv-sudoku-solver-and-ocr/
         Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2GRAY);
-        Imgproc.adaptiveThreshold(mat,mat, 125, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 12);
-        Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(7,7),2);
-        Imgproc.Canny(mat,mat,100,150);
-
-
-        Imgproc.dilate(mat,mat,new Mat(15,15,0));
-        //Imgproc.erode(mat,mat,new Mat(3,3,0));
+        Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(7,7),3);
+        Imgproc.adaptiveThreshold(mat,mat, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 2);
+        //Imgproc.Canny(mat,mat,150,150);
+        Imgproc.dilate(mat,mat,new Mat(3,3,0));
+        Imgproc.erode(mat,mat,new Mat(2,2,0));
+        Core.bitwise_not(mat,mat);
+        //Imgproc.dilate(mat,mat,new Mat(2,2,0));
 
         //contour detection
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
@@ -221,42 +222,71 @@ public class CameraPage extends AppCompatActivity {
             }
         }
 //        //largestContour = new MatOfPoint2f(contours.get(maxAreaIdx));
-//        Imgproc.drawContours(copy,contours,maxAreaIdx,new Scalar(255,0,0),20);
+        //Imgproc.drawContours(copy,contours,maxAreaIdx,new Scalar(255,0,0),20);
 //        //https://stackoverflow.com/questions/17361693/cant-get-opencvs-warpperspective-to-work-on-android
 //        //https://stackoverflow.com/questions/17637730/android-opencv-getperspectivetransform-and-warpperspective
-//        List<Point> inputPoints = maxCurve.toList();
-//        Log.d(TAG,inputPoints.toString());
-//        int resultWidth = (int)(inputPoints.get(0).x - inputPoints.get(1).x);
-//        int bottomWidth = (int)(inputPoints.get(3).x - inputPoints.get(2).x);
-//        if(bottomWidth > resultWidth)
-//            resultWidth = bottomWidth;
-//
-//        int resultHeight = (int)(inputPoints.get(3).y - inputPoints.get(0).y);
-//        int bottomHeight = (int)(inputPoints.get(2).y - inputPoints.get(1).y);
-//        if(bottomHeight > resultHeight)
-//            resultHeight = bottomHeight;
-//
-//        List<Point> outputPoints = new ArrayList<Point>();
-//        outputPoints.add(new Point(resultWidth,0));
-//        outputPoints.add(new Point(0,0));
-//        outputPoints.add(new Point(0,resultHeight));
-//        outputPoints.add(new Point(resultWidth,resultHeight));
-//        Mat startM = Converters.vector_Point2f_to_Mat(inputPoints);
-//        Mat endM = Converters.vector_Point2f_to_Mat(outputPoints);
-//        Mat perspectiveTransform = Imgproc.getPerspectiveTransform(startM, endM);
-//        Mat outputMat = new Mat(resultWidth,resultHeight, CvType.CV_8UC4);
-//        Imgproc.warpPerspective(copy, outputMat, perspectiveTransform, new Size(resultWidth, resultHeight));
-//        Bitmap output = Bitmap.createBitmap(resultWidth,resultHeight,Bitmap.Config.ARGB_8888);
+//        //https://www.pyimagesearch.com/2014/08/25/4-point-opencv-getperspective-transform-example/
+        List<Point> inputPoints = orderPoints(maxCurve.toList());
+        Log.d(TAG,inputPoints.toString());
+        int resultWidth = (int)(inputPoints.get(0).x - inputPoints.get(1).x);
+        int bottomWidth = (int)(inputPoints.get(3).x - inputPoints.get(2).x);
+        if(bottomWidth > resultWidth)
+            resultWidth = bottomWidth;
+
+        int resultValue = resultWidth;
+
+        int resultHeight = (int)(inputPoints.get(3).y - inputPoints.get(0).y);
+        int bottomHeight = (int)(inputPoints.get(2).y - inputPoints.get(1).y);
+        if(bottomHeight > resultHeight)
+            resultHeight = bottomHeight;
+
+        if (resultHeight > resultValue)
+            resultValue = resultHeight;
+
+        List<Point> outputPoints = new ArrayList<Point>();
+        outputPoints.add(new Point(resultValue,0));
+        outputPoints.add(new Point(0,0));
+        outputPoints.add(new Point(0,resultValue));
+        outputPoints.add(new Point(resultValue,resultValue));
+        Mat startM = Converters.vector_Point2f_to_Mat(inputPoints);
+        Mat endM = Converters.vector_Point2f_to_Mat(outputPoints);
+        Mat perspectiveTransform = Imgproc.getPerspectiveTransform(startM, endM);
+        Mat outputMat = new Mat(resultValue,resultValue, CvType.CV_8UC4);
+        Imgproc.warpPerspective(copy, outputMat, perspectiveTransform, new Size(resultValue, resultValue));
+        Bitmap output = Bitmap.createBitmap(resultValue,resultValue,Bitmap.Config.ARGB_8888);
 
 
-        //Bitmap output = Bitmap.createBitmap(contourRect.width,contourRect.height,Bitmap.Config.ARGB_8888);
-        //Mat outputMat = new Mat(copy,contourRect);
+//        Bitmap output = Bitmap.createBitmap(contourRect.width,contourRect.height,Bitmap.Config.ARGB_8888);
+//        Mat outputMat = new Mat(copy,contourRect);
 
-        Utils.matToBitmap(mat,tempBitmap);
-        return tempBitmap;
+        Utils.matToBitmap(outputMat,output);
+        return output;
 
 //        Utils.matToBitmap(mat,bitmap);
 //        return bitmap;
+    }
+
+    private List<Point> orderPoints(List<Point> points){
+        List<Point> ordered = new ArrayList<Point>();
+        for(int i = 0; i < 4; i++){ordered.add(new Point());}
+        //Log.d(TAG,points.toString());
+        //Log.d(TAG,ordered.toString());
+        double xavg = 0;
+        double yavg = 0;
+
+        for (Point p : points){
+            xavg += p.x / 4;
+            yavg += p.y / 4;
+        }
+
+        for (Point p : points){
+            if (p.x >= xavg && p.y < yavg) {ordered.set(0,p);}
+            else if (p.x < xavg && p.y < yavg) {ordered.set(1,p);}
+            else if (p.x < xavg && p.y >= yavg) {ordered.set(2,p);}
+            else {ordered.set(3,p);}
+        }
+
+        return ordered;
     }
 
     //https://stackoverflow.com/questions/24341114/simple-illumination-correction-in-images-opencv-c
