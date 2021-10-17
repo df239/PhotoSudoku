@@ -1,17 +1,8 @@
 package com.example.photosudoku.processing;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.example.photosudoku.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
@@ -30,14 +21,17 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class ImageProcessingThread extends Thread{
 
     TextRecognizer recognizer;
-    String OCRresult = "";
+    //String OCRresult = "";
     Bitmap original;
     int rotation;
 
@@ -46,21 +40,29 @@ public class ImageProcessingThread extends Thread{
 
     String snackbarText = "";
 
-    public ImageProcessingThread(Bitmap originalBitmap, int rotationDegrees){
+    private PropertyChangeSupport observableSupport;
+
+    public ImageProcessingThread(Bitmap originalBitmap, int rotationDegrees, PropertyChangeListener listener){
         super();
         original = originalBitmap;
         rotation = rotationDegrees;
         recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+        observableSupport = new PropertyChangeSupport(this);
+        observableSupport.addPropertyChangeListener(listener);
     }
 
     @Override
     public void run() {
         try{
+            notifyListeners("snackbarText",snackbarText,"Locating Sudoku...");
             snackbarText = "Locating Sudoku...";
             Bitmap processed = processImage(original,rotation);
             this.processed = processed;
+            notifyListeners("snackbarText",snackbarText,"Reading numbers...");
             snackbarText = "Reading numbers...";
             int[][] sudokuMatrix = getMatrixFromBitmap(processed);
+            notifyListeners("sudokuResult",sudokuResult,sudokuMatrix);
+            notifyListeners("processed",this.processed,processed);
             sudokuResult = sudokuMatrix;
         }
         catch (Exception e){
@@ -78,6 +80,14 @@ public class ImageProcessingThread extends Thread{
 
     public String getSnackbarText(){
         return snackbarText;
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener){
+        observableSupport.addPropertyChangeListener(listener);
+    }
+
+    private void notifyListeners(String varName, Object oldVal, Object newVal){
+        observableSupport.firePropertyChange(varName,oldVal,newVal);
     }
 
     private Bitmap processImage(Bitmap bitmap, int rotation) throws Exception{
@@ -244,6 +254,7 @@ public class ImageProcessingThread extends Thread{
                 //Log.d(TAG,str);
             }
         }
+
         return sudokuMatrix;
     }
 }

@@ -64,6 +64,8 @@ import org.opencv.imgproc.CLAHE;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -75,7 +77,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class CameraPage extends AppCompatActivity {
+public class CameraPage extends AppCompatActivity implements PropertyChangeListener {
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     PreviewView previewView;
@@ -83,6 +85,7 @@ public class CameraPage extends AppCompatActivity {
     ImageView imageView;
 
     ImageCapture imageCapture;
+    Snackbar bar;
 
 
     private static String TAG = "CameraActivity";
@@ -109,7 +112,7 @@ public class CameraPage extends AppCompatActivity {
         textview2 = (TextView)findViewById(R.id.textView2);
         imageView = (ImageView)findViewById(R.id.imageView2);
 
-
+        bar = Snackbar.make(findViewById(R.id.imageView2),"",Snackbar.LENGTH_INDEFINITE);
 
         //matches camera process to a single camera process provider
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -160,19 +163,22 @@ public class CameraPage extends AppCompatActivity {
                 int rotation = image.getImageInfo().getRotationDegrees();
                 try{
                     Bitmap bitmap = toBitmap(image);
-                    Snackbar bar = Snackbar.make(findViewById(R.id.imageView2),"Processing...",Snackbar.LENGTH_INDEFINITE);
+                    bar.setText("Processing...");
                     bar.show();
-                    ImageProcessingThread t = new ImageProcessingThread(bitmap,rotation);
+                    ImageProcessingThread t = new ImageProcessingThread(bitmap,rotation,CameraPage.this::propertyChange);
+                    if(t.isAlive()){
+                        t.interrupt();
+                    }
                     t.start();
+
 //                    while(t.isAlive()){
 //                        bar.setText(t.getSnackbarText());
 //                        Log.d(TAG,t.getSnackbarText());
 //                    }
-                    t.join();
-                    int[][] sudoku = t.getSudokuResult();
-                    Log.d(TAG,sudoku.toString());
-                    bar.dismiss();
-                    imageView.setImageBitmap(t.getProcessedBitmap());
+//                    int[][] sudoku = t.getSudokuResult();
+//                    Log.d(TAG,sudoku.toString());
+                    //bar.dismiss();
+                    //imageView.setImageBitmap(t.getProcessedBitmap());
                 }
                 catch (Exception e){
                     Snackbar.make(findViewById(R.id.imageView2),e.getMessage(),Snackbar.LENGTH_LONG).show();
@@ -232,6 +238,20 @@ public class CameraPage extends AppCompatActivity {
             channel.release();
         }
 
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if(evt.getNewValue() instanceof int[][]){
+            int[][] sudoku = (int[][])evt.getNewValue();
+            bar.dismiss();
+        }
+        else if (evt.getNewValue() instanceof String){
+            bar.setText((String)evt.getNewValue());
+        }
+        else if (evt.getNewValue() instanceof Bitmap){
+            imageView.setImageBitmap((Bitmap)evt.getNewValue());
+        }
     }
 
 
