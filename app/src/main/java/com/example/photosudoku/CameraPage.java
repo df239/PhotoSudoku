@@ -67,8 +67,12 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class CameraPage extends AppCompatActivity {
 
@@ -79,6 +83,7 @@ public class CameraPage extends AppCompatActivity {
 
     ImageCapture imageCapture;
     TextRecognizer recognizer;
+    String OCRresult = "";
 
     private static String TAG = "CameraActivity";
     static{
@@ -144,7 +149,7 @@ public class CameraPage extends AppCompatActivity {
     }
 
     private ImageCapture setImageCapture(){
-        ImageCapture capture = new ImageCapture.Builder().setTargetRotation(previewView.getDisplay().getRotation()).setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build();
+        ImageCapture capture = new ImageCapture.Builder().setTargetRotation(previewView.getDisplay().getRotation()).setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY).build();
         return capture;
     }
 
@@ -155,20 +160,18 @@ public class CameraPage extends AppCompatActivity {
                 int rotation = image.getImageInfo().getRotationDegrees();
                 try{
                     Bitmap bitmap = toBitmap(image);
+                    Snackbar.make(findViewById(R.id.imageView2),"Processing Sudoku",Snackbar.LENGTH_SHORT).show();
                     Bitmap processed = processImage(bitmap,rotation);
-                    if (processed == null) throw new Exception();
-                    //int[][] sudoku = getMatrixFromBitmap(processed);
-                    //Log.d(TAG,sudoku.toString());
+
+                    int[][] sudoku = getMatrixFromBitmap(processed);
+                    Log.d(TAG,sudoku.toString());
                     imageView.setImageBitmap(processed);
                 }
                 catch (Exception e){
-                    Snackbar bar = Snackbar.make(findViewById(R.id.imageView2),"Sorry, I could not locate any sudoku. Try again.",Snackbar.LENGTH_SHORT);
-                    bar.show();
-                    Log.d(TAG,e.getMessage());
+                    Snackbar.make(findViewById(R.id.imageView2),e.getMessage(),Snackbar.LENGTH_LONG).show();
+                    //Log.d(TAG,e.getMessage());
                 }
-                finally{
-                    image.close();
-                }
+                image.close();
             }
 
             @Override
@@ -189,7 +192,7 @@ public class CameraPage extends AppCompatActivity {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
-    private Bitmap processImage(Bitmap bitmap, int rotation){
+    private Bitmap processImage(Bitmap bitmap, int rotation) throws Exception{
 //        Mat mat = new Mat();
 //        Utils.bitmapToMat(bitmap,mat);
 
@@ -237,7 +240,7 @@ public class CameraPage extends AppCompatActivity {
             temp_contour = contours.get(idx);
             double contourarea = Imgproc.contourArea(temp_contour);
             //compare this contour to the previous largest contour found
-            if (contourarea > maxArea) {
+            if (contourarea > maxArea && contourarea > 4000) {
                 //check if this contour is a square
                 MatOfPoint2f new_mat = new MatOfPoint2f( temp_contour.toArray() );
                 int contourSize = (int)temp_contour.total();
@@ -250,7 +253,7 @@ public class CameraPage extends AppCompatActivity {
             }
         }
 
-        if(maxCurve.total() != 4) return null;
+        if(maxCurve.total() != 4) throw new Exception("Sorry, I could not locate any sudoku. Try again.");
 
 //        //largestContour = new MatOfPoint2f(contours.get(maxAreaIdx));
         //Imgproc.drawContours(copy,contours,maxAreaIdx,new Scalar(255,0,0),20);
@@ -293,6 +296,7 @@ public class CameraPage extends AppCompatActivity {
         Utils.matToBitmap(outputMat,output);
         return output;
 
+
 //        Utils.matToBitmap(mat,bitmap);
 //        return bitmap;
     }
@@ -329,25 +333,52 @@ public class CameraPage extends AppCompatActivity {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
-        int Wninth = (int)(width / 9 * 0.8);
-        int Hninth = (int)(height / 9 * 0.8);
+        int Wninth = (int)(width / 9);
+        int Hninth = (int)(height / 9);
 
         for (int row = 0; row < 9; row++){
             for (int col = 0; col < 9; col++){
-                Rect cellroi = new Rect((int)(Wninth * col * 1.27)+20, (int)(Hninth * row * 1.27)+20, Wninth, Hninth);
+                Rect cellroi = new Rect(Wninth * col, Hninth * row, Wninth, Hninth);
                 Mat cellMat = new Mat(mat,cellroi);
                 Bitmap cellBmp = Bitmap.createBitmap(Wninth,Hninth,Bitmap.Config.ARGB_8888);
                 Utils.matToBitmap(cellMat,cellBmp);
 
                 //OCR here
                 InputImage image = InputImage.fromBitmap(cellBmp, 0);
-                Task<Text> result = recognizer.process(image);
-                Tasks.await(result);
-                String str = result.getResult().getText();
-                if (!str.equals("")){
-                    int number = Integer.parseInt(str);
-                    sudokuMatrix[row][col] = number;
+
+                int finalrow = row;
+                int finalcol = col;
+
+                Task<Text> ocrTask= recognizer.process(image);
+                ocrTask.addOnSuccessListener(new OnSuccessListener<Text>() {
+                    @Override
+                    public void onSuccess(@NonNull Text text) {
+                        String str = text.getText();
+                        if (!str.equals("")){
+                            int number = Integer.parseInt(str);
+                            sudokuMatrix[finalrow][finalcol] = number;
+                            Log.d(TAG,str);
+                        }
+                    }
+                });
+                ocrTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Snackbar.make(findViewById(R.id.imageView2),e.getMessage(),Snackbar.LENGTH_LONG);
+                    }
+                });
+                while(!ocrTask.isComplete()){
+                    Snackbar.make(findViewById(R.id.imageView2),"Reading Sudoku",Snackbar.LENGTH_SHORT).show();
                 }
+
+
+//                Task<Text> result = recognizer.process(image);
+//                String str = result.getResult().getText();
+//
+//                if (!str.equals("")){
+//                    int number = Integer.parseInt(str);
+//                    sudokuMatrix[row][col] = number;
+//                }
                 //Log.d(TAG,str);
             }
         }
