@@ -2,6 +2,7 @@ package com.example.photosudoku.processing;
 
 import android.graphics.Bitmap;
 
+import com.example.photosudoku.CameraPage;
 import com.google.android.gms.tasks.Tasks;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
@@ -24,7 +25,6 @@ import org.opencv.utils.Converters;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -34,11 +34,10 @@ public class ImageProcessingThread extends Thread{
     //String OCRresult = "";
     Bitmap original;
     int rotation;
+    CameraPage originalPage;
 
     int[][] sudokuResult;
     Bitmap processed;
-
-    String snackbarText = "";
 
     private PropertyChangeSupport observableSupport;
 
@@ -51,35 +50,30 @@ public class ImageProcessingThread extends Thread{
         observableSupport.addPropertyChangeListener(listener);
     }
 
+    public ImageProcessingThread(Bitmap originalBitmap, int rotationDegrees, CameraPage cameraPage){
+        super();
+        original = originalBitmap;
+        rotation = rotationDegrees;
+        originalPage = cameraPage;
+        recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+    }
+
     @Override
     public void run() {
         try{
-            notifyListeners("snackbarText",snackbarText,"Locating Sudoku...");
-            snackbarText = "Locating Sudoku...";
+            new ProcessingTask(originalPage,"Locating Sudoku").handleDecodeState(ProcessingState.LOCATING_SUDOKU);
             Bitmap processed = processImage(original,rotation);
             this.processed = processed;
-            notifyListeners("snackbarText",snackbarText,"Reading numbers...");
-            snackbarText = "Reading numbers...";
+            new ProcessingTask(originalPage,"Reading Numbers").handleDecodeState(ProcessingState.READING_NUMBERS);
             int[][] sudokuMatrix = getMatrixFromBitmap(processed);
-            notifyListeners("sudokuResult",sudokuResult,sudokuMatrix);
-            notifyListeners("processed",this.processed,processed);
+            new ProcessingTask(originalPage,processed).handleDecodeState(ProcessingState.COMPLETE);
+            //notifyListeners("sudokuResult",sudokuResult,sudokuMatrix);
+            //notifyListeners("processed",this.processed,processed);
             sudokuResult = sudokuMatrix;
         }
         catch (Exception e){
-            snackbarText = e.getMessage();
+            new ProcessingTask(originalPage,e.getMessage()).handleDecodeState(ProcessingState.ERROR);
         }
-    }
-
-    public Bitmap getProcessedBitmap(){
-        return  processed;
-    }
-
-    public int[][] getSudokuResult(){
-        return sudokuResult;
-    }
-
-    public String getSnackbarText(){
-        return snackbarText;
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener){
@@ -234,6 +228,8 @@ public class ImageProcessingThread extends Thread{
         int Wninth = (int)(width / 9);
         int Hninth = (int)(height / 9);
 
+        //int counter = 1;
+
         for (int row = 0; row < 9; row++){
             for (int col = 0; col < 9; col++){
                 Rect cellroi = new Rect(Wninth * col, Hninth * row, Wninth, Hninth);
@@ -251,10 +247,12 @@ public class ImageProcessingThread extends Thread{
                     int number = Integer.parseInt(str);
                     sudokuMatrix[row][col] = number;
                 }
+
+//                new ProcessingTask(originalPage,"Reading numbers "+counter+"/81").handleDecodeState(ProcessingState.READING_NUMBERS);
+//                counter ++;
                 //Log.d(TAG,str);
             }
         }
-
         return sudokuMatrix;
     }
 }

@@ -29,6 +29,9 @@ import android.graphics.ImageFormat;
 import android.graphics.YuvImage;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -36,6 +39,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.photosudoku.processing.ImageProcessingThread;
+import com.example.photosudoku.processing.ProcessingState;
+import com.example.photosudoku.processing.ProcessingTask;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -83,9 +88,11 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
     PreviewView previewView;
     TextView textview2;
     ImageView imageView;
+    Snackbar bar;
 
     ImageCapture imageCapture;
-    Snackbar bar;
+    Handler handler;
+    ImageProcessingThread t;
 
 
     private static String TAG = "CameraActivity";
@@ -111,8 +118,27 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         previewView = (PreviewView)findViewById(R.id.previewView);
         textview2 = (TextView)findViewById(R.id.textView2);
         imageView = (ImageView)findViewById(R.id.imageView2);
+        bar = Snackbar.make(imageView,"Processing...",Snackbar.LENGTH_INDEFINITE);
 
-        bar = Snackbar.make(findViewById(R.id.imageView2),"",Snackbar.LENGTH_INDEFINITE);
+        handler = new Handler(Looper.getMainLooper()){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                ProcessingTask task = (ProcessingTask)msg.obj;
+                if(msg.what == 0){
+                    bar.setDuration(Snackbar.LENGTH_SHORT);
+                    imageView.setImageBitmap((Bitmap)task.getObject());
+                }
+                else if(msg.what == 1 || msg.what == 2){
+                    bar.setText((String)task.getObject());
+                }
+                else{
+                    bar.setText((String)task.getObject());
+                    bar.setDuration(Snackbar.LENGTH_LONG);
+                    t=null;
+                    Log.d(TAG,(String)task.getObject());
+                }
+            }
+        };
 
         //matches camera process to a single camera process provider
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -163,14 +189,13 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                 int rotation = image.getImageInfo().getRotationDegrees();
                 try{
                     Bitmap bitmap = toBitmap(image);
-                    bar.setText("Processing...");
-                    bar.show();
-                    ImageProcessingThread t = new ImageProcessingThread(bitmap,rotation,CameraPage.this::propertyChange);
-                    if(t.isAlive()){
-                        t.interrupt();
+                    //ImageProcessingThread t = new ImageProcessingThread(bitmap,rotation,CameraPage.this::propertyChange);
+                    if(t==null){
+                        t = new ImageProcessingThread(bitmap,rotation,CameraPage.this);
+                        bar.setDuration(Snackbar.LENGTH_INDEFINITE);
+                        bar.show();
+                        t.start();
                     }
-                    t.start();
-
 //                    while(t.isAlive()){
 //                        bar.setText(t.getSnackbarText());
 //                        Log.d(TAG,t.getSnackbarText());
@@ -205,8 +230,30 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
-
-
+    public void handleProcessingTask(ProcessingTask task, ProcessingState state){
+        switch(state){
+            case COMPLETE:{
+                Message completeMessage = handler.obtainMessage(0, task);
+                completeMessage.sendToTarget();
+                break;
+            }
+            case LOCATING_SUDOKU:{
+                Message completeMessage = handler.obtainMessage(1, task);
+                completeMessage.sendToTarget();
+                break;
+            }
+            case READING_NUMBERS:{
+                Message completeMessage = handler.obtainMessage(2, task);
+                completeMessage.sendToTarget();
+                break;
+            }
+            case ERROR:{
+                Message completeMessage = handler.obtainMessage(-1,task);
+                completeMessage.sendToTarget();
+                break;
+            }
+        }
+    }
 
 
 
@@ -244,10 +291,6 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
     public void propertyChange(PropertyChangeEvent evt) {
         if(evt.getNewValue() instanceof int[][]){
             int[][] sudoku = (int[][])evt.getNewValue();
-            bar.dismiss();
-        }
-        else if (evt.getNewValue() instanceof String){
-            bar.setText((String)evt.getNewValue());
         }
         else if (evt.getNewValue() instanceof Bitmap){
             imageView.setImageBitmap((Bitmap)evt.getNewValue());
