@@ -125,15 +125,15 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
             public void handleMessage(@NonNull Message msg) {
                 ProcessingTask task = (ProcessingTask)msg.obj;
                 if(msg.what == 0){
-                    bar.setDuration(Snackbar.LENGTH_SHORT);
+                    bar.dismiss();
                     imageView.setImageBitmap((Bitmap)task.getObject());
+                    t=null;
                 }
                 else if(msg.what == 1 || msg.what == 2){
                     bar.setText((String)task.getObject());
                 }
                 else{
                     bar.setText((String)task.getObject());
-                    bar.setDuration(Snackbar.LENGTH_LONG);
                     t=null;
                     Log.d(TAG,(String)task.getObject());
                 }
@@ -188,9 +188,9 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
             public void onCaptureSuccess(@NonNull ImageProxy image) {
                 int rotation = image.getImageInfo().getRotationDegrees();
                 try{
-                    Bitmap bitmap = toBitmap(image);
                     //ImageProcessingThread t = new ImageProcessingThread(bitmap,rotation,CameraPage.this::propertyChange);
                     if(t==null){
+                        Bitmap bitmap = toBitmap(image);
                         t = new ImageProcessingThread(bitmap,rotation,CameraPage.this);
                         bar.setDuration(Snackbar.LENGTH_INDEFINITE);
                         bar.show();
