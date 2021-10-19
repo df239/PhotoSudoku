@@ -12,12 +12,17 @@ public class ProcessingTask {
     private final Object taskObject;
     private final CameraPage UIThread;
 
+    public static final int STATE_COMPLETE = 0;
+    public static final int STATE_LOCATING_SUDOKU = 1;
+    public static final int STATE_READING_NUMBERS = 2;
+    public static final int STATE_ERROR = -1;
+
     public ProcessingTask(CameraPage thread, Object obj){
         UIThread = thread;
         taskObject = obj;
     }
 
-    public void handleDecodeState(ProcessingState state){
+    public void handleDecodeState(int state){
         UIThread.handleProcessingTask(this, state);
     }
 

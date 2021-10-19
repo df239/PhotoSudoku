@@ -3,84 +3,45 @@ package com.example.photosudoku;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
-import androidx.camera.core.impl.CameraCaptureMetaData;
-import androidx.camera.core.impl.ImageCaptureConfig;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
-import android.graphics.YuvImage;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.photosudoku.processing.ImageProcessingThread;
-import com.example.photosudoku.processing.ProcessingState;
 import com.example.photosudoku.processing.ProcessingTask;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.text.Text;
-import com.google.mlkit.vision.text.TextRecognition;
-import com.google.mlkit.vision.text.TextRecognizer;
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.CLAHE;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.utils.Converters;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class CameraPage extends AppCompatActivity implements PropertyChangeListener {
 
@@ -124,15 +85,15 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
             @Override
             public void handleMessage(@NonNull Message msg) {
                 ProcessingTask task = (ProcessingTask)msg.obj;
-                if(msg.what == 0){
+                if(msg.what == ProcessingTask.STATE_COMPLETE){
                     bar.dismiss();
                     imageView.setImageBitmap((Bitmap)task.getObject());
                     t=null;
                 }
-                else if(msg.what == 1 || msg.what == 2){
+                else if(msg.what == ProcessingTask.STATE_LOCATING_SUDOKU || msg.what == ProcessingTask.STATE_READING_NUMBERS){
                     bar.setText((String)task.getObject());
                 }
-                else{
+                else if(msg.what == ProcessingTask.STATE_ERROR){
                     bar.setText((String)task.getObject());
                     t=null;
                     Log.d(TAG,(String)task.getObject());
@@ -230,29 +191,9 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
-    public void handleProcessingTask(ProcessingTask task, ProcessingState state){
-        switch(state){
-            case COMPLETE:{
-                Message completeMessage = handler.obtainMessage(0, task);
-                completeMessage.sendToTarget();
-                break;
-            }
-            case LOCATING_SUDOKU:{
-                Message completeMessage = handler.obtainMessage(1, task);
-                completeMessage.sendToTarget();
-                break;
-            }
-            case READING_NUMBERS:{
-                Message completeMessage = handler.obtainMessage(2, task);
-                completeMessage.sendToTarget();
-                break;
-            }
-            case ERROR:{
-                Message completeMessage = handler.obtainMessage(-1,task);
-                completeMessage.sendToTarget();
-                break;
-            }
-        }
+    public void handleProcessingTask(ProcessingTask task, int state){
+        Message message = handler.obtainMessage(state,task);
+        message.sendToTarget();
     }
 
 

@@ -61,18 +61,18 @@ public class ImageProcessingThread extends Thread{
     @Override
     public void run() {
         try{
-            new ProcessingTask(originalPage,"Locating Sudoku").handleDecodeState(ProcessingState.LOCATING_SUDOKU);
+            new ProcessingTask(originalPage,"Locating Sudoku").handleDecodeState(ProcessingTask.STATE_LOCATING_SUDOKU);
             Bitmap processed = processImage(original,rotation);
             this.processed = processed;
-            new ProcessingTask(originalPage,"Reading Numbers").handleDecodeState(ProcessingState.READING_NUMBERS);
+            new ProcessingTask(originalPage,"Reading Numbers").handleDecodeState(ProcessingTask.STATE_READING_NUMBERS);
             int[][] sudokuMatrix = getMatrixFromBitmap(processed);
-            new ProcessingTask(originalPage,processed).handleDecodeState(ProcessingState.COMPLETE);
+            new ProcessingTask(originalPage,processed).handleDecodeState(ProcessingTask.STATE_COMPLETE);
             //notifyListeners("sudokuResult",sudokuResult,sudokuMatrix);
             //notifyListeners("processed",this.processed,processed);
             sudokuResult = sudokuMatrix;
         }
         catch (Exception e){
-            new ProcessingTask(originalPage,e.getMessage()).handleDecodeState(ProcessingState.ERROR);
+            new ProcessingTask(originalPage,e.getMessage()).handleDecodeState(ProcessingTask.STATE_ERROR);
         }
     }
 
@@ -248,7 +248,6 @@ public class ImageProcessingThread extends Thread{
                     sudokuMatrix[row][col] = number;
                 }
 
-//                new ProcessingTask(originalPage,"Reading numbers "+counter+"/81").handleDecodeState(ProcessingState.READING_NUMBERS);
 //                counter ++;
                 //Log.d(TAG,str);
             }
