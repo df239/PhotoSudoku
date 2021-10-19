@@ -9,6 +9,7 @@ import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -28,6 +29,7 @@ import android.widget.TextView;
 
 import com.example.photosudoku.processing.ImageProcessingThread;
 import com.example.photosudoku.processing.ProcessingTask;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -51,6 +53,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
     TextView textview2;
     ImageView imageView;
     Snackbar bar;
+    ConstraintLayout cameraPageLayout;
 
     ImageCapture imageCapture;
     Handler handler;
@@ -78,9 +81,9 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         }
 
         previewView = (PreviewView)findViewById(R.id.previewView);
-        textview2 = (TextView)findViewById(R.id.textView2);
-        imageView = (ImageView)findViewById(R.id.imageView2);
-        bar = Snackbar.make(imageView,"Processing...",Snackbar.LENGTH_INDEFINITE);
+        cameraPageLayout = (ConstraintLayout)findViewById(R.id.cameraPageLayout);
+//        imageView = (ImageView)findViewById(R.id.imageView2);
+        bar = Snackbar.make(cameraPageLayout,"Processing...",Snackbar.LENGTH_INDEFINITE);
 
         handler = new Handler(Looper.getMainLooper()){
             @Override
@@ -144,7 +147,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
     }
 
     private ImageCapture setImageCapture(){
-        ImageCapture capture = new ImageCapture.Builder().setTargetRotation(previewView.getDisplay().getRotation()).setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY).build();
+        ImageCapture capture = new ImageCapture.Builder().setTargetRotation(previewView.getDisplay().getRotation()).setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build();
         return capture;
     }
 
@@ -172,7 +175,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                     //imageView.setImageBitmap(t.getProcessedBitmap());
                 }
                 catch (Exception e){
-                    Snackbar.make(findViewById(R.id.imageView2),e.getMessage(),Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.cameraPageLayout),e.getMessage(),Snackbar.LENGTH_LONG).show();
                     //Log.d(TAG,e.getMessage());
                 }
                 image.close();
