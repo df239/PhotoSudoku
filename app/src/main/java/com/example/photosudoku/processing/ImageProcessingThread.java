@@ -66,7 +66,7 @@ public class ImageProcessingThread extends Thread{
             this.processed = processed;
             new ProcessingTask(originalPage,"Reading Numbers").handleDecodeState(ProcessingTask.STATE_READING_NUMBERS);
             int[][] sudokuMatrix = getMatrixFromBitmap(processed);
-            new ProcessingTask(originalPage,processed).handleDecodeState(ProcessingTask.STATE_COMPLETE);
+            new ProcessingTask(originalPage,sudokuMatrix).handleDecodeState(ProcessingTask.STATE_COMPLETE);
             //notifyListeners("sudokuResult",sudokuResult,sudokuMatrix);
             //notifyListeners("processed",this.processed,processed);
             sudokuResult = sudokuMatrix;

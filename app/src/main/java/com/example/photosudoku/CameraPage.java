@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -87,7 +88,11 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                 ProcessingTask task = (ProcessingTask)msg.obj;
                 if(msg.what == ProcessingTask.STATE_COMPLETE){
                     bar.dismiss();
-                    imageView.setImageBitmap((Bitmap)task.getObject());
+                    Intent sudokuDisplayIntent = new Intent(CameraPage.this,SudokuDisplayPage.class);
+                    int[][] sudoku = (int[][])task.getObject();
+                    //imageView.setImageBitmap((Bitmap)task.getObject());
+                    sudokuDisplayIntent.putExtra("sudoku",sudoku);
+                    startActivity(sudokuDisplayIntent);
                     t=null;
                 }
                 else if(msg.what == ProcessingTask.STATE_LOCATING_SUDOKU || msg.what == ProcessingTask.STATE_READING_NUMBERS){
