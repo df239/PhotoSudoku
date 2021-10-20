@@ -33,7 +33,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
         mainLayout = (ConstraintLayout)findViewById(R.id.cameraPageLayout);
 
         Intent intent = getIntent();
-        int[][] sudoku = (int[][])intent.getSerializableExtra("sudoku");
+        int[][] sudoku = (int[][])intent.getSerializableExtra(CameraPage.SudokuKey);
         createSudokuUI(sudoku);
         //String str = arrayToString(sudoku);
         //textView.setText(str);

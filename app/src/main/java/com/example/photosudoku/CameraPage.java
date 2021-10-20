@@ -59,6 +59,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
     Handler handler;
     ImageProcessingThread t;
 
+    public static final String SudokuKey = "Sudoku";
 
     private static String TAG = "CameraActivity";
     static{
@@ -83,7 +84,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         previewView = (PreviewView)findViewById(R.id.previewView);
         cameraPageLayout = (ConstraintLayout)findViewById(R.id.cameraPageLayout);
 //        imageView = (ImageView)findViewById(R.id.imageView2);
-        bar = Snackbar.make(cameraPageLayout,"Processing...",Snackbar.LENGTH_INDEFINITE);
+        bar = Snackbar.make(cameraPageLayout,getString(R.string.processing),Snackbar.LENGTH_INDEFINITE);
 
         handler = new Handler(Looper.getMainLooper()){
             @Override
@@ -94,7 +95,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                     Intent sudokuDisplayIntent = new Intent(CameraPage.this,SudokuDisplayPage.class);
                     int[][] sudoku = (int[][])task.getObject();
                     //imageView.setImageBitmap((Bitmap)task.getObject());
-                    sudokuDisplayIntent.putExtra("sudoku",sudoku);
+                    sudokuDisplayIntent.putExtra(SudokuKey,sudoku);
                     startActivity(sudokuDisplayIntent);
                     t=null;
                 }

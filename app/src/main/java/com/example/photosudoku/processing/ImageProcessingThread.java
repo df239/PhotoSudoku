@@ -3,6 +3,7 @@ package com.example.photosudoku.processing;
 import android.graphics.Bitmap;
 
 import com.example.photosudoku.CameraPage;
+import com.example.photosudoku.R;
 import com.google.android.gms.tasks.Tasks;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
@@ -61,10 +62,10 @@ public class ImageProcessingThread extends Thread{
     @Override
     public void run() {
         try{
-            new ProcessingTask(originalPage,"Locating Sudoku").handleDecodeState(ProcessingTask.STATE_LOCATING_SUDOKU);
+            new ProcessingTask(originalPage,originalPage.getString(R.string.locating_sudoku)).handleDecodeState(ProcessingTask.STATE_LOCATING_SUDOKU);
             Bitmap processed = processImage(original,rotation);
             this.processed = processed;
-            new ProcessingTask(originalPage,"Reading Numbers").handleDecodeState(ProcessingTask.STATE_READING_NUMBERS);
+            new ProcessingTask(originalPage,originalPage.getString(R.string.reading_numbers)).handleDecodeState(ProcessingTask.STATE_READING_NUMBERS);
             int[][] sudokuMatrix = getMatrixFromBitmap(processed);
             new ProcessingTask(originalPage,sudokuMatrix).handleDecodeState(ProcessingTask.STATE_COMPLETE);
             //notifyListeners("sudokuResult",sudokuResult,sudokuMatrix);
@@ -145,7 +146,7 @@ public class ImageProcessingThread extends Thread{
             }
         }
 
-        if(maxCurve.total() != 4) throw new Exception("Sorry, I could not locate any sudoku. Try again.");
+        if(maxCurve.total() != 4) throw new Exception(originalPage.getString(R.string.sudoku_not_located_error));
 
 //        //largestContour = new MatOfPoint2f(contours.get(maxAreaIdx));
         //Imgproc.drawContours(copy,contours,maxAreaIdx,new Scalar(255,0,0),20);
@@ -250,7 +251,7 @@ public class ImageProcessingThread extends Thread{
             }
         }
         catch (Exception e){
-            throw new Exception("A problem occured with reading the sudoku. Try again.");
+            throw new Exception(originalPage.getString(R.string.ocr_error));
         }
 
 

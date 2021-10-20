@@ -5,4 +5,9 @@
     <string name="scan_button">Scan</string>
     <string name="tutorial_button">How to Solve</string>
     <string name="locate_sudoku_text">Locate sudoku</string>
+    <string name="sudoku_not_located_error">Sorry, I could not locate any sudoku. Try again.</string>
+    <string name="ocr_error">Could not read the content. Try again.</string>
+    <string name="locating_sudoku">Locating Sudoku...</string>
+    <string name="reading_numbers">Reading numbers...</string>
+    <string name="processing">Processing...</string>
 </resources>
