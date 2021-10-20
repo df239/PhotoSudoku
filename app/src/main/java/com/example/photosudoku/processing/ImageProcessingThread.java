@@ -216,7 +216,7 @@ public class ImageProcessingThread extends Thread{
         return ordered;
     }
 
-    private int[][] getMatrixFromBitmap(Bitmap bitmap) throws ExecutionException, InterruptedException {
+    private int[][] getMatrixFromBitmap(Bitmap bitmap) throws Exception {
         Mat mat = new Mat();
         Utils.bitmapToMat(bitmap,mat);
 
@@ -228,30 +228,32 @@ public class ImageProcessingThread extends Thread{
         int Wninth = (int)(width / 9);
         int Hninth = (int)(height / 9);
 
-        //int counter = 1;
+        try{
+            for (int row = 0; row < 9; row++){
+                for (int col = 0; col < 9; col++){
+                    Rect cellroi = new Rect(Wninth * col, Hninth * row, Wninth, Hninth);
+                    Mat cellMat = new Mat(mat,cellroi);
+                    Bitmap cellBmp = Bitmap.createBitmap(Wninth,Hninth,Bitmap.Config.ARGB_8888);
+                    Utils.matToBitmap(cellMat,cellBmp);
 
-        for (int row = 0; row < 9; row++){
-            for (int col = 0; col < 9; col++){
-                Rect cellroi = new Rect(Wninth * col, Hninth * row, Wninth, Hninth);
-                Mat cellMat = new Mat(mat,cellroi);
-                Bitmap cellBmp = Bitmap.createBitmap(Wninth,Hninth,Bitmap.Config.ARGB_8888);
-                Utils.matToBitmap(cellMat,cellBmp);
+                    //OCR here
+                    InputImage image = InputImage.fromBitmap(cellBmp, 0);
 
-                //OCR here
-                InputImage image = InputImage.fromBitmap(cellBmp, 0);
+                    Text result = Tasks.await(recognizer.process(image));
+                    String str = result.getText();
 
-                Text result = Tasks.await(recognizer.process(image));
-                String str = result.getText();
-
-                if (!str.equals("")){
-                    int number = Integer.parseInt(str);
-                    sudokuMatrix[row][col] = number;
+                    if (!str.equals("")){
+                        int number = Integer.parseInt(str);
+                        sudokuMatrix[row][col] = number;
+                    }
                 }
-
-//                counter ++;
-                //Log.d(TAG,str);
             }
         }
+        catch (Exception e){
+            throw new Exception("A problem occured with reading the sudoku. Try again.");
+        }
+
+
         return sudokuMatrix;
     }
 }

@@ -102,7 +102,8 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                     bar.setText((String)task.getObject());
                 }
                 else if(msg.what == ProcessingTask.STATE_ERROR){
-                    bar.setText((String)task.getObject());
+                    Snackbar.make(cameraPageLayout,(String)task.getObject(),Snackbar.LENGTH_LONG).show();
+                    bar.dismiss();
                     t=null;
                     Log.d(TAG,(String)task.getObject());
                 }
