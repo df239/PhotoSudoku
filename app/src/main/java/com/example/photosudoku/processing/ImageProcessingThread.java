@@ -115,16 +115,16 @@ public class ImageProcessingThread extends Thread{
     }
 
     private Bitmap processImage(Bitmap bitmap, int rotation) throws Exception{
-//        Mat mat = new Mat();
-//        Utils.bitmapToMat(bitmap,mat);
+        Mat mat = new Mat();
+        Utils.bitmapToMat(bitmap,mat);
 
-        Mat original = new Mat();
-        Utils.bitmapToMat(bitmap,original);
+        //Mat original = new Mat();
+        //Utils.bitmapToMat(bitmap,original);
         int targetWidth = (int)(bitmap.getWidth()*0.75);
         int targetHeight = (int)(bitmap.getHeight());
-        org.opencv.core.Rect roi = new org.opencv.core.Rect((int)(targetWidth*0.2),0,  targetWidth,targetHeight);
+        //org.opencv.core.Rect roi = new org.opencv.core.Rect((int)(targetWidth*0.2),0,  targetWidth,targetHeight);
         Bitmap tempBitmap = Bitmap.createBitmap(targetWidth,targetHeight, Bitmap.Config.ARGB_8888);
-        Mat mat = new Mat(original,roi);
+        //Mat mat = new Mat(original,roi);
 
         //image rotation: https://www.geeksforgeeks.org/rotating-images-using-opencv-in-java/
         Point centre = new Point(mat.rows()/2.0,mat.cols()/2.0);

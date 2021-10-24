@@ -43,8 +43,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 import org.opencv.imgproc.CLAHE;
 import org.opencv.imgproc.Imgproc;
 
@@ -74,7 +76,6 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
     SurfaceView surfaceView;
     Canvas canvas;
     Paint paint;
-    int cameraHeight, cameraWidth, xOffset, yOffset, boxWidth, boxHeight;
 
     public static final String SudokuKey = "Sudoku";
     public static final String BitmapKey = "Bitmap";
@@ -184,7 +185,33 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         public void onCaptureSuccess(@NonNull ImageProxy image) {
             if(t==null){
                 int rotation = image.getImageInfo().getRotationDegrees();
-                t = new ImageProcessingThread(toBitmap(image),rotation,CameraPage.this);
+
+                Bitmap photo = toBitmap(image);
+                DisplayMetrics displaymetrics = new DisplayMetrics();
+                getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                int height = photo.getHeight();
+                int width = photo.getWidth();
+
+                int left, top, right, bottom, diameter;
+
+                diameter = width;
+                if (height < width) {
+                    diameter = height;
+                }
+
+                int offset = (int) (0.05 * diameter);
+                diameter -= offset;
+
+                left = (int)(width / 2.5 - diameter / 3.5);
+                top = (int)(height / 2 - diameter / 3.5);
+                right = (int)(width / 2.5 + diameter / 3.5);
+                bottom = (int)(height / 2 + diameter / 3.5);
+
+                int boxHeight = bottom - top;
+                int boxWidth = right - left;
+                Bitmap temp = Bitmap.createBitmap(photo,left,top,boxWidth,boxHeight);
+
+                t = new ImageProcessingThread(temp,rotation,CameraPage.this);
                 bar.setDuration(Snackbar.LENGTH_INDEFINITE);
                 bar.show();
                 t.start();
@@ -304,9 +331,6 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         int height = previewView.getHeight();
         int width = previewView.getWidth();
 
-        cameraHeight = height;
-        cameraWidth = width;
-
         int left, right, top, bottom, diameter;
 
         diameter = width;
@@ -325,15 +349,11 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         paint.setColor(color);
         paint.setStrokeWidth(10);
 
-        left = (int)(width / 2 - diameter / 2.5);
-        top = (int)(height / 2.5 - diameter / 2.5);
-        right = (int)(width / 2 + diameter / 2.5);
-        bottom = (int)(height / 2.5 + diameter / 2.5);
+        left = (int)(width / 2 - diameter / 3);
+        top = (int)(height / 2.5 - diameter / 3);
+        right = (int)(width / 2 + diameter / 3);
+        bottom = (int)(height / 2.5 + diameter / 3);
 
-        xOffset = left;
-        yOffset = top;
-        boxHeight = bottom - top;
-        boxWidth = right - left;
         //Changing the value of x in diameter/x will change the size of the box ; inversely proportionate to x
         canvas.drawRect(left, top, right, bottom, paint);
         holder.unlockCanvasAndPost(canvas);
