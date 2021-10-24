@@ -6,11 +6,13 @@ import androidx.core.content.ContextCompat;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -33,8 +35,15 @@ public class SudokuDisplayPage extends AppCompatActivity {
         mainLayout = (ConstraintLayout)findViewById(R.id.cameraPageLayout);
 
         Intent intent = getIntent();
+
+//        Bitmap bmp = (Bitmap)intent.getParcelableExtra(CameraPage.BitmapKey);
+//        imageView.setImageBitmap(bmp);
+
         int[][] sudoku = (int[][])intent.getSerializableExtra(CameraPage.SudokuKey);
         createSudokuUI(sudoku);
+
+
+
         //String str = arrayToString(sudoku);
         //textView.setText(str);
     }

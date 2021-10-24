@@ -18,11 +18,19 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,10 +51,13 @@ import org.opencv.imgproc.Imgproc;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.nio.ByteBuffer;
+import java.security.cert.Extension;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
-public class CameraPage extends AppCompatActivity implements PropertyChangeListener {
+public class CameraPage extends AppCompatActivity implements PropertyChangeListener, SurfaceHolder.Callback {
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     PreviewView previewView;
@@ -59,7 +70,14 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
     Handler handler;
     ImageProcessingThread t;
 
+    SurfaceHolder holder;
+    SurfaceView surfaceView;
+    Canvas canvas;
+    Paint paint;
+    int cameraHeight, cameraWidth, xOffset, yOffset, boxWidth, boxHeight;
+
     public static final String SudokuKey = "Sudoku";
+    public static final String BitmapKey = "Bitmap";
 
     private static String TAG = "CameraActivity";
     static{
@@ -94,8 +112,8 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                     bar.dismiss();
                     Intent sudokuDisplayIntent = new Intent(CameraPage.this,SudokuDisplayPage.class);
                     int[][] sudoku = (int[][])task.getObject();
-                    //imageView.setImageBitmap((Bitmap)task.getObject());
                     sudokuDisplayIntent.putExtra(SudokuKey,sudoku);
+//                    sudokuDisplayIntent.putExtra(BitmapKey,(Bitmap)task.getObject());
                     startActivity(sudokuDisplayIntent);
                     t=null;
                 }
@@ -110,6 +128,14 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                 }
             }
         };
+
+        //Create the bounding box
+        surfaceView = findViewById(R.id.overlay);
+        surfaceView.setZOrderOnTop(true);
+        holder = surfaceView.getHolder();
+        holder.setFormat(PixelFormat.TRANSPARENT);
+        holder.addCallback(this);
+
 
         //matches camera process to a single camera process provider
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -135,9 +161,8 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         //selects the camera to use for the use case
         CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
         //creates a preview object and conencts it to the layout element previewView
-        //ImageAnalysis analysis = setAnalysis();
         Preview preview = setPreview();
-
+        //ImageAnalysis analysis = setAnalysis();
         imageCapture = setImageCapture();
         cameraProvider.bindToLifecycle(this, cameraSelector, imageCapture, preview);
     }
@@ -155,39 +180,24 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
 
     public void TakePicture(View view){
         imageCapture.takePicture(getExecutor(), new ImageCapture.OnImageCapturedCallback() {
-            @Override
-            public void onCaptureSuccess(@NonNull ImageProxy image) {
+        @Override
+        public void onCaptureSuccess(@NonNull ImageProxy image) {
+            if(t==null){
                 int rotation = image.getImageInfo().getRotationDegrees();
-                try{
-                    //ImageProcessingThread t = new ImageProcessingThread(bitmap,rotation,CameraPage.this::propertyChange);
-                    if(t==null){
-                        Bitmap bitmap = toBitmap(image);
-                        t = new ImageProcessingThread(bitmap,rotation,CameraPage.this);
-                        bar.setDuration(Snackbar.LENGTH_INDEFINITE);
-                        bar.show();
-                        t.start();
-                    }
-//                    while(t.isAlive()){
-//                        bar.setText(t.getSnackbarText());
-//                        Log.d(TAG,t.getSnackbarText());
-//                    }
-//                    int[][] sudoku = t.getSudokuResult();
-//                    Log.d(TAG,sudoku.toString());
-                    //bar.dismiss();
-                    //imageView.setImageBitmap(t.getProcessedBitmap());
-                }
-                catch (Exception e){
-                    Snackbar.make(findViewById(R.id.cameraPageLayout),e.getMessage(),Snackbar.LENGTH_LONG).show();
-                    //Log.d(TAG,e.getMessage());
-                }
-                image.close();
+                t = new ImageProcessingThread(toBitmap(image),rotation,CameraPage.this);
+                bar.setDuration(Snackbar.LENGTH_INDEFINITE);
+                bar.show();
+                t.start();
             }
+            //bar.dismiss();
+            //imageView.setImageBitmap(t.getProcessedBitmap());
+            image.close();
+        }
 
-            @Override
-            public void onError(@NonNull ImageCaptureException exception) {
-                super.onError(exception);
-            }
-        });
+        @Override
+        public void onError(@NonNull ImageCaptureException exception) {
+            super.onError(exception);
+        }});
     }
 
 
@@ -272,5 +282,60 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         return imageAnalysis;
     }*/
 
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        DrawFocusRect(Color.parseColor("#9ad9c0"));
+    }
 
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+
+    }
+
+    //https://medium.com/@sdptd20/exploring-ocr-capabilities-of-ml-kit-using-camera-x-9949633af0fe
+    private void DrawFocusRect(int color) {
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int height = previewView.getHeight();
+        int width = previewView.getWidth();
+
+        cameraHeight = height;
+        cameraWidth = width;
+
+        int left, right, top, bottom, diameter;
+
+        diameter = width;
+        if (height < width) {
+            diameter = height;
+        }
+
+        int offset = (int) (0.05 * diameter);
+        diameter -= offset;
+
+        canvas = holder.lockCanvas();
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        //border's properties
+        paint = new Paint();
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(color);
+        paint.setStrokeWidth(10);
+
+        left = (int)(width / 2 - diameter / 2.5);
+        top = (int)(height / 2.5 - diameter / 2.5);
+        right = (int)(width / 2 + diameter / 2.5);
+        bottom = (int)(height / 2.5 + diameter / 2.5);
+
+        xOffset = left;
+        yOffset = top;
+        boxHeight = bottom - top;
+        boxWidth = right - left;
+        //Changing the value of x in diameter/x will change the size of the box ; inversely proportionate to x
+        canvas.drawRect(left, top, right, bottom, paint);
+        holder.unlockCanvasAndPost(canvas);
+    }
 }

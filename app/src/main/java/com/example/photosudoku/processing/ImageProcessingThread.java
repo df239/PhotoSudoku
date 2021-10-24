@@ -19,6 +19,7 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
@@ -27,7 +28,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class ImageProcessingThread extends Thread{
 
@@ -59,17 +59,46 @@ public class ImageProcessingThread extends Thread{
         recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
     }
 
+//    public ImageProcessingThread(List<Bitmap> bitmaps, int rotationDegrees, CameraPage cameraPage){
+//        super();
+//        original = meanBmp(bitmaps);
+//        rotation = rotationDegrees;
+//        originalPage = cameraPage;
+//        recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+//    }
+//
+//    private Bitmap meanBmp(List<Bitmap> bmps){
+//        int type = CvType.CV_8UC3;
+//        Mat[] mats = new Mat[bmps.size()];
+//        for (int i = 0; i < bmps.size(); i++){
+//            mats[i] = new Mat(bmps.get(0).getWidth(),bmps.get(0).getHeight(),type);
+//            Utils.bitmapToMat(bmps.get(i),mats[i]);
+//        }
+//
+//        Mat mean = mats[0];
+//        for (int i = 1; i < mats.length; i++){
+//            Imgproc.accumulate(mats[i],mean);
+//        }
+//
+//        Core.divide(mean,new Scalar(bmps.size(),bmps.size(),bmps.size(),bmps.size()),mean);
+//        Bitmap output = Bitmap.createBitmap(mean.width(),mean.height(), Bitmap.Config.ARGB_8888);
+//        Utils.matToBitmap(mean,output);
+//        return output;
+//    }
+
+
     @Override
     public void run() {
         try{
             new ProcessingTask(originalPage,originalPage.getString(R.string.locating_sudoku)).handleDecodeState(ProcessingTask.STATE_LOCATING_SUDOKU);
             Bitmap processed = processImage(original,rotation);
             this.processed = processed;
+
+//            new ProcessingTask(originalPage,processed).handleDecodeState(ProcessingTask.STATE_COMPLETE);
+
             new ProcessingTask(originalPage,originalPage.getString(R.string.reading_numbers)).handleDecodeState(ProcessingTask.STATE_READING_NUMBERS);
             int[][] sudokuMatrix = getMatrixFromBitmap(processed);
             new ProcessingTask(originalPage,sudokuMatrix).handleDecodeState(ProcessingTask.STATE_COMPLETE);
-            //notifyListeners("sudokuResult",sudokuResult,sudokuMatrix);
-            //notifyListeners("processed",this.processed,processed);
             sudokuResult = sudokuMatrix;
         }
         catch (Exception e){
@@ -179,7 +208,9 @@ public class ImageProcessingThread extends Thread{
         Mat endM = Converters.vector_Point2f_to_Mat(outputPoints);
         Mat perspectiveTransform = Imgproc.getPerspectiveTransform(startM, endM);
         Mat outputMat = new Mat(resultValue,resultValue, CvType.CV_8UC4);
+
         Imgproc.warpPerspective(copy, outputMat, perspectiveTransform, new Size(resultValue, resultValue));
+        //Imgproc.erode(mat,mat,new Mat(5,5,0));
         Bitmap output = Bitmap.createBitmap(resultValue,resultValue,Bitmap.Config.ARGB_8888);
 
 
@@ -221,6 +252,13 @@ public class ImageProcessingThread extends Thread{
         Mat mat = new Mat();
         Utils.bitmapToMat(bitmap,mat);
 
+//        Bitmap temp = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+//        Utils.matToBitmap(mat,temp);
+
+//        Imgproc.cvtColor(mat,mat,Imgproc.COLOR_BGR2GRAY);
+//        Imgproc.adaptiveThreshold(mat,mat,255,Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,Imgproc.THRESH_BINARY,101,1);
+//        Core.bitwise_not(mat,mat);
+
         int[][] sudokuMatrix = new int[9][9];
 
         int width = bitmap.getWidth();
@@ -229,21 +267,58 @@ public class ImageProcessingThread extends Thread{
         int Wninth = (int)(width / 9);
         int Hninth = (int)(height / 9);
 
+        int row = 0,col = 0;
+
+        double ratio = 0.9;
+        int Wactual = (int)(Wninth * ratio);
+        int Hactual = (int)(Hninth * ratio);
+        int Wdisplacement = (int)((Wninth - Wactual)/2);
+        int Hdisplacement = (int)((Hninth - Hactual)/2);
+
         try{
-            for (int row = 0; row < 9; row++){
-                for (int col = 0; col < 9; col++){
-                    Rect cellroi = new Rect(Wninth * col, Hninth * row, Wninth, Hninth);
+            for (row = 0; row < 9; row++){
+                for (col = 0; col < 9; col++){
+                    Rect cellroi = new Rect(Wninth * col + Wdisplacement, Hninth * row + Hdisplacement, Wactual, Hactual);
                     Mat cellMat = new Mat(mat,cellroi);
-                    Bitmap cellBmp = Bitmap.createBitmap(Wninth,Hninth,Bitmap.Config.ARGB_8888);
+
+//                    List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+//                    Imgproc.findContours(cellMat,contours,new Mat(),Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_NONE);
+//
+//                    double maxArea = -1;
+//                    int maxAreaIdx = -1;
+//                    MatOfPoint temp_contour = contours.get(0); //the largest is at the index 0 for starting point
+//                    MatOfPoint2f approxCurve = new MatOfPoint2f();
+//                    //MatOfPoint2f maxCurve = new MatOfPoint2f();
+//
+//                    for (int idx = 0; idx < contours.size(); idx++) {
+//                        temp_contour = contours.get(idx);
+//                        double contourarea = Imgproc.contourArea(temp_contour);
+//                        //compare this contour to the previous largest contour found
+//                        if (contourarea > maxArea && contourarea > 500) {
+//                            //check if this contour is a square
+//                            MatOfPoint2f new_mat = new MatOfPoint2f( temp_contour.toArray() );
+//                            int contourSize = (int)temp_contour.total();
+//                            Imgproc.approxPolyDP(new_mat, approxCurve, contourSize*0.05, true);
+//                            //maxCurve = approxCurve;
+//                            maxArea = contourarea;
+//                            maxAreaIdx = idx;
+//                        }
+//                    }
+//
+//                    Mat Mnumber = new Mat(Wactual,Hactual,0);
+//                    Imgproc.drawContours(Mnumber,contours,maxAreaIdx,new Scalar(255,255,255), -1);
+
+                    Bitmap cellBmp = Bitmap.createBitmap(Wactual,Hactual,Bitmap.Config.ARGB_8888);
+
                     Utils.matToBitmap(cellMat,cellBmp);
 
                     //OCR here
                     InputImage image = InputImage.fromBitmap(cellBmp, 0);
 
                     Text result = Tasks.await(recognizer.process(image));
-                    String str = result.getText();
+                    String str = result.getText().trim();
 
-                    if (!str.equals("")){
+                    if (tryParseSudokuDigit(str)){
                         int number = Integer.parseInt(str);
                         sudokuMatrix[row][col] = number;
                     }
@@ -251,10 +326,20 @@ public class ImageProcessingThread extends Thread{
             }
         }
         catch (Exception e){
-            throw new Exception(originalPage.getString(R.string.ocr_error));
+            throw new Exception(originalPage.getString(R.string.ocr_error)+" R"+(row+1)+"C"+(col+1));
         }
 
 
         return sudokuMatrix;
+    }
+
+    private boolean tryParseSudokuDigit(String string){
+        try{
+            int n = Integer.parseInt(string);
+            return n - 10 < 0;
+        }
+        catch (NumberFormatException e){
+            return false;
+        }
     }
 }
