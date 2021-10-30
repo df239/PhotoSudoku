@@ -249,8 +249,15 @@ public class ImageProcessingThread extends Thread{
     }
 
     private int[][] getMatrixFromBitmap(Bitmap bitmap) throws Exception {
-        Mat mat = new Mat();
-        Utils.bitmapToMat(bitmap,mat);
+        Mat input = new Mat();
+        Utils.bitmapToMat(bitmap,input);
+        Imgproc.cvtColor(input,input,Imgproc.COLOR_BGRA2GRAY);
+        Mat mat = new Mat(input.rows(), input.cols(), input.type());
+        Imgproc.bilateralFilter(input,mat,15,70,100);
+        Imgproc.adaptiveThreshold(mat,mat, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 2);
+
+        Utils.matToBitmap(mat,bitmap);
+
 
 //        Bitmap temp = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
 //        Utils.matToBitmap(mat,temp);
@@ -269,7 +276,7 @@ public class ImageProcessingThread extends Thread{
 
         int row = 0,col = 0;
 
-        double ratio = 0.9;
+        double ratio = 0.95;
         int Wactual = (int)(Wninth * ratio);
         int Hactual = (int)(Hninth * ratio);
         int Wdisplacement = (int)((Wninth - Wactual)/2);
