@@ -287,6 +287,7 @@ public class ImageProcessingThread extends Thread{
         int Hdisplacement = (int)((Hninth - Hactual)/2);
 
         String[] vals = {"1","2","3","4","5","6","7","8","9"};
+        Boolean valFound = false;
         try{
             for (row = 0; row < 9; row++){
                 for (col = 0; col < 9; col++){
@@ -305,8 +306,8 @@ public class ImageProcessingThread extends Thread{
                         Text result = Tasks.await(recognizer.process(image));
                         String str = result.getText().trim();
 
-                        if(str.equals("A")){sudokuMatrix[row][col] = 4;}
-                        else if (str.equals("I") || str.equals("l")){sudokuMatrix[row][col] = 1;}
+                        if(str.equals("A")){sudokuMatrix[row][col] = 4; valFound = true;}
+                        else if (str.equals("I") || str.equals("l")){sudokuMatrix[row][col] = 1; valFound = true;}
                         else if (!str.equals("")){
                             int index = 0;
                             for (String val : vals){
@@ -317,6 +318,7 @@ public class ImageProcessingThread extends Thread{
                             }
                             int number = Integer.parseInt(String.valueOf(str.charAt(index)));
                             sudokuMatrix[row][col] = number;
+                            valFound = true;
                         }
                     }
                 }
@@ -326,6 +328,9 @@ public class ImageProcessingThread extends Thread{
             throw new Exception(originalPage.getString(R.string.ocr_error)+" R"+(row+1)+"C"+(col+1));
         }
 
+        if (!valFound){
+            throw new Exception(originalPage.getString(R.string.ocr_error));
+        }
         return sudokuMatrix;
     }
 
