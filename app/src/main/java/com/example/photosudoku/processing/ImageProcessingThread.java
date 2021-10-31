@@ -286,6 +286,7 @@ public class ImageProcessingThread extends Thread{
         int Wdisplacement = (int)((Wninth - Wactual)/2);
         int Hdisplacement = (int)((Hninth - Hactual)/2);
 
+        String[] vals = {"1","2","3","4","5","6","7","8","9"};
         try{
             for (row = 0; row < 9; row++){
                 for (col = 0; col < 9; col++){
@@ -304,8 +305,17 @@ public class ImageProcessingThread extends Thread{
                         Text result = Tasks.await(recognizer.process(image));
                         String str = result.getText().trim();
 
-                        if (tryParseSudokuDigit(str)){
-                            int number = Integer.parseInt(str);
+                        if(str.equals("A")){sudokuMatrix[row][col] = 4;}
+                        else if (str.equals("I") || str.equals("l")){sudokuMatrix[row][col] = 1;}
+                        else if (!str.equals("")){
+                            int index = 0;
+                            for (String val : vals){
+                                if (str.contains(val)){
+                                    index = str.indexOf(val);
+                                    break;
+                                }
+                            }
+                            int number = Integer.parseInt(String.valueOf(str.charAt(index)));
                             sudokuMatrix[row][col] = number;
                         }
                     }
@@ -315,7 +325,6 @@ public class ImageProcessingThread extends Thread{
         catch (Exception e){
             throw new Exception(originalPage.getString(R.string.ocr_error)+" R"+(row+1)+"C"+(col+1));
         }
-
 
         return sudokuMatrix;
     }
