@@ -202,10 +202,10 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                 int offset = (int) (0.05 * diameter);
                 diameter -= offset;
 
-                left = (int)(width / 2.5 - diameter / 3.5);
-                top = (int)(height / 2 - diameter / 3.5);
-                right = (int)(width / 2.5 + diameter / 3.5);
-                bottom = (int)(height / 2 + diameter / 3.5);
+                left = (int)(width / 2.5 - diameter / 3);
+                top = (int)(height / 2 - diameter / 3);
+                right = (int)(width / 2.5 + diameter / 3);
+                bottom = (int)(height / 2 + diameter / 3);
 
                 int boxHeight = bottom - top;
                 int boxWidth = right - left;
@@ -349,10 +349,10 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         paint.setColor(color);
         paint.setStrokeWidth(10);
 
-        left = (int)(width / 2 - diameter / 3);
-        top = (int)(height / 2.5 - diameter / 3);
-        right = (int)(width / 2 + diameter / 3);
-        bottom = (int)(height / 2.5 + diameter / 3);
+        left = (int)(width / 2 - diameter / 2.5);
+        top = (int)(height / 2.5 - diameter / 2.5);
+        right = (int)(width / 2 + diameter / 2.5);
+        bottom = (int)(height / 2.5 + diameter / 2.5);
 
         //Changing the value of x in diameter/x will change the size of the box ; inversely proportionate to x
         canvas.drawRect(left, top, right, bottom, paint);

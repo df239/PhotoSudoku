@@ -256,6 +256,10 @@ public class ImageProcessingThread extends Thread{
         Imgproc.bilateralFilter(input,mat,15,70,100);
         Imgproc.adaptiveThreshold(mat,mat, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 2);
 
+        Imgproc.erode(mat,mat,new Mat(5,5,0));
+        Imgproc.dilate(mat,mat,new Mat(3,3,0));
+        Core.bitwise_not(mat,mat);
+
         Utils.matToBitmap(mat,bitmap);
 
 
@@ -276,7 +280,7 @@ public class ImageProcessingThread extends Thread{
 
         int row = 0,col = 0;
 
-        double ratio = 0.95;
+        double ratio = 0.85;
         int Wactual = (int)(Wninth * ratio);
         int Hactual = (int)(Hninth * ratio);
         int Wdisplacement = (int)((Wninth - Wactual)/2);
@@ -287,47 +291,23 @@ public class ImageProcessingThread extends Thread{
                 for (col = 0; col < 9; col++){
                     Rect cellroi = new Rect(Wninth * col + Wdisplacement, Hninth * row + Hdisplacement, Wactual, Hactual);
                     Mat cellMat = new Mat(mat,cellroi);
+                    double nonZero = Core.countNonZero(cellMat);
+                    int size = cellMat.rows()*cellMat.cols();
+                    if (nonZero / size > 0.04){
+                        Bitmap cellBmp = Bitmap.createBitmap(Wactual,Hactual,Bitmap.Config.ARGB_8888);
 
-//                    List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-//                    Imgproc.findContours(cellMat,contours,new Mat(),Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_NONE);
-//
-//                    double maxArea = -1;
-//                    int maxAreaIdx = -1;
-//                    MatOfPoint temp_contour = contours.get(0); //the largest is at the index 0 for starting point
-//                    MatOfPoint2f approxCurve = new MatOfPoint2f();
-//                    //MatOfPoint2f maxCurve = new MatOfPoint2f();
-//
-//                    for (int idx = 0; idx < contours.size(); idx++) {
-//                        temp_contour = contours.get(idx);
-//                        double contourarea = Imgproc.contourArea(temp_contour);
-//                        //compare this contour to the previous largest contour found
-//                        if (contourarea > maxArea && contourarea > 500) {
-//                            //check if this contour is a square
-//                            MatOfPoint2f new_mat = new MatOfPoint2f( temp_contour.toArray() );
-//                            int contourSize = (int)temp_contour.total();
-//                            Imgproc.approxPolyDP(new_mat, approxCurve, contourSize*0.05, true);
-//                            //maxCurve = approxCurve;
-//                            maxArea = contourarea;
-//                            maxAreaIdx = idx;
-//                        }
-//                    }
-//
-//                    Mat Mnumber = new Mat(Wactual,Hactual,0);
-//                    Imgproc.drawContours(Mnumber,contours,maxAreaIdx,new Scalar(255,255,255), -1);
+                        Utils.matToBitmap(cellMat,cellBmp);
 
-                    Bitmap cellBmp = Bitmap.createBitmap(Wactual,Hactual,Bitmap.Config.ARGB_8888);
+                        //OCR here
+                        InputImage image = InputImage.fromBitmap(cellBmp, 0);
 
-                    Utils.matToBitmap(cellMat,cellBmp);
+                        Text result = Tasks.await(recognizer.process(image));
+                        String str = result.getText().trim();
 
-                    //OCR here
-                    InputImage image = InputImage.fromBitmap(cellBmp, 0);
-
-                    Text result = Tasks.await(recognizer.process(image));
-                    String str = result.getText().trim();
-
-                    if (tryParseSudokuDigit(str)){
-                        int number = Integer.parseInt(str);
-                        sudokuMatrix[row][col] = number;
+                        if (tryParseSudokuDigit(str)){
+                            int number = Integer.parseInt(str);
+                            sudokuMatrix[row][col] = number;
+                        }
                     }
                 }
             }
