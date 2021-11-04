@@ -347,7 +347,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(color);
-        paint.setStrokeWidth(10);
+        paint.setStrokeWidth(20);
 
         left = (int)(width / 2 - diameter / 2.5);
         top = (int)(height / 2.5 - diameter / 2.5);

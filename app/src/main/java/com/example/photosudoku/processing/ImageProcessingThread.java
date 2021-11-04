@@ -138,7 +138,10 @@ public class ImageProcessingThread extends Thread{
         //image processing
         //https://www.pyimagesearch.com/2020/08/10/opencv-sudoku-solver-and-ocr/
         Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2GRAY);
-        Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(7,7),3);
+        Mat temp = new Mat();
+        Imgproc.bilateralFilter(mat,temp,7,70,100);
+        temp.copyTo(mat);
+        //Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(7,7),3);
         Imgproc.adaptiveThreshold(mat,mat, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 2);
         //Imgproc.Canny(mat,mat,150,150);
         Imgproc.dilate(mat,mat,new Mat(3,3,0));
@@ -251,24 +254,22 @@ public class ImageProcessingThread extends Thread{
     private int[][] getMatrixFromBitmap(Bitmap bitmap) throws Exception {
         Mat input = new Mat();
         Utils.bitmapToMat(bitmap,input);
-        Imgproc.cvtColor(input,input,Imgproc.COLOR_BGRA2GRAY);
         Mat mat = new Mat(input.rows(), input.cols(), input.type());
+
+        Imgproc.cvtColor(input,input,Imgproc.COLOR_BGRA2GRAY);
         Imgproc.bilateralFilter(input,mat,15,70,100);
         Imgproc.adaptiveThreshold(mat,mat, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 2);
 
         Imgproc.erode(mat,mat,new Mat(5,5,0));
         Imgproc.dilate(mat,mat,new Mat(3,3,0));
         Core.bitwise_not(mat,mat);
+//        Mat output = new Mat();
+//        Mat testMask = Mat.zeros(500,500,CvType.CV_8UC1);
+//        Core.bitwise_and(input,input,output,mat);
 
         Utils.matToBitmap(mat,bitmap);
-
-
-//        Bitmap temp = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-//        Utils.matToBitmap(mat,temp);
-
-//        Imgproc.cvtColor(mat,mat,Imgproc.COLOR_BGR2GRAY);
-//        Imgproc.adaptiveThreshold(mat,mat,255,Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,Imgproc.THRESH_BINARY,101,1);
-//        Core.bitwise_not(mat,mat);
+//        Utils.matToBitmap(input,bitmap);
+//        Utils.matToBitmap(output,bitmap);
 
         int[][] sudokuMatrix = new int[9][9];
 

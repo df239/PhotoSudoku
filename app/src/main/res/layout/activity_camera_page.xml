@@ -28,12 +28,13 @@
 
     </androidx.camera.view.PreviewView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <ImageButton
         android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
         android:layout_gravity="bottom|center"
         android:layout_margin="15dp"
+        android:background="@drawable/round_button"
         android:elevation="100dp"
         android:onClick="TakePicture"
         app:layout_constraintBottom_toBottomOf="parent"
