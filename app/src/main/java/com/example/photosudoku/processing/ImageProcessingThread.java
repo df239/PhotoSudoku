@@ -260,16 +260,19 @@ public class ImageProcessingThread extends Thread{
         Imgproc.bilateralFilter(input,mat,15,70,100);
         Imgproc.adaptiveThreshold(mat,mat, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 2);
 
-        Imgproc.erode(mat,mat,new Mat(5,5,0));
-        Imgproc.dilate(mat,mat,new Mat(3,3,0));
-        Core.bitwise_not(mat,mat);
-//        Mat output = new Mat();
-//        Mat testMask = Mat.zeros(500,500,CvType.CV_8UC1);
-//        Core.bitwise_and(input,input,output,mat);
-
         Utils.matToBitmap(mat,bitmap);
-//        Utils.matToBitmap(input,bitmap);
-//        Utils.matToBitmap(output,bitmap);
+        Imgproc.erode(mat,mat,new Mat(9,9,0));
+        Utils.matToBitmap(mat,bitmap);
+        Imgproc.dilate(mat,mat,new Mat(7,7,0));
+        Utils.matToBitmap(mat,bitmap);
+        Core.bitwise_not(mat,mat);
+        Utils.matToBitmap(mat,bitmap);
+
+        Mat output = new Mat();
+        Core.bitwise_not(output,output);
+        Core.bitwise_and(input,input,input,mat);
+
+        Utils.matToBitmap(input,bitmap);
 
         int[][] sudokuMatrix = new int[9][9];
 
@@ -310,16 +313,18 @@ public class ImageProcessingThread extends Thread{
                         if(str.equals("A")){sudokuMatrix[row][col] = 4; valFound = true;}
                         else if (str.equals("I") || str.equals("l")){sudokuMatrix[row][col] = 1; valFound = true;}
                         else if (!str.equals("")){
-                            int index = 0;
+                            int index = -1;
                             for (String val : vals){
                                 if (str.contains(val)){
                                     index = str.indexOf(val);
                                     break;
                                 }
                             }
-                            int number = Integer.parseInt(String.valueOf(str.charAt(index)));
-                            sudokuMatrix[row][col] = number;
-                            valFound = true;
+                            if (index != -1){
+                                int number = Integer.parseInt(String.valueOf(str.charAt(index)));
+                                sudokuMatrix[row][col] = number;
+                                valFound = true;
+                            }
                         }
                     }
                 }
