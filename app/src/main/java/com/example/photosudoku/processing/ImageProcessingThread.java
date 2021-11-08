@@ -91,7 +91,8 @@ public class ImageProcessingThread extends Thread{
     public void run() {
         try{
             new ProcessingTask(originalPage,originalPage.getString(R.string.locating_sudoku)).handleDecodeState(ProcessingTask.STATE_LOCATING_SUDOKU);
-            Bitmap processed = processImage(original,rotation);
+            Bitmap rotated = rotateImage(original,rotation) ;
+            Bitmap processed = processImage(rotated);
             this.processed = processed;
 
 //            new ProcessingTask(originalPage,processed).handleDecodeState(ProcessingTask.STATE_COMPLETE);
@@ -114,7 +115,18 @@ public class ImageProcessingThread extends Thread{
         observableSupport.firePropertyChange(varName,oldVal,newVal);
     }
 
-    private Bitmap processImage(Bitmap bitmap, int rotation) throws Exception{
+    private Bitmap rotateImage(Bitmap bitmap, int rotation){
+        Mat mat = new Mat();
+        Utils.bitmapToMat(bitmap,mat);
+        //image rotation: https://www.geeksforgeeks.org/rotating-images-using-opencv-in-java/
+        Point centre = new Point(mat.rows()/2.0,mat.cols()/2.0);
+        Mat rotationMatrix = Imgproc.getRotationMatrix2D(centre,360-rotation,1);
+        Imgproc.warpAffine(mat,mat,rotationMatrix,mat.size());
+        Utils.matToBitmap(mat,bitmap);
+        return bitmap;
+    }
+
+    private Bitmap processImage(Bitmap bitmap) throws Exception{
         Mat mat = new Mat();
         Utils.bitmapToMat(bitmap,mat);
 
@@ -126,10 +138,7 @@ public class ImageProcessingThread extends Thread{
         Bitmap tempBitmap = Bitmap.createBitmap(targetWidth,targetHeight, Bitmap.Config.ARGB_8888);
         //Mat mat = new Mat(original,roi);
 
-        //image rotation: https://www.geeksforgeeks.org/rotating-images-using-opencv-in-java/
-        Point centre = new Point(mat.rows()/2.0,mat.cols()/2.0);
-        Mat rotationMatrix = Imgproc.getRotationMatrix2D(centre,360-rotation,1);
-        Imgproc.warpAffine(mat,mat,rotationMatrix,mat.size());
+
 
         //applyCLAHE(mat,mat);
 

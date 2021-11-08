@@ -25,6 +25,8 @@ public class SudokuDisplayPage extends AppCompatActivity {
     TableLayout table;
     ConstraintLayout mainLayout;
 
+    public static final String SUDOKU_KEY = "sudoku";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +41,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
 //        Bitmap bmp = (Bitmap)intent.getParcelableExtra(CameraPage.BitmapKey);
 //        imageView.setImageBitmap(bmp);
 
-        int[][] sudoku = (int[][])intent.getSerializableExtra(CameraPage.SudokuKey);
+        int[][] sudoku = (int[][])intent.getSerializableExtra(SUDOKU_KEY);
         createSudokuUI(sudoku);
 
 

@@ -77,7 +77,6 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
     Canvas canvas;
     Paint paint;
 
-    public static final String SudokuKey = "Sudoku";
     public static final String BitmapKey = "Bitmap";
 
     private static String TAG = "CameraActivity";
@@ -113,7 +112,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                     bar.dismiss();
                     Intent sudokuDisplayIntent = new Intent(CameraPage.this,SudokuDisplayPage.class);
                     int[][] sudoku = (int[][])task.getObject();
-                    sudokuDisplayIntent.putExtra(SudokuKey,sudoku);
+                    sudokuDisplayIntent.putExtra(SudokuDisplayPage.SUDOKU_KEY,sudoku);
 //                    sudokuDisplayIntent.putExtra(BitmapKey,(Bitmap)task.getObject());
                     startActivity(sudokuDisplayIntent);
                     t=null;

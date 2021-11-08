@@ -24,4 +24,11 @@ public class HomePage extends AppCompatActivity {
         Intent cameraPageIntent = new Intent(this,CameraPage.class);
         startActivity(cameraPageIntent);
     }
+
+    public void OpenSudokuEditor(View view){
+        Intent sudokuEditIntent = new Intent(this,SudokuDisplayPage.class);
+        int[][] empty = new int[9][9];
+        sudokuEditIntent.putExtra(SudokuDisplayPage.SUDOKU_KEY,empty);
+        startActivity(sudokuEditIntent);
+    }
 }
