@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg_main"
     tools:context=".HomePage">
 
     <TextView
@@ -11,35 +12,43 @@
         android:layout_width="0dp"
         android:layout_height="213dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
+        android:fontFamily="@font/cantora_one"
         android:text="@string/home_page_title"
         android:textAlignment="center"
-        android:textSize="36sp"
+        android:textColor="@color/black"
+        android:textSize="70sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button"
-        android:layout_width="250dp"
-        android:layout_height="100dp"
+        android:layout_width="220dp"
+        android:layout_height="90dp"
         android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/primary_button"
         android:onClick="OpenSudokuEditor"
         android:text="@string/enter_button"
-        android:textSize="30sp"
+        android:fontFamily="@font/cantora_one"
+        android:textColor="@color/black"
+        android:textSize="40sp"
         app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/button2"
-        android:layout_width="250dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="64dp"
+        android:layout_width="220dp"
+        android:layout_height="90dp"
+        android:layout_marginBottom="48dp"
         android:onClick="OpenCamera"
         android:text="@string/scan_button"
-        android:textSize="30sp"
+        android:fontFamily="@font/cantora_one"
+        android:textSize="40sp"
+        android:backgroundTint="@color/primary_button"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/button3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -50,7 +59,10 @@
         android:layout_height="60dp"
         android:layout_marginBottom="64dp"
         android:text="@string/tutorial_button"
+        android:fontFamily="@font/cantora_one"
         android:textSize="24sp"
+        android:backgroundTint="@color/primary_button"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

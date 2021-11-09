@@ -14,6 +14,7 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -33,6 +34,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_sudoku_display_page);
 
         //textView = (TextView)findViewById(R.id.sudokuTextView);

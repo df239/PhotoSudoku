@@ -32,6 +32,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -310,7 +311,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        DrawFocusRect(Color.parseColor("#9ad9c0"));
+        DrawFocusRect(R.color.primary_button);
     }
 
     @Override
@@ -345,8 +346,9 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         //border's properties
         paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(color);
+        paint.setColor(getResources().getColor(R.color.primary_button));
         paint.setStrokeWidth(20);
+        paint.setAlpha(255);
 
         left = (int)(width / 2 - diameter / 2.5);
         top = (int)(height / 2.5 - diameter / 2.5);
