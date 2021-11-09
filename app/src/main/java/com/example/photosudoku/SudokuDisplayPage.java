@@ -2,6 +2,7 @@ package com.example.photosudoku;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 
 import android.app.ActionBar;
@@ -10,7 +11,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -34,7 +37,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
 
         //textView = (TextView)findViewById(R.id.sudokuTextView);
         table = (TableLayout)findViewById(R.id.sudokuTable);
-        mainLayout = (ConstraintLayout)findViewById(R.id.cameraPageLayout);
+        mainLayout = (ConstraintLayout)findViewById(R.id.sudokuDisplayLayout);
 
         Intent intent = getIntent();
 
@@ -68,17 +71,20 @@ public class SudokuDisplayPage extends AppCompatActivity {
 
     private void createSudokuUI(int[][] sudoku){
         Drawable thinBg = ContextCompat.getDrawable(this,R.drawable.thin_cell_border);
+        TableRow.LayoutParams rowParams = new TableRow.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT,0.11f);
         for (int row = 0; row < 9; row++){
-            TableRow tableRow = (TableRow)table.getChildAt(row);
+            TableRow tableRow = new TableRow(this);
+            table.addView(tableRow);
             for (int col = 0; col < 9; col++){
-
-                EditText cell = (EditText)tableRow.getChildAt(col);
+                EditText cell = new EditText(this);
                 cell.setBackground(thinBg);
-//                cell.setEms(1);
-//                cell.setInputType(InputType.TYPE_CLASS_NUMBER);
-//                cell.setLayoutParams(new TableLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT,0.11f));
-//                cell.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-//                cell.setMaxEms(1);
+                cell.setEms(1);
+                cell.setInputType(InputType.TYPE_CLASS_NUMBER);
+                cell.setLayoutParams(rowParams);
+                cell.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                cell.setMaxEms(1);
+
+                tableRow.addView(cell);
 
                 if (sudoku[row][col] != 0){
                     cell.setText(String.valueOf(sudoku[row][col]));
