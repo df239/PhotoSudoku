@@ -71,6 +71,11 @@ public class SudokuDisplayPage extends AppCompatActivity {
 
     private void createSudokuUI(int[][] sudoku){
         TableRow.LayoutParams rowParams = new TableRow.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT,0.11f);
+
+        int padding_dp = 7;
+        float scale = getResources().getDisplayMetrics().density;
+        int padding_px = (int) (padding_dp * scale + 0.5f);
+
         for (int row = 0; row < 9; row++){
             TableRow tableRow = new TableRow(this);
             table.addView(tableRow);
@@ -81,6 +86,8 @@ public class SudokuDisplayPage extends AppCompatActivity {
                 cell.setLayoutParams(rowParams);
                 cell.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                 cell.setMaxEms(1);
+
+                cell.setPadding(0,padding_px,0,padding_px);
 
                 cell.setBackground(getCellBorder(row,col));
 
