@@ -70,19 +70,19 @@ public class SudokuDisplayPage extends AppCompatActivity {
     }
 
     private void createSudokuUI(int[][] sudoku){
-        Drawable thinBg = ContextCompat.getDrawable(this,R.drawable.thin_cell_border);
         TableRow.LayoutParams rowParams = new TableRow.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT,0.11f);
         for (int row = 0; row < 9; row++){
             TableRow tableRow = new TableRow(this);
             table.addView(tableRow);
             for (int col = 0; col < 9; col++){
                 EditText cell = new EditText(this);
-                cell.setBackground(thinBg);
                 cell.setEms(1);
                 cell.setInputType(InputType.TYPE_CLASS_NUMBER);
                 cell.setLayoutParams(rowParams);
                 cell.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                 cell.setMaxEms(1);
+
+                cell.setBackground(getCellBorder(row,col));
 
                 tableRow.addView(cell);
 
@@ -91,6 +91,28 @@ public class SudokuDisplayPage extends AppCompatActivity {
                 }
             }
         }
-        table.setBackground(ContextCompat.getDrawable(this,R.drawable.thick_cell_border));
+    }
+
+    private Drawable getCellBorder(int row, int col){
+        int rowRem = row % 3;
+        int colRem = col % 3;
+
+        if (rowRem == 0){
+            if (colRem == 0) return ContextCompat.getDrawable(this,R.drawable.border_top_left);
+            else if (colRem == 1) return ContextCompat.getDrawable(this,R.drawable.border_top);
+            else if (colRem == 2) return ContextCompat.getDrawable(this,R.drawable.border_top_right);
+        }
+        else if (rowRem == 1){
+            if (colRem == 0)  return ContextCompat.getDrawable(this,R.drawable.border_left);
+            else if (colRem == 1)  return ContextCompat.getDrawable(this,R.drawable.border_middle);
+            else if (colRem == 2)  return ContextCompat.getDrawable(this,R.drawable.border_right);
+        }
+        else if (rowRem == 2){
+            if (colRem == 0) return ContextCompat.getDrawable(this,R.drawable.border_bottom_left);
+            else if (colRem == 1) return ContextCompat.getDrawable(this,R.drawable.border_bottom);
+            else if (colRem == 2) return ContextCompat.getDrawable(this,R.drawable.border_bottom_right);
+        }
+
+        return ContextCompat.getDrawable(this,R.drawable.thin_cell_border);
     }
 }
