@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import com.example.photosudoku.CameraPage;
 import com.example.photosudoku.R;
+import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
@@ -28,10 +29,14 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ImageProcessingThread extends Thread{
 
-    TextRecognizer recognizer;
     //String OCRresult = "";
     Bitmap original;
     int rotation;
@@ -42,21 +47,21 @@ public class ImageProcessingThread extends Thread{
 
     private PropertyChangeSupport observableSupport;
 
-    public ImageProcessingThread(Bitmap originalBitmap, int rotationDegrees, PropertyChangeListener listener){
-        super();
-        original = originalBitmap;
-        rotation = rotationDegrees;
-        recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-        observableSupport = new PropertyChangeSupport(this);
-        observableSupport.addPropertyChangeListener(listener);
-    }
+//    public ImageProcessingThread(Bitmap originalBitmap, int rotationDegrees, PropertyChangeListener listener){
+//        super();
+//        original = originalBitmap;
+//        rotation = rotationDegrees;
+//        recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+//        observableSupport = new PropertyChangeSupport(this);
+//        observableSupport.addPropertyChangeListener(listener);
+//    }
 
     public ImageProcessingThread(Bitmap originalBitmap, int rotationDegrees, CameraPage cameraPage){
         super();
         original = originalBitmap;
         rotation = rotationDegrees;
         originalPage = cameraPage;
-        recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+        //recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
     }
 
 //    public ImageProcessingThread(List<Bitmap> bitmaps, int rotationDegrees, CameraPage cameraPage){
@@ -300,7 +305,14 @@ public class ImageProcessingThread extends Thread{
         int Hdisplacement = (int)((Hninth - Hactual)/2);
 
         String[] vals = {"1","2","3","4","5","6","7","8","9"};
-        Boolean valFound = false;
+
+        //List<Task<Text>> tasks = new ArrayList<Task<Text>>();
+        List<Integer> xcoords = new ArrayList<Integer>();
+        List<Integer> ycoords = new ArrayList<Integer>();
+        List<String> values = new ArrayList<String>();
+        ExecutorService service = Executors.newFixedThreadPool(5);
+
+        boolean valFound = false;
         try{
             for (row = 0; row < 9; row++){
                 for (col = 0; col < 9; col++){
@@ -314,30 +326,53 @@ public class ImageProcessingThread extends Thread{
                         Utils.matToBitmap(cellMat,cellBmp);
 
                         //OCR here
+
                         InputImage image = InputImage.fromBitmap(cellBmp, 0);
+                        TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+                        //tasks.add(recognizer.process(image));
+                        int finalRow = row;
+                        int finalCol = col;
 
-                        Text result = Tasks.await(recognizer.process(image));
-                        String str = result.getText().trim();
-
-                        if(str.equals("A")){sudokuMatrix[row][col] = 4; valFound = true;}
-                        else if (str.equals("I") || str.equals("l")){sudokuMatrix[row][col] = 1; valFound = true;}
-                        else if (!str.equals("")){
-                            int index = -1;
-                            for (String val : vals){
-                                if (str.contains(val)){
-                                    index = str.indexOf(val);
-                                    break;
-                                }
+                        service.submit(()->{
+                            String str = null;
+                            try {
+                                str = Tasks.await(recognizer.process(image)).getText().trim();
+                            } catch (ExecutionException | InterruptedException e) {
+                                e.printStackTrace();
                             }
-                            if (index != -1){
-                                int number = Integer.parseInt(String.valueOf(str.charAt(index)));
-                                sudokuMatrix[row][col] = number;
-                                valFound = true;
-                            }
-                        }
+                            values.add(str);
+                            xcoords.add(finalRow);
+                            ycoords.add(finalCol);
+                        });
                     }
                 }
             }
+
+            //String[] strings = tasks.get(0).getResult().getText().trim().split("\\W+");
+            service.shutdown();
+            if(!service.awaitTermination(5, TimeUnit.SECONDS)) service.shutdownNow();
+            for (int i = 0; i < values.size(); i++) {
+                //Text result = Tasks.await(recognizer.process(image));
+                String str = values.get(i);
+                if(str.equals("A")){sudokuMatrix[xcoords.get(i)][ycoords.get(i)] = 4; valFound = true;}
+                else if (str.equals("I") || str.equals("l")){sudokuMatrix[xcoords.get(i)][ycoords.get(i)] = 1; valFound = true;}
+                else if (!str.equals("")){
+                    int index = -1;
+                    for (String val : vals){
+                        if (str.contains(val)){
+                            index = str.indexOf(val);
+                            break;
+                        }
+                    }
+                    if (index != -1){
+                        int number = Integer.parseInt(String.valueOf(str.charAt(index)));
+                        sudokuMatrix[xcoords.get(i)][ycoords.get(i)] = number;
+                        valFound = true;
+                    }
+                }
+
+            }
+
         }
         catch (Exception e){
             throw new Exception(originalPage.getString(R.string.ocr_error)+" R"+(row+1)+"C"+(col+1));
