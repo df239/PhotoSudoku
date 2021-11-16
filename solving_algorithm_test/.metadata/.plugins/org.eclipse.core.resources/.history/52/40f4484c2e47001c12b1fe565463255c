@@ -13,15 +13,9 @@ public class Sudoku {
 
     public Sudoku(int[][] sudokuGrid){
         this.grid = sudokuGrid;
-        this.rows = new ArrayList<CellGroup>();
-        this.cols = new ArrayList<CellGroup>();
-        this.boxes = new ArrayList<CellGroup>();
-        
-        for(int i = 0; i < 9; i++) {
-        	this.rows.add(new CellGroup());
-        	this.cols.add(new CellGroup());
-        	this.boxes.add(new CellGroup());
-        }
+        this.rows = new ArrayList<CellGroup>(9);
+        this.cols = new ArrayList<CellGroup>(9);
+        this.boxes = new ArrayList<CellGroup>(9);
         
         this.sudoku = buildSudoku(sudokuGrid);
         this.updateCellCandidates();

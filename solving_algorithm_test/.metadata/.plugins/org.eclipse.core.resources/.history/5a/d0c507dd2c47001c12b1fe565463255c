@@ -26,10 +26,7 @@ public class Tester {
 		System.out.print("Hello World");
 		
 		Sudoku sudoku = new Sudoku(EXAMPLE1);
-		sudoku = Solver.solveNakedSingles(sudoku);
-		sudoku.updateCellCandidates();
 		
-		System.out.print(sudoku.grid);		
 		
 
 	}
