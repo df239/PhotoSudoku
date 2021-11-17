@@ -22,12 +22,27 @@ public class Main {
     }
 
     static void printMatrix(int[][] mat){
+        System.out.println("  _ _ _   _ _ _   _ _ _");
+        int rowcount = 0;
         for (int i = 0; i < mat.length; i++){
+            int colcount = 0;
+            System.out.print("| ");
             for (int j = 0; j < mat[i].length; j++){
                 if (mat[i][j] != 0) System.out.print(mat[i][j] + " ");
-                else System.out.print(". ");
+                else System.out.print("  ");
+
+                colcount++;
+                if(colcount == 3){
+                    System.out.print("| ");
+                    colcount = 0;
+                }
             }
             System.out.println("");
+            rowcount++;
+            if(rowcount == 3){
+                System.out.println("  _ _ _   _ _ _   _ _ _");
+                rowcount = 0;
+            }
         }
         System.out.println("");
     }
