@@ -14,8 +14,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PhotoSudoku">
         <activity
+            android:name=".Solving_page"
+            android:parentActivityName=".SudokuDisplayPage" />
+        <activity
             android:name=".SudokuDisplayPage"
-            android:parentActivityName=".CameraPage"/>
+            android:parentActivityName=".CameraPage" />
         <activity
             android:name=".CameraPage"
             android:parentActivityName=".HomePage" />
