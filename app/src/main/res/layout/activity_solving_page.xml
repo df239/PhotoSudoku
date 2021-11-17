@@ -17,7 +17,7 @@
     </TableLayout>
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/solveButton"
         android:layout_width="139dp"
         android:layout_height="75dp"
         android:layout_marginBottom="16dp"

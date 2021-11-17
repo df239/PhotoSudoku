@@ -13,7 +13,7 @@ public class Sudoku {
     private List<CellGroup> cols;
     private List<CellGroup> boxes;
 
-    public Sudoku(int[][] sudokuGrid){
+    public Sudoku(int[][] sudokuGrid) throws Exception{
         this.grid = sudokuGrid;
         this.rows = new ArrayList<CellGroup>();
         this.cols = new ArrayList<CellGroup>();
@@ -29,15 +29,18 @@ public class Sudoku {
         this.updateCellCandidates();
     }
 
-    private Cell[][] buildSudoku(int[][] grid){
+    private Cell[][] buildSudoku(int[][] grid) throws Exception{
         Cell[][] matrix = new Cell[grid.length][grid.length];
         for(int x = 0; x < grid.length; x++){
             for(int y = 0; y < grid.length; y++){
                 Cell c = new Cell(grid[x][y],x,y);
                 matrix[x][y] = c;
-                this.rows.get(c.ROW).add(c);
-                this.cols.get(c.COL).add(c);
-                this.boxes.get(c.BOX).add(c);
+                CellGroup temp = this.rows.get(c.ROW);
+                temp.add(c);
+                temp = this.cols.get(c.COL);
+                temp.add(c);
+                temp = this.boxes.get(c.BOX);
+                temp.add(c);
             }
         }
         return matrix;

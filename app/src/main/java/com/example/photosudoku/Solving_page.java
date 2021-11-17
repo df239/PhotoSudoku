@@ -9,16 +9,27 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.example.photosudoku.processing.ImageProcessingThread;
+import com.example.photosudoku.sudoku.Solver;
+import com.example.photosudoku.sudoku.Sudoku;
+
 public class Solving_page extends AppCompatActivity {
 
     TableLayout table;
     ConstraintLayout mainLayout;
+    Button solveButton;
+
+    int[][] grid;
+
+    private static String TAG = "CameraActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +38,19 @@ public class Solving_page extends AppCompatActivity {
 
         table = (TableLayout)findViewById(R.id.sudokuSolvingTable);
         mainLayout = (ConstraintLayout)findViewById(R.id.sudokuSolvingLayout);
+        solveButton = (Button)findViewById(R.id.solveButton);
+
+        solveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                solveButtonClick();
+            }
+        });
 
         Intent intent = getIntent();
 
         int[][] sudoku = (int[][])intent.getSerializableExtra(SudokuDisplayPage.SUDOKU_KEY);
+        this.grid = sudoku;
         createSudokuUI(sudoku);
     }
 
@@ -86,5 +106,18 @@ public class Solving_page extends AppCompatActivity {
         }
 
         return ContextCompat.getDrawable(this,R.drawable.thin_cell_border);
+    }
+
+    public void solveButtonClick(){
+        try{
+            Sudoku sudoku = new Sudoku(this.grid);
+            sudoku = Solver.solveNakedSingles(sudoku);
+            sudoku.updateCellCandidates();
+            System.out.print(sudoku.grid);
+        }
+        catch (Exception e){
+            Log.d(TAG,e.getMessage());
+        }
+
     }
 }
