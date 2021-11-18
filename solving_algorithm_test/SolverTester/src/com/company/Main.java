@@ -10,25 +10,39 @@ public class Main {
         Sudoku sudoku = new Sudoku(sample);
 
         Solver.solveNakedSingles(sudoku);
-        sudoku.updateCellCandidates();
+        //sudoku.updateCellCandidates();
         System.out.println("Naked Singles:");
         printMatrix(sudoku.grid);
 
         Solver.solveHiddenSingles(sudoku);
-        sudoku.updateCellCandidates();
+        //sudoku.updateCellCandidates();
         System.out.println("Hidden Singles:");
         printMatrix(sudoku.grid);
 
         Solver.solveNakedSingles(sudoku);
-        sudoku.updateCellCandidates();
+        //sudoku.updateCellCandidates();
         System.out.println("Naked Singles:");
         printMatrix(sudoku.grid);
 
         Solver.solveHiddenSingles(sudoku);
-        sudoku.updateCellCandidates();
+        //sudoku.updateCellCandidates();
         System.out.println("Hidden Singles:");
         printMatrix(sudoku.grid);
 
+        Solver.solveHiddenSingles(sudoku);
+        //sudoku.updateCellCandidates();
+        System.out.println("Hidden Singles:");
+        printMatrix(sudoku.grid);
+
+        Solver.solveHiddenSingles(sudoku);
+        //sudoku.updateCellCandidates();
+        System.out.println("Hidden Singles:");
+        printMatrix(sudoku.grid);
+
+        Solver.solveNakedSingles(sudoku);
+        //sudoku.updateCellCandidates();
+        System.out.println("Hidden Singles:");
+        printMatrix(sudoku.grid);
 
 //        int[][] grid = Solver.solveBacktracking(sudoku);
 //        printMatrix(grid);

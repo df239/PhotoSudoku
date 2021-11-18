@@ -76,6 +76,7 @@ public class Sudoku {
     //updates only candidates of cells that the parameter cell can see
     public void updateCellCandidates(Cell cell){
         if (cell.solved()){
+            this.grid[cell.ROW][cell.COL] = cell.getValue();
             for (Cell c : getRow(cell.ROW)){
                 if (!c.solved()){
                     c.candidates.remove((Integer)cell.getValue());
