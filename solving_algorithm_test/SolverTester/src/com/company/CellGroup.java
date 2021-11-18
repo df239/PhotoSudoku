@@ -31,14 +31,14 @@ public class CellGroup {
         return this.group;
     }
 
-    public void updateCandidates(){
-        this.candidates.clear();
-        for(Cell c : this.group){
-            if(!c.solved()){
-                this.candidates.addAll(c.candidates);
-            }
-        }
-    }
+//    public void updateCandidates(){
+//        this.candidates.clear();
+//        for(Cell c : this.group){
+//            if(!c.solved()){
+//                this.candidates.addAll(c.candidates);
+//            }
+//        }
+//    }
 
     public HashSet<Integer> getCandidates(){
         HashSet<Integer> temp = new HashSet<Integer>();

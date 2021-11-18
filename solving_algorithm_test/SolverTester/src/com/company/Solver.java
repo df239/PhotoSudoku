@@ -80,8 +80,8 @@ public class Solver {
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid.length; col++) {
                 Cell c = grid[row][col];
-                if(!c.solved() && c.candidates.size() == 1) {
-                    c.setValue(c.candidates.get(0));
+                if(!c.solved() && c.getCandidates().size() == 1) {
+                    c.setValue(c.getCandidates().get(0));
                     input.updateCellCandidates(c);
                     changeMade = true;
                 }
@@ -100,8 +100,8 @@ public class Solver {
                     HashSet<Integer> cellCandidates = new HashSet<Integer>();
                     HashSet<Integer> groupCandidates;
 
-                    cellCandidates.addAll(c.candidates);
-                    groupCandidates = input.getRow(c.ROW).getCandidates();
+                    cellCandidates.addAll(c.getCandidates());
+                    groupCandidates = getGroupCandidates(input.getRow(c.ROW).getGroup(),c);
                     cellCandidates.removeAll(groupCandidates);
                     if(cellCandidates.toArray().length == 1){
                         c.setValue((Integer) cellCandidates.toArray()[0]);
@@ -112,8 +112,8 @@ public class Solver {
                     }
                     groupCandidates.clear();
 
-                    cellCandidates.addAll(c.candidates);
-                    groupCandidates = input.getCol(c.COL).getCandidates();
+                    cellCandidates.addAll(c.getCandidates());
+                    groupCandidates = getGroupCandidates(input.getCol(c.COL).getGroup(),c);
                     cellCandidates.removeAll(groupCandidates);
                     if(cellCandidates.toArray().length == 1){
                         c.setValue((Integer) cellCandidates.toArray()[0]);
@@ -124,8 +124,8 @@ public class Solver {
                     }
                     groupCandidates.clear();
 
-                    cellCandidates.addAll(c.candidates);
-                    groupCandidates = input.getBox(c.BOX).getCandidates();
+                    cellCandidates.addAll(c.getCandidates());
+                    groupCandidates = getGroupCandidates(input.getBox(c.BOX).getGroup(),c);
                     cellCandidates.removeAll(groupCandidates);
                     if(cellCandidates.toArray().length == 1){
                         c.setValue((Integer) cellCandidates.toArray()[0]);
@@ -144,7 +144,7 @@ public class Solver {
         HashSet<Integer> output = new HashSet<Integer>();
         for (Cell c : group){
             if (!c.equals(cell) && !c.solved()){
-                output.addAll(c.candidates);
+                output.addAll(c.getCandidates());
             }
         }
         return output;

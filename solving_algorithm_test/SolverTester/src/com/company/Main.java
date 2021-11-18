@@ -2,7 +2,7 @@ package com.company;
 
 public class Main {
 
-    static int[][] sample = SudokuUtils.EXAMPLE6; //examples 1 - 8
+    static int[][] sample = SudokuUtils.EXAMPLE8; //examples 1 - 9
 
     public static void main(String[] args) {
 	// write your code here
@@ -35,6 +35,7 @@ public class Main {
         }
         elapsed = System.currentTimeMillis() - start;
         System.out.println("Time: "+elapsed+"ms");
+
 
 //        long elapsed = 0l;
 //        long start = System.currentTimeMillis();

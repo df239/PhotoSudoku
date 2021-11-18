@@ -55,18 +55,18 @@ public class Sudoku {
                 this.grid[row][col] = c.getValue();
                 if(!c.solved()) {
                     HashSet<Integer> temp = new HashSet<Integer>();
-                    temp.addAll(c.candidates);
+                    temp.addAll(c.getCandidates());
                     for(Integer candidate : temp) {
                         if(this.rows.get(c.ROW).contains(candidate)){
-                            c.candidates.remove(candidate);
+                            c.removeCandidate(candidate);
                             continue;
                         }
                         if(this.cols.get(c.COL).contains(candidate)){
-                            c.candidates.remove(candidate);
+                            c.removeCandidate(candidate);
                             continue;
                         }
                         if(this.boxes.get(c.BOX).contains(candidate)){
-                            c.candidates.remove(candidate);
+                            c.removeCandidate(candidate);
                         }
                     }
                 }
@@ -80,19 +80,19 @@ public class Sudoku {
             this.grid[cell.ROW][cell.COL] = cell.getValue();
             for (Cell c : getRow(cell.ROW).getGroup()){
                 if (!c.solved()){
-                    c.candidates.remove((Integer)cell.getValue());
+                    c.removeCandidate(cell.getValue());
                 }
             }
 
             for (Cell c : getCol(cell.COL).getGroup()){
                 if (!c.solved()){
-                    c.candidates.remove((Integer)cell.getValue());
+                    c.removeCandidate(cell.getValue());
                 }
             }
 
             for (Cell c : getBox(cell.BOX).getGroup()){
                 if (!c.solved()){
-                    c.candidates.remove((Integer)cell.getValue());
+                    c.removeCandidate(cell.getValue());
                 }
             }
         }

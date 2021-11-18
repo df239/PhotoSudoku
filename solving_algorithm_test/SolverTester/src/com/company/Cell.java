@@ -7,12 +7,13 @@ import java.util.List;
 public class Cell {
     private int value;
     private boolean isSolved;
+    private boolean isBiValue;
 
     public final int ROW;
     public final int COL;
     public final int BOX;
 
-    public List<Integer> candidates;
+    private List<Integer> candidates;
     //private HashSet<Integer> forbiddenValues;
 
     public Cell(int value, int row, int col){
@@ -62,5 +63,16 @@ public class Cell {
         this.value = 0;
         this.isSolved = false;
         this.candidates = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
+    }
+
+    public void removeCandidate(int candidate){
+        this.candidates.remove((Integer)candidate);
+        if(this.candidates.size() == 2){
+            this.isBiValue = true;
+        }
+    }
+
+    public List<Integer> getCandidates(){
+        return this.candidates;
     }
 }
