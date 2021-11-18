@@ -14,7 +14,7 @@ public class Sudoku {
     private List<CellGroup> cols;
     private List<CellGroup> boxes;
 
-    public Sudoku(int[][] sudokuGrid) throws Exception{
+    public Sudoku(int[][] sudokuGrid){
         this.grid = sudokuGrid;
         this.rows = new ArrayList<CellGroup>();
         this.cols = new ArrayList<CellGroup>();
@@ -30,7 +30,7 @@ public class Sudoku {
         this.updateCellCandidates();
     }
 
-    private Cell[][] buildSudoku(int[][] grid) throws Exception{
+    private Cell[][] buildSudoku(int[][] grid){
         Cell[][] matrix = new Cell[grid.length][grid.length];
         for(int x = 0; x < grid.length; x++){
             for(int y = 0; y < grid.length; y++){
@@ -75,5 +75,18 @@ public class Sudoku {
 
     public Cell[][] getCellMatrix(){
         return this.sudoku;
+    }
+
+    public boolean isValuePossible(int value, Cell cell){
+        if(this.rows.get(cell.ROW).contains(value)){
+            return false;
+        }
+        else if(this.cols.get(cell.COL).contains(value)){
+            return false;
+        }
+        else if(this.boxes.get(cell.BOX).contains(value)){
+            return false;
+        }
+        return true;
     }
 }

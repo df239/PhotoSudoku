@@ -1,6 +1,7 @@
 package com.company;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Cell {
@@ -55,5 +56,11 @@ public class Cell {
         this.value = value;
         this.isSolved = true;
         this.candidates.clear();
+    }
+
+    public void unsolve(){
+        this.value = 0;
+        this.isSolved = false;
+        this.candidates = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
     }
 }
