@@ -2,7 +2,7 @@ package com.company;
 
 public class Main {
 
-    static int[][] sample = SudokuUtils.EXAMPLE2;
+    static int[][] sample = SudokuUtils.EXAMPLE6; //examples 1 - 8
 
     public static void main(String[] args) {
 	// write your code here
@@ -12,7 +12,13 @@ public class Main {
 
         long elapsed;
         long start = System.currentTimeMillis();
+        int noChangeCounter = 0;
         while(!sudoku.solved()){
+            if (noChangeCounter == 3){
+                System.out.println("Could not solve");
+                break;
+            }
+
             if(Solver.solveNakedSingles(sudoku)){
                 System.out.println("Naked Singles:");
                 printMatrix(sudoku.grid);
@@ -25,6 +31,7 @@ public class Main {
                 continue;
             }
 
+            noChangeCounter++;
         }
         elapsed = System.currentTimeMillis() - start;
         System.out.println("Time: "+elapsed+"ms");
