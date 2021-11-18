@@ -9,44 +9,28 @@ public class Main {
         printMatrix(sample);
         Sudoku sudoku = new Sudoku(sample);
 
-        Solver.solveNakedSingles(sudoku);
-        //sudoku.updateCellCandidates();
-        System.out.println("Naked Singles:");
-        printMatrix(sudoku.grid);
+        long elapsed = 0l;
+        long start = System.currentTimeMillis();
+        while(!sudoku.solved()){
+            Solver.solveNakedSingles(sudoku);
+            //sudoku.updateCellCandidates();
+            System.out.println("Naked Singles:");
+            printMatrix(sudoku.grid);
 
-        Solver.solveHiddenSingles(sudoku);
-        //sudoku.updateCellCandidates();
-        System.out.println("Hidden Singles:");
-        printMatrix(sudoku.grid);
+//            Solver.solveHiddenSingles(sudoku);
+//            sudoku.updateCellCandidates();
+//            System.out.println("Hidden Singles:");
+//            printMatrix(sudoku.grid);
+        }
+        elapsed = System.currentTimeMillis() - start;
+        System.out.println("Time: "+elapsed+"ms");
 
-        Solver.solveNakedSingles(sudoku);
-        //sudoku.updateCellCandidates();
-        System.out.println("Naked Singles:");
-        printMatrix(sudoku.grid);
-
-        Solver.solveHiddenSingles(sudoku);
-        //sudoku.updateCellCandidates();
-        System.out.println("Hidden Singles:");
-        printMatrix(sudoku.grid);
-
-        Solver.solveHiddenSingles(sudoku);
-        //sudoku.updateCellCandidates();
-        System.out.println("Hidden Singles:");
-        printMatrix(sudoku.grid);
-
-        Solver.solveHiddenSingles(sudoku);
-        //sudoku.updateCellCandidates();
-        System.out.println("Hidden Singles:");
-        printMatrix(sudoku.grid);
-
-        Solver.solveNakedSingles(sudoku);
-        //sudoku.updateCellCandidates();
-        System.out.println("Hidden Singles:");
-        printMatrix(sudoku.grid);
-
+//        long elapsed = 0l;
+//        long start = System.currentTimeMillis();
 //        int[][] grid = Solver.solveBacktracking(sudoku);
 //        printMatrix(grid);
-
+//        elapsed = System.currentTimeMillis() - start;
+//        System.out.println("Time: "+elapsed+"ms");
     }
 
     static void printMatrix(int[][] mat){

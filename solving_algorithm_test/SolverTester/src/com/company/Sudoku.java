@@ -125,4 +125,15 @@ public class Sudoku {
     public HashSet<Cell> getBox(int box){
         return this.boxes.get(box).getGroup();
     }
+
+    public boolean solved(){
+        for (int row = 0; row < 9; row++){
+            for (int col = 0; col < 9; col++){
+                if (this.grid[row][col] == 0)
+                    return false;
+            }
+        }
+        this.solution = this.grid;
+        return true;
+    }
 }
