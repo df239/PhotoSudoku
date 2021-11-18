@@ -1,5 +1,7 @@
 package com.company;
 
+import java.util.HashSet;
+
 public class Solver {
     private static Sudoku s;
     private static int[][] matrix;
@@ -79,8 +81,63 @@ public class Solver {
                 Cell c = grid[row][col];
                 if(!c.solved() && c.candidates.size() == 1) {
                     c.setValue(c.candidates.get(0));
+                    input.updateCellCandidates(c);
                 }
             }
         }
+    }
+
+    public static void solveHiddenSingles(Sudoku input){
+        Cell[][] grid = input.getCellMatrix();
+        for (int row = 0; row < grid.length; row++){
+            for (int col = 0; col <grid.length; col++){
+                Cell c = grid[row][col];
+                if (!c.solved()){
+                    HashSet<Integer> cellCandidates = new HashSet<Integer>();
+                    HashSet<Integer> groupCandidates;
+
+                    cellCandidates.addAll(c.candidates);
+                    groupCandidates = getGroupCandidates(input.getRow(c.ROW),c);
+                    cellCandidates.removeAll(groupCandidates);
+                    if(cellCandidates.toArray().length == 1){
+                        c.setValue((Integer) cellCandidates.toArray()[0]);
+                        input.updateCellCandidates(c);
+                        break;
+                        //return;
+                    }
+                    groupCandidates.clear();
+
+                    cellCandidates.addAll(c.candidates);
+                    groupCandidates = getGroupCandidates(input.getCol(c.COL),c);
+                    cellCandidates.removeAll(groupCandidates);
+                    if(cellCandidates.toArray().length == 1){
+                        c.setValue((Integer) cellCandidates.toArray()[0]);
+                        input.updateCellCandidates(c);
+                        break;
+                       //return;
+                    }
+                    groupCandidates.clear();
+
+                    cellCandidates.addAll(c.candidates);
+                    groupCandidates = getGroupCandidates(input.getBox(c.BOX),c);
+                    cellCandidates.removeAll(groupCandidates);
+                    if(cellCandidates.toArray().length == 1){
+                        c.setValue((Integer) cellCandidates.toArray()[0]);
+                        input.updateCellCandidates(c);
+                        //return;
+                    }
+                }
+            }
+        }
+    }
+
+    private static HashSet<Integer> getGroupCandidates(HashSet<Cell> group, Cell cell){
+        HashSet<Integer> output = new HashSet<Integer>();
+        for (Cell c : group){
+            if (!c.equals(cell) && !c.solved()){
+                output.addAll(c.candidates);
+            }
+        }
+        return output;
     }
 }

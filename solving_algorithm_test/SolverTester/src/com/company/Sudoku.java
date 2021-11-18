@@ -73,6 +73,29 @@ public class Sudoku {
         }
     }
 
+    //updates only candidates of cells that the parameter cell can see
+    public void updateCellCandidates(Cell cell){
+        if (cell.solved()){
+            for (Cell c : getRow(cell.ROW)){
+                if (!c.solved()){
+                    c.candidates.remove((Integer)cell.getValue());
+                }
+            }
+
+            for (Cell c : getCol(cell.COL)){
+                if (!c.solved()){
+                    c.candidates.remove((Integer)cell.getValue());
+                }
+            }
+
+            for (Cell c : getBox(cell.BOX)){
+                if (!c.solved()){
+                    c.candidates.remove((Integer)cell.getValue());
+                }
+            }
+        }
+    }
+
     public Cell[][] getCellMatrix(){
         return this.sudoku;
     }
@@ -88,5 +111,17 @@ public class Sudoku {
             return false;
         }
         return true;
+    }
+
+    public HashSet<Cell> getRow(int row){
+        return this.rows.get(row).getGroup();
+    }
+
+    public HashSet<Cell> getCol(int col){
+        return this.cols.get(col).getGroup();
+    }
+
+    public HashSet<Cell> getBox(int box){
+        return this.boxes.get(box).getGroup();
     }
 }

@@ -23,4 +23,8 @@ public class CellGroup {
     public boolean contains(int value) {
         return this.solvedValues.contains(value);
     }
+
+    public HashSet<Cell> getGroup(){
+        return this.group;
+    }
 }

@@ -2,19 +2,36 @@ package com.company;
 
 public class Main {
 
-    static int[][] sample = SudokuUtils.EXAMPLE2;
+    static int[][] sample = SudokuUtils.EXAMPLE1;
 
     public static void main(String[] args) {
 	// write your code here
         printMatrix(sample);
         Sudoku sudoku = new Sudoku(sample);
-//        for (int i = 0; i < 2; i++){
-//            Solver.solveNakedSingles(sudoku);
-//            sudoku.updateCellCandidates();
-//            printMatrix(sudoku.grid);
-//        }
-        int[][] grid = Solver.solveBacktracking(sudoku);
-        printMatrix(grid);
+
+        Solver.solveNakedSingles(sudoku);
+        sudoku.updateCellCandidates();
+        System.out.println("Naked Singles:");
+        printMatrix(sudoku.grid);
+
+        Solver.solveHiddenSingles(sudoku);
+        sudoku.updateCellCandidates();
+        System.out.println("Hidden Singles:");
+        printMatrix(sudoku.grid);
+
+        Solver.solveNakedSingles(sudoku);
+        sudoku.updateCellCandidates();
+        System.out.println("Naked Singles:");
+        printMatrix(sudoku.grid);
+
+        Solver.solveHiddenSingles(sudoku);
+        sudoku.updateCellCandidates();
+        System.out.println("Hidden Singles:");
+        printMatrix(sudoku.grid);
+
+
+//        int[][] grid = Solver.solveBacktracking(sudoku);
+//        printMatrix(grid);
 
     }
 
