@@ -1,6 +1,8 @@
 package com.company;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class Solver {
     private static Sudoku s;
@@ -148,5 +150,27 @@ public class Solver {
             }
         }
         return output;
+    }
+
+    public static boolean solveNakedPair(Sudoku input){
+        for (int i = 0; i < 9; i++){
+            List<Cell> bivalueCells = new ArrayList<Cell>();
+            for (Cell cell : input.getRow(i).getGroup()){
+                if (!cell.solved() && cell.biValue()){
+                    bivalueCells.add(cell);
+                }
+            }
+            if(bivalueCells.size() == 2 && bivalueCells.get(0).getCandidates().containsAll(bivalueCells.get(1).getCandidates())){
+                HashSet<Integer> candidates = new HashSet<Integer>();
+                candidates.addAll(bivalueCells.get(0).getCandidates());
+                for (Cell cell : input.getRow(i).getGroup()){
+                    //by not being bi-value the cell is inherently inside the bivalueCell list
+                    if (!cell.solved() && !cell.biValue()){
+                        cell.removeCandidates(candidates);
+                    }
+                }
+            }
+        }
+        return true;
     }
 }

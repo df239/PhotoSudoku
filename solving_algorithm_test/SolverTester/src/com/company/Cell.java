@@ -2,6 +2,7 @@ package com.company;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class Cell {
@@ -42,6 +43,10 @@ public class Cell {
         return this.isSolved;
     }
 
+    public boolean biValue(){
+        return this.isBiValue;
+    }
+
     public boolean containsCandidate(int candidate) {
         return this.candidates.contains(candidate);
     }
@@ -67,6 +72,13 @@ public class Cell {
 
     public void removeCandidate(int candidate){
         this.candidates.remove((Integer)candidate);
+        if(this.candidates.size() == 2){
+            this.isBiValue = true;
+        }
+    }
+
+    public void removeCandidates(Collection<Integer> candidates){
+        this.candidates.removeAll(candidates);
         if(this.candidates.size() == 2){
             this.isBiValue = true;
         }

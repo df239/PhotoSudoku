@@ -2,7 +2,7 @@ package com.company;
 
 public class Main {
 
-    static int[][] sample = SudokuUtils.EXAMPLE8; //examples 1 - 9
+    static int[][] sample = SudokuUtils.EXAMPLE111; //examples 1 - 9; 111
 
     public static void main(String[] args) {
 	// write your code here
@@ -19,17 +19,19 @@ public class Main {
                 break;
             }
 
-            if(Solver.solveNakedSingles(sudoku)){
-                System.out.println("Naked Singles:");
-                printMatrix(sudoku.grid);
-                continue;
-            }
+//            if(Solver.solveNakedSingles(sudoku)){
+//                System.out.println("Naked Singles:");
+//                printMatrix(sudoku.grid);
+//                continue;
+//            }
+//
+//            if(Solver.solveHiddenSingles(sudoku)){
+//                System.out.println("Hidden Singles:");
+//                printMatrix(sudoku.grid);
+//                continue;
+//            }
 
-            if(Solver.solveHiddenSingles(sudoku)){
-                System.out.println("Hidden Singles:");
-                printMatrix(sudoku.grid);
-                continue;
-            }
+            Solver.solveNakedPair(sudoku);
 
             noChangeCounter++;
         }
