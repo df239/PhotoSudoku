@@ -1,5 +1,6 @@
 package com.company;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -77,19 +78,19 @@ public class Sudoku {
     public void updateCellCandidates(Cell cell){
         if (cell.solved()){
             this.grid[cell.ROW][cell.COL] = cell.getValue();
-            for (Cell c : getRow(cell.ROW)){
+            for (Cell c : getRow(cell.ROW).getGroup()){
                 if (!c.solved()){
                     c.candidates.remove((Integer)cell.getValue());
                 }
             }
 
-            for (Cell c : getCol(cell.COL)){
+            for (Cell c : getCol(cell.COL).getGroup()){
                 if (!c.solved()){
                     c.candidates.remove((Integer)cell.getValue());
                 }
             }
 
-            for (Cell c : getBox(cell.BOX)){
+            for (Cell c : getBox(cell.BOX).getGroup()){
                 if (!c.solved()){
                     c.candidates.remove((Integer)cell.getValue());
                 }
@@ -114,16 +115,16 @@ public class Sudoku {
         return true;
     }
 
-    public HashSet<Cell> getRow(int row){
-        return this.rows.get(row).getGroup();
+    public CellGroup getRow(int row){
+        return this.rows.get(row);
     }
 
-    public HashSet<Cell> getCol(int col){
-        return this.cols.get(col).getGroup();
+    public CellGroup getCol(int col){
+        return this.cols.get(col);
     }
 
-    public HashSet<Cell> getBox(int box){
-        return this.boxes.get(box).getGroup();
+    public CellGroup getBox(int box){
+        return this.boxes.get(box);
     }
 
     public boolean solved(){

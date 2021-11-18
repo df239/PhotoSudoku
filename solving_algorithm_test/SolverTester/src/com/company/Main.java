@@ -2,25 +2,29 @@ package com.company;
 
 public class Main {
 
-    static int[][] sample = SudokuUtils.EXAMPLE1;
+    static int[][] sample = SudokuUtils.EXAMPLE2;
 
     public static void main(String[] args) {
 	// write your code here
+        System.out.println("Original:");
         printMatrix(sample);
         Sudoku sudoku = new Sudoku(sample);
 
-        long elapsed = 0l;
+        long elapsed;
         long start = System.currentTimeMillis();
         while(!sudoku.solved()){
-            Solver.solveNakedSingles(sudoku);
-            //sudoku.updateCellCandidates();
-            System.out.println("Naked Singles:");
-            printMatrix(sudoku.grid);
+            if(Solver.solveNakedSingles(sudoku)){
+                System.out.println("Naked Singles:");
+                printMatrix(sudoku.grid);
+                continue;
+            }
 
-//            Solver.solveHiddenSingles(sudoku);
-//            sudoku.updateCellCandidates();
-//            System.out.println("Hidden Singles:");
-//            printMatrix(sudoku.grid);
+            if(Solver.solveHiddenSingles(sudoku)){
+                System.out.println("Hidden Singles:");
+                printMatrix(sudoku.grid);
+                continue;
+            }
+
         }
         elapsed = System.currentTimeMillis() - start;
         System.out.println("Time: "+elapsed+"ms");

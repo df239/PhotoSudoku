@@ -74,7 +74,8 @@ public class Solver {
 //        }
 //    }
 
-    public static void solveNakedSingles(Sudoku input) {
+    public static boolean solveNakedSingles(Sudoku input) {
+        boolean changeMade = false;
         Cell[][] grid = input.getCellMatrix();
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid.length; col++) {
@@ -82,12 +83,15 @@ public class Solver {
                 if(!c.solved() && c.candidates.size() == 1) {
                     c.setValue(c.candidates.get(0));
                     input.updateCellCandidates(c);
+                    changeMade = true;
                 }
             }
         }
+        return changeMade;
     }
 
-    public static void solveHiddenSingles(Sudoku input){
+    public static boolean solveHiddenSingles(Sudoku input){
+        boolean changeMade = false;
         Cell[][] grid = input.getCellMatrix();
         for (int row = 0; row < grid.length; row++){
             for (int col = 0; col <grid.length; col++){
@@ -97,38 +101,43 @@ public class Solver {
                     HashSet<Integer> groupCandidates;
 
                     cellCandidates.addAll(c.candidates);
-                    groupCandidates = getGroupCandidates(input.getRow(c.ROW),c);
+                    groupCandidates = input.getRow(c.ROW).getCandidates();
                     cellCandidates.removeAll(groupCandidates);
                     if(cellCandidates.toArray().length == 1){
                         c.setValue((Integer) cellCandidates.toArray()[0]);
                         input.updateCellCandidates(c);
-                        break;
-                        //return;
+                        return true;
+//                        changeMade = true;
+//                        break;
                     }
                     groupCandidates.clear();
 
                     cellCandidates.addAll(c.candidates);
-                    groupCandidates = getGroupCandidates(input.getCol(c.COL),c);
+                    groupCandidates = input.getCol(c.COL).getCandidates();
                     cellCandidates.removeAll(groupCandidates);
                     if(cellCandidates.toArray().length == 1){
                         c.setValue((Integer) cellCandidates.toArray()[0]);
                         input.updateCellCandidates(c);
-                        break;
-                       //return;
+                        return true;
+//                        changeMade = true;
+//                        break;
                     }
                     groupCandidates.clear();
 
                     cellCandidates.addAll(c.candidates);
-                    groupCandidates = getGroupCandidates(input.getBox(c.BOX),c);
+                    groupCandidates = input.getBox(c.BOX).getCandidates();
                     cellCandidates.removeAll(groupCandidates);
                     if(cellCandidates.toArray().length == 1){
                         c.setValue((Integer) cellCandidates.toArray()[0]);
                         input.updateCellCandidates(c);
-                        //return;
+                        return true;
+                        //changeMade = true;
                     }
                 }
             }
         }
+        return false;
+        //return changeMade;
     }
 
     private static HashSet<Integer> getGroupCandidates(HashSet<Cell> group, Cell cell){
