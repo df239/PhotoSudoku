@@ -1,5 +1,7 @@
 package com.company;
 
+import sun.rmi.server.InactiveGroupException;
+
 import java.util.*;
 
 public class Solver {
@@ -156,15 +158,16 @@ public class Solver {
     public static boolean solvePointingCandidates(Sudoku input){
         for (int boxIndex = 0; boxIndex < 9; boxIndex++){
             House box = input.getBox(boxIndex);
-            for (int rowIndex = 0; rowIndex < 9; rowIndex++){
-                House row = input.getRow(rowIndex);
-                if (removePointingCandidates(box, row)){
+            int rowStart = (boxIndex / 3) * 3;
+            for (int rowIndex = rowStart; rowIndex < rowStart + 3; rowIndex++){
+                if (removePointingCandidates(box, input.getRow(rowIndex))){
                     return true;
                 }
+
             }
-            for (int colIndex = 0; colIndex < 9; colIndex++){
-                House col = input.getCol(colIndex);
-                if (removePointingCandidates(box, col)){
+            int colStart = (boxIndex % 3) * 3;
+            for (int colIndex = colStart; colIndex < colStart + 3; colIndex++){
+                if (removePointingCandidates(box, input.getCol(colIndex))){
                     return true;
                 }
             }
@@ -174,19 +177,21 @@ public class Solver {
 
     private static boolean removePointingCandidates(House box, House group){
         CellGroup crossSection = new CellGroup(box.getCrossSection(group));
-        int sharedCandidate = crossSection.getSharedCandidate();
-        if (crossSection.size() > 1 && sharedCandidate != 0){
+        HashSet<Integer> sharedCandidates = crossSection.getSharedCandidates();
+        if (crossSection.size() > 1 && sharedCandidates.size() != 0){
             CellGroup groupExclusive = new CellGroup(group.getCellDifference(crossSection.getCells()));
             CellGroup boxExclusive = new CellGroup(box.getCellDifference(crossSection.getCells()));
-            if (groupExclusive.getCandidates().contains(sharedCandidate) && !boxExclusive.getCandidates().contains(sharedCandidate)){
-                for (Cell c : groupExclusive.getCells()){
-                    c.removeCandidate(sharedCandidate);
+            for (int sharedCandidate : sharedCandidates){
+                if (groupExclusive.getCandidates().contains(sharedCandidate) && !boxExclusive.getCandidates().contains(sharedCandidate)){
+                    for (Cell c : groupExclusive.getCells()){
+                        c.removeCandidate(sharedCandidate);
+                    }
                     return true;
                 }
-            }
-            else if (!groupExclusive.getCandidates().contains(sharedCandidate) && boxExclusive.getCandidates().contains(sharedCandidate)){
-                for (Cell c : boxExclusive.getCells()){
-                    c.removeCandidate(sharedCandidate);
+                else if (!groupExclusive.getCandidates().contains(sharedCandidate) && boxExclusive.getCandidates().contains(sharedCandidate)){
+                    for (Cell c : boxExclusive.getCells()){
+                        c.removeCandidate(sharedCandidate);
+                    }
                     return true;
                 }
             }

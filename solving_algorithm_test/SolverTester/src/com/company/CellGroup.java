@@ -18,21 +18,23 @@ public class CellGroup {
         return set;
     }
 
-    public int getSharedCandidate(){
+    public HashSet<Integer> getSharedCandidates(){
+        HashSet<Integer> set = new HashSet<>();
         HashSet<Integer> candidates = this.getCandidates();
         for (int candidate : candidates){
-            boolean allContain = true;
+            boolean oneContains = false;
             for (Cell c : this.group){
-                if (!c.getCandidates().contains(candidate)){
-                    allContain = false;
-                    break;
+                if (c.getCandidates().contains(candidate)){
+                    if (oneContains){
+                        set.add(candidate);
+                    }
+                    else{
+                        oneContains = true;
+                    }
                 }
             }
-            if(allContain){
-                return candidate;
-            }
         }
-        return 0;
+        return set;
     }
 
     public HashSet<Cell> getCells(){

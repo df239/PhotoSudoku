@@ -2,7 +2,7 @@ package com.company;
 
 public class Main {
 
-    static int[][] sample = SudokuUtils.EXAMPLE9; //examples 1 - 9; 111 - 116
+    static int[][] sample = SudokuUtils.EXAMPLE11; //examples 1 - 9; 111 - 116
 
     public static void main(String[] args) {
 	// write your code here
@@ -34,7 +34,7 @@ public class Main {
             }
 
             if(Solver.solvePointingCandidates(sudoku)){
-                System.out.println("- Pointing Pair -");
+                System.out.println("- Pointing Candidates -");
                 continue;
             }
 
