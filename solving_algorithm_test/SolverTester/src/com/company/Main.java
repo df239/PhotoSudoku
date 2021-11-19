@@ -2,7 +2,7 @@ package com.company;
 
 public class Main {
 
-    static int[][] sample = SudokuUtils.EXAMPLE8; //examples 1 - 9; 111 - 116
+    static int[][] sample = SudokuUtils.EXAMPLE4; //examples 1 - 9; 111 - 116
 
     public static void main(String[] args) {
 	// write your code here
@@ -15,7 +15,9 @@ public class Main {
         int noChangeCounter = 0;
         while(!sudoku.solved()){
             if (noChangeCounter == 3){
-                System.out.println("Could not solve");
+                System.out.println("Could not solve. Using backtracking:");
+                int[][] grid = Solver.solveBacktracking(sudoku);
+                printMatrix(grid);
                 break;
             }
 

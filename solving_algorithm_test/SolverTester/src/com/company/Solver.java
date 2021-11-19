@@ -1,5 +1,7 @@
 package com.company;
 
+import javafx.util.Pair;
+
 import java.util.*;
 
 public class Solver {
@@ -165,6 +167,8 @@ public class Solver {
         return false;
     }
 
+    // =-=-=-=-= NAKED PAIRS =-=-=-=-= //
+    private static ArrayList<Cell> lastNakedPair = new ArrayList<Cell>(2);
     private static boolean findNakedPairInsideGroup(CellGroup group){
         List<Cell> bivalueCells = new ArrayList<Cell>();
         for (Cell cell : group.getGroup()){
@@ -172,16 +176,39 @@ public class Solver {
                 bivalueCells.add(cell);
             }
         }
-        if(bivalueCells.size() == 2 && bivalueCells.get(0).getCandidates().containsAll(bivalueCells.get(1).getCandidates())){
-            removeCandidatesOutsideOfPair(group.getGroup(),bivalueCells.get(0).getCandidates(),bivalueCells);
-            return true;
+        if(bivalueCells.size() == 2){
+            Cell temp = bivalueCells.get(0);
+            if (temp.getCandidates().containsAll(bivalueCells.get(1).getCandidates()) && !lastNakedPair.contains(temp)){
+                if(removeCandidatesOutsideOfPair(group.getGroup(),temp.getCandidates(),bivalueCells)){
+                    if(lastNakedPair.size() == 0){
+                        lastNakedPair.add(temp);
+                        lastNakedPair.add(bivalueCells.get(1));
+                    }
+                    else{
+                        lastNakedPair.set(0,temp);
+                        lastNakedPair.set(1,bivalueCells.get(1));
+                    }
+                    return true;
+                }
+            }
         }
         else if(bivalueCells.size() > 2){
             for(int x = 0; x < bivalueCells.size(); x++){
+                Cell tempX = bivalueCells.get(x);
                 for (int y = x + 1; y < bivalueCells.size(); y++){
-                    if (bivalueCells.get(x).getCandidates().containsAll(bivalueCells.get(y).getCandidates())){
-                        removeCandidatesOutsideOfPair(group.getGroup(),bivalueCells.get(x).getCandidates(),new ArrayList<Cell>(Arrays.asList(bivalueCells.get(x),bivalueCells.get(y))));
-                        return true;
+                    Cell tempY = bivalueCells.get(y);
+                    if (tempX.getCandidates().containsAll(tempY.getCandidates()) && !lastNakedPair.contains(tempX)){
+                        if(removeCandidatesOutsideOfPair(group.getGroup(),tempX.getCandidates(),new ArrayList<Cell>(Arrays.asList(tempX,tempY)))){
+                            if(lastNakedPair.size() == 0){
+                                lastNakedPair.add(tempX);
+                                lastNakedPair.add(tempY);
+                            }
+                            else{
+                                lastNakedPair.set(0,tempX);
+                                lastNakedPair.set(0,tempY);
+                            }
+                            return true;
+                        }
                     }
                 }
             }
@@ -189,13 +216,16 @@ public class Solver {
         return false;
     }
 
-    private static void removeCandidatesOutsideOfPair(HashSet<Cell> group, Collection<Integer> pairCandidates, Collection<Cell> biValueCells){
+    private static boolean removeCandidatesOutsideOfPair(HashSet<Cell> group, List<Integer> pairCandidates, Collection<Cell> biValueCells){
         HashSet<Integer> candidates = new HashSet<Integer>(pairCandidates);
         for (Cell cell : group){
             //by not being bi-value the cell is inherently not inside the bivalueCell list
-            if (!cell.solved() && !biValueCells.contains(cell)){
+            if (!cell.solved() && !biValueCells.contains(cell) &&
+                    (cell.getCandidates().contains(pairCandidates.get(0)) || cell.getCandidates().contains(pairCandidates.get(1)))){
                 cell.removeCandidates(candidates);
+                return true;
             }
         }
+        return false;
     }
 }
