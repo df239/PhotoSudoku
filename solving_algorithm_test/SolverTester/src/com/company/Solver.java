@@ -102,46 +102,35 @@ public class Solver {
             for (int col = 0; col <grid.length; col++){
                 Cell c = grid[row][col];
                 if (!c.solved()){
-                    HashSet<Integer> groupCandidates;
-                    HashSet<Integer> cellCandidates = new HashSet<Integer>(c.getCandidates());
-
-                    groupCandidates = getGroupCandidates(input.getRow(c.ROW).getGroup(),c);
-                    cellCandidates.removeAll(groupCandidates);
-                    if(cellCandidates.toArray().length == 1){
-                        c.setValue((Integer) cellCandidates.toArray()[0]);
+                    if(findHiddenSingle(c,input.getRow(c.ROW))){
                         input.updateCellCandidates(c);
                         return true;
-//                        changeMade = true;
-//                        break;
                     }
-                    groupCandidates.clear();
-
-                    cellCandidates.addAll(c.getCandidates());
-                    groupCandidates = getGroupCandidates(input.getCol(c.COL).getGroup(),c);
-                    cellCandidates.removeAll(groupCandidates);
-                    if(cellCandidates.toArray().length == 1){
-                        c.setValue((Integer) cellCandidates.toArray()[0]);
+                    if(findHiddenSingle(c,input.getCol(c.COL))){
                         input.updateCellCandidates(c);
                         return true;
-//                        changeMade = true;
-//                        break;
                     }
-                    groupCandidates.clear();
-
-                    cellCandidates.addAll(c.getCandidates());
-                    groupCandidates = getGroupCandidates(input.getBox(c.BOX).getGroup(),c);
-                    cellCandidates.removeAll(groupCandidates);
-                    if(cellCandidates.toArray().length == 1){
-                        c.setValue((Integer) cellCandidates.toArray()[0]);
+                    if(findHiddenSingle(c,input.getBox(c.BOX))){
                         input.updateCellCandidates(c);
                         return true;
-                        //changeMade = true;
                     }
                 }
             }
         }
         return false;
-        //return changeMade;
+    }
+
+    private static boolean findHiddenSingle(Cell currentCell, House house){
+        HashSet<Integer> groupCandidates;
+        HashSet<Integer> cellCandidates = new HashSet<Integer>(currentCell.getCandidates());
+
+        groupCandidates = getGroupCandidates(house.getGroup(),currentCell);
+        cellCandidates.removeAll(groupCandidates);
+        if(cellCandidates.toArray().length == 1){
+            currentCell.setValue((Integer) cellCandidates.toArray()[0]);
+            return true;
+        }
+        return false;
     }
 
     private static HashSet<Integer> getGroupCandidates(HashSet<Cell> group, Cell cell){
@@ -154,7 +143,7 @@ public class Solver {
         return output;
     }
 
-    // =-=-=-=-= POINTING PAIRS =-=-=-=-= //
+    // =-=-=-=-= POINTING CANDIDATES =-=-=-=-= //
     public static boolean solvePointingCandidates(Sudoku input){
         for (int boxIndex = 0; boxIndex < 9; boxIndex++){
             House box = input.getBox(boxIndex);
