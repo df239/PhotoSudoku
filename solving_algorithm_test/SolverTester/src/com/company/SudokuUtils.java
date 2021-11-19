@@ -110,7 +110,7 @@ public class SudokuUtils {
                                     {0,0,2,0,0,8,0,0,6},
                                     {0,0,0,4,0,0,0,2,0}};
 
-    //naked pair (3,9) in the first row
+    //naked pair (3,9) in the first row - OK
     public static int[][] EXAMPLE111 = {{1,0,0,0,0,2,0,0,8},
                                         {0,0,0,0,0,0,0,0,0},
                                         {0,6,2,0,0,0,4,0,0},
@@ -121,7 +121,7 @@ public class SudokuUtils {
                                         {0,0,0,0,0,0,0,5,0},
                                         {0,0,0,6,0,0,0,0,0}};
 
-    //naked pair (3,9) in the first row plus cell of (6,7) in the first row
+    //naked pair (3,9) in the first row plus cell of (6,7) in the first row - OK
     public static int[][] EXAMPLE112 = {{1,0,0,0,0,2,0,0,8},
                                         {0,0,0,0,0,0,0,0,5},
                                         {0,6,2,0,0,0,4,0,0},
@@ -135,16 +135,27 @@ public class SudokuUtils {
     //naked pairs (3,9) & (6,7) in the first row
     public static int[][] EXAMPLE113 = {{1,0,0,0,0,2,0,0,8},
                                         {0,0,0,0,0,0,0,0,5},
+                                        {0,6,2,0,5,0,4,0,0},
+                                        {5,0,0,7,9,0,0,6,0},
+                                        {0,8,0,0,4,0,9,7,0},
+                                        {0,0,0,0,0,0,0,0,0},
+                                        {0,0,0,4,0,0,3,0,0},
+                                        {0,0,0,0,3,0,0,5,0},
+                                        {0,0,0,6,0,0,0,0,0}};
+
+    //a single cell of two candidates (3,9) in the first row - OK
+    public static int[][] EXAMPLE114 = {{1,0,0,0,0,2,0,0,8},
+                                        {0,0,0,0,0,0,0,0,5},
                                         {0,6,2,0,0,0,4,0,0},
                                         {5,0,0,7,9,0,0,6,0},
-                                        {0,8,0,5,0,0,9,7,0},
+                                        {0,8,0,0,0,0,0,7,0},
                                         {0,0,0,0,0,0,0,0,0},
                                         {0,0,0,4,0,0,3,0,0},
                                         {0,0,0,0,0,0,0,5,0},
                                         {0,0,0,6,0,0,0,0,0}};
 
-    //a single cell of two candidates (3,9) in the first row
-    public static int[][] EXAMPLE114 = {{1,0,0,0,0,2,0,0,8},
+    //cells of (3,9) & (6,7) in the first row - OK
+    public static int[][] EXAMPLE115 = {{1,0,0,0,0,2,0,0,8},
                                         {0,0,0,0,0,0,0,0,5},
                                         {0,6,2,0,0,0,4,0,0},
                                         {5,0,0,7,9,0,0,6,0},
@@ -153,4 +164,15 @@ public class SudokuUtils {
                                         {0,0,0,4,0,0,3,0,0},
                                         {0,0,0,0,0,0,0,5,0},
                                         {0,0,0,6,0,0,0,0,0}};
+
+    //pair of (3,9) & a single cell of (3,4) in the first row - OK
+    public static int[][] EXAMPLE116 = {{1,0,0,0,0,2,0,0,8},
+                                        {0,0,0,0,7,6,0,0,5},
+                                        {0,6,2,0,0,0,4,0,0},
+                                        {5,0,0,7,9,0,0,6,0},
+                                        {0,8,0,5,0,0,0,7,0},
+                                        {0,0,0,0,0,0,0,0,0},
+                                        {0,0,0,4,0,0,3,0,0},
+                                        {0,0,0,0,0,0,0,5,0},
+                                        {0,0,0,6,5,0,0,0,0}};
 }

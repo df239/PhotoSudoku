@@ -1,8 +1,6 @@
 package com.company;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class Solver {
     private static Sudoku s;
@@ -154,23 +152,50 @@ public class Solver {
 
     public static boolean solveNakedPair(Sudoku input){
         for (int i = 0; i < 9; i++){
-            List<Cell> bivalueCells = new ArrayList<Cell>();
-            for (Cell cell : input.getRow(i).getGroup()){
-                if (!cell.solved() && cell.biValue()){
-                    bivalueCells.add(cell);
-                }
+            if (findNakedPairInsideGroup(input.getRow(i))){
+                return true;
             }
-            if(bivalueCells.size() == 2 && bivalueCells.get(0).getCandidates().containsAll(bivalueCells.get(1).getCandidates())){
-                HashSet<Integer> candidates = new HashSet<Integer>();
-                candidates.addAll(bivalueCells.get(0).getCandidates());
-                for (Cell cell : input.getRow(i).getGroup()){
-                    //by not being bi-value the cell is inherently inside the bivalueCell list
-                    if (!cell.solved() && !cell.biValue()){
-                        cell.removeCandidates(candidates);
+            if (findNakedPairInsideGroup(input.getCol(i))){
+                return true;
+            }
+            if (findNakedPairInsideGroup(input.getBox(i))){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean findNakedPairInsideGroup(CellGroup group){
+        List<Cell> bivalueCells = new ArrayList<Cell>();
+        for (Cell cell : group.getGroup()){
+            if (!cell.solved() && cell.biValue()){
+                bivalueCells.add(cell);
+            }
+        }
+        if(bivalueCells.size() == 2 && bivalueCells.get(0).getCandidates().containsAll(bivalueCells.get(1).getCandidates())){
+            removeCandidatesOutsideOfPair(group.getGroup(),bivalueCells.get(0).getCandidates(),bivalueCells);
+            return true;
+        }
+        else if(bivalueCells.size() > 2){
+            for(int x = 0; x < bivalueCells.size(); x++){
+                for (int y = x + 1; y < bivalueCells.size(); y++){
+                    if (bivalueCells.get(x).getCandidates().containsAll(bivalueCells.get(y).getCandidates())){
+                        removeCandidatesOutsideOfPair(group.getGroup(),bivalueCells.get(x).getCandidates(),new ArrayList<Cell>(Arrays.asList(bivalueCells.get(x),bivalueCells.get(y))));
+                        return true;
                     }
                 }
             }
         }
-        return true;
+        return false;
+    }
+
+    private static void removeCandidatesOutsideOfPair(HashSet<Cell> group, Collection<Integer> pairCandidates, Collection<Cell> biValueCells){
+        HashSet<Integer> candidates = new HashSet<Integer>(pairCandidates);
+        for (Cell cell : group){
+            //by not being bi-value the cell is inherently not inside the bivalueCell list
+            if (!cell.solved() && !biValueCells.contains(cell)){
+                cell.removeCandidates(candidates);
+            }
+        }
     }
 }
