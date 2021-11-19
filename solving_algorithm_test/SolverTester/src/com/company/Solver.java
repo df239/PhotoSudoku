@@ -1,13 +1,12 @@
 package com.company;
 
-import javafx.util.Pair;
-
 import java.util.*;
 
 public class Solver {
     private static Sudoku s;
     private static int[][] matrix;
 
+    // =-=-=-=-= BACKTRACKING =-=-=-=-= //
     public static int[][] solveBacktracking(Sudoku input){
         matrix = input.grid;
         if(backtrack(0,0))
@@ -76,6 +75,7 @@ public class Solver {
 //        }
 //    }
 
+    // =-=-=-=-= NAKED SINGLES =-=-=-=-= //
     public static boolean solveNakedSingles(Sudoku input) {
         boolean changeMade = false;
         Cell[][] grid = input.getCellMatrix();
@@ -92,6 +92,7 @@ public class Solver {
         return changeMade;
     }
 
+    // =-=-=-=-= HIDDEN SINGLES =-=-=-=-= //
     public static boolean solveHiddenSingles(Sudoku input){
         boolean changeMade = false;
         Cell[][] grid = input.getCellMatrix();
@@ -99,10 +100,9 @@ public class Solver {
             for (int col = 0; col <grid.length; col++){
                 Cell c = grid[row][col];
                 if (!c.solved()){
-                    HashSet<Integer> cellCandidates = new HashSet<Integer>();
                     HashSet<Integer> groupCandidates;
+                    HashSet<Integer> cellCandidates = new HashSet<Integer>(c.getCandidates());
 
-                    cellCandidates.addAll(c.getCandidates());
                     groupCandidates = getGroupCandidates(input.getRow(c.ROW).getGroup(),c);
                     cellCandidates.removeAll(groupCandidates);
                     if(cellCandidates.toArray().length == 1){
@@ -152,6 +152,49 @@ public class Solver {
         return output;
     }
 
+    // =-=-=-=-= POINTING PAIRS =-=-=-=-= //
+    public static boolean solvePointingCandidates(Sudoku input){
+        for (int boxIndex = 0; boxIndex < 9; boxIndex++){
+            House box = input.getBox(boxIndex);
+            for (int rowIndex = 0; rowIndex < 9; rowIndex++){
+                House row = input.getRow(rowIndex);
+                if (removePointingCandidates(box, row)){
+                    return true;
+                }
+            }
+            for (int colIndex = 0; colIndex < 9; colIndex++){
+                House col = input.getCol(colIndex);
+                if (removePointingCandidates(box, col)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean removePointingCandidates(House box, House group){
+        CellGroup crossSection = new CellGroup(box.getCrossSection(group));
+        int sharedCandidate = crossSection.getSharedCandidate();
+        if (crossSection.size() > 1 && sharedCandidate != 0){
+            CellGroup groupExclusive = new CellGroup(group.getCellDifference(crossSection.getCells()));
+            CellGroup boxExclusive = new CellGroup(box.getCellDifference(crossSection.getCells()));
+            if (groupExclusive.getCandidates().contains(sharedCandidate) && !boxExclusive.getCandidates().contains(sharedCandidate)){
+                for (Cell c : groupExclusive.getCells()){
+                    c.removeCandidate(sharedCandidate);
+                    return true;
+                }
+            }
+            else if (!groupExclusive.getCandidates().contains(sharedCandidate) && boxExclusive.getCandidates().contains(sharedCandidate)){
+                for (Cell c : boxExclusive.getCells()){
+                    c.removeCandidate(sharedCandidate);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // =-=-=-=-= NAKED PAIRS =-=-=-=-= //
     public static boolean solveNakedPair(Sudoku input){
         for (int i = 0; i < 9; i++){
             if (findNakedPairInsideGroup(input.getRow(i))){
@@ -167,9 +210,8 @@ public class Solver {
         return false;
     }
 
-    // =-=-=-=-= NAKED PAIRS =-=-=-=-= //
     private static ArrayList<Cell> lastNakedPair = new ArrayList<Cell>(2);
-    private static boolean findNakedPairInsideGroup(CellGroup group){
+    private static boolean findNakedPairInsideGroup(House group){
         List<Cell> bivalueCells = new ArrayList<Cell>();
         for (Cell cell : group.getGroup()){
             if (!cell.solved() && cell.biValue()){

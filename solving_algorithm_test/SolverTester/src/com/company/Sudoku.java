@@ -1,6 +1,5 @@
 package com.company;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,20 +10,20 @@ public class Sudoku {
     private int[][] solution;
     private Cell[][] sudoku;
 
-    private List<CellGroup> rows;
-    private List<CellGroup> cols;
-    private List<CellGroup> boxes;
+    private List<House> rows;
+    private List<House> cols;
+    private List<House> boxes;
 
     public Sudoku(int[][] sudokuGrid){
         this.grid = sudokuGrid;
-        this.rows = new ArrayList<CellGroup>();
-        this.cols = new ArrayList<CellGroup>();
-        this.boxes = new ArrayList<CellGroup>();
+        this.rows = new ArrayList<House>();
+        this.cols = new ArrayList<House>();
+        this.boxes = new ArrayList<House>();
 
         for(int i = 0; i < 9; i++) {
-            this.rows.add(new CellGroup());
-            this.cols.add(new CellGroup());
-            this.boxes.add(new CellGroup());
+            this.rows.add(new House());
+            this.cols.add(new House());
+            this.boxes.add(new House());
         }
 
         this.sudoku = buildSudoku(sudokuGrid);
@@ -37,7 +36,7 @@ public class Sudoku {
             for(int y = 0; y < grid.length; y++){
                 Cell c = new Cell(grid[x][y],x,y);
                 matrix[x][y] = c;
-                CellGroup temp = this.rows.get(c.ROW);
+                House temp = this.rows.get(c.ROW);
                 temp.add(c);
                 temp = this.cols.get(c.COL);
                 temp.add(c);
@@ -115,15 +114,15 @@ public class Sudoku {
         return true;
     }
 
-    public CellGroup getRow(int row){
+    public House getRow(int row){
         return this.rows.get(row);
     }
 
-    public CellGroup getCol(int col){
+    public House getCol(int col){
         return this.cols.get(col);
     }
 
-    public CellGroup getBox(int box){
+    public House getBox(int box){
         return this.boxes.get(box);
     }
 
