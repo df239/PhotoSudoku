@@ -2,7 +2,7 @@ package com.company;
 
 public class Main {
 
-    static int[][] sample = SudokuUtils.EXAMPLE11; //examples 1 - 11; 111 - 116
+    static int[][] sample = SudokuUtils.EXAMPLE13; //examples 1 - 11; 111 - 116
 
     public static void main(String[] args) {
 	// write your code here

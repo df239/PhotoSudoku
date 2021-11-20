@@ -5,7 +5,6 @@ import javafx.util.Pair;
 import java.util.*;
 
 public class Solver {
-    private static Sudoku s;
     private static int[][] matrix;
 
     // =-=-=-=-= BACKTRACKING =-=-=-=-= //
@@ -204,7 +203,6 @@ public class Solver {
         return false;
     }
 
-    private static ArrayList<Cell> lastNakedPair = new ArrayList<Cell>(2);
     private static boolean findNakedPairInsideGroup(House group){
         List<Cell> bivalueCells = new ArrayList<Cell>();
         for (Cell cell : group.getGroup()){
@@ -214,16 +212,8 @@ public class Solver {
         }
         if(bivalueCells.size() == 2){
             Cell temp = bivalueCells.get(0);
-            if (temp.getCandidates().containsAll(bivalueCells.get(1).getCandidates()) && !lastNakedPair.contains(temp)){
+            if (temp.getCandidates().containsAll(bivalueCells.get(1).getCandidates())){
                 if(removeCandidatesOutsideOfPair(group.getGroup(),temp.getCandidates(),bivalueCells)){
-                    if(lastNakedPair.size() == 0){
-                        lastNakedPair.add(temp);
-                        lastNakedPair.add(bivalueCells.get(1));
-                    }
-                    else{
-                        lastNakedPair.set(0,temp);
-                        lastNakedPair.set(1,bivalueCells.get(1));
-                    }
                     return true;
                 }
             }
@@ -233,16 +223,8 @@ public class Solver {
                 Cell tempX = bivalueCells.get(x);
                 for (int y = x + 1; y < bivalueCells.size(); y++){
                     Cell tempY = bivalueCells.get(y);
-                    if (tempX.getCandidates().containsAll(tempY.getCandidates()) && !lastNakedPair.contains(tempX)){
+                    if (tempX.getCandidates().containsAll(tempY.getCandidates())){
                         if(removeCandidatesOutsideOfPair(group.getGroup(),tempX.getCandidates(),new ArrayList<Cell>(Arrays.asList(tempX,tempY)))){
-                            if(lastNakedPair.size() == 0){
-                                lastNakedPair.add(tempX);
-                                lastNakedPair.add(tempY);
-                            }
-                            else{
-                                lastNakedPair.set(0,tempX);
-                                lastNakedPair.set(0,tempY);
-                            }
                             return true;
                         }
                     }
