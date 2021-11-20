@@ -1,8 +1,10 @@
 package com.company;
 
+import com.company.solvingSteps.SolvingStep;
+
 public class Main {
 
-    static int[][] sample = SudokuUtils.EXAMPLE14; //examples 1 - 11; 111 - 116
+    static int[][] sample = SudokuUtils.EXAMPLE3; //examples 1 - 11; 111 - 116
 
     static int[][] grid;
 
@@ -27,21 +29,21 @@ public class Main {
             }
 
             if(Solver.solveNakedSingles(sudoku)){
-                System.out.println("Naked Singles:");
-                grid = sudoku.grid;
-                printMatrix(sudoku.grid);
+                System.out.println("Naked Singles");
+                //grid = sudoku.grid;
+                //printMatrix(sudoku.grid);
                 continue;
             }
 
             if(Solver.solveHiddenSingles(sudoku)){
-                System.out.println("Hidden Singles:");
-                grid = sudoku.grid;
-                printMatrix(sudoku.grid);
+                System.out.println("Hidden Singles");
+                //grid = sudoku.grid;
+                //printMatrix(sudoku.grid);
                 continue;
             }
 
             if(Solver.solvePointingCandidates(sudoku)){
-                System.out.println("- Pointing Candidates -");
+                //System.out.println("- Pointing Candidates -");
                 continue;
             }
 
@@ -59,6 +61,10 @@ public class Main {
         }
         elapsed = System.currentTimeMillis() - start;
         System.out.println("Time: "+elapsed+"ms");
+        System.out.println();
+        for (SolvingStep step : Solver.steps){
+            System.out.println(step.getMessage());
+        }
 
 
 //        long elapsed = 0l;

@@ -1,10 +1,14 @@
 package com.company;
 
+import com.company.solvingSteps.HiddenSingle;
+import com.company.solvingSteps.NakedSingle;
+import com.company.solvingSteps.SolvingStep;
 import javafx.util.Pair;
 
 import java.util.*;
 
 public class Solver {
+    public static List<SolvingStep> steps = new ArrayList<>();
     private static int[][] matrix;
 
     // =-=-=-=-= BACKTRACKING =-=-=-=-= //
@@ -84,9 +88,10 @@ public class Solver {
             for (int col = 0; col < grid.length; col++) {
                 Cell c = grid[row][col];
                 if(!c.solved() && c.getCandidates().size() == 1) {
-                    c.setValue(c.getCandidates().get(0));
+                    int candidate = c.getCandidates().get(0);
+                    c.setValue(candidate);
+                    steps.add(new NakedSingle(candidate,row,col,input.grid));
                     input.updateCellCandidates(c);
-                    changeMade = true;
                     return true;
                 }
             }
@@ -103,15 +108,15 @@ public class Solver {
             for (int col = 0; col <grid.length; col++){
                 Cell c = grid[row][col];
                 if (!c.solved()){
-                    if(findHiddenSingle(c,input.getRow(c.ROW))){
+                    if(findHiddenSingle(c,input.getRow(c.ROW),"row", row, col, input.grid)){
                         input.updateCellCandidates(c);
                         return true;
                     }
-                    if(findHiddenSingle(c,input.getCol(c.COL))){
+                    if(findHiddenSingle(c,input.getCol(c.COL),"column", row, col, input.grid)){
                         input.updateCellCandidates(c);
                         return true;
                     }
-                    if(findHiddenSingle(c,input.getBox(c.BOX))){
+                    if(findHiddenSingle(c,input.getBox(c.BOX),"box", row, col, input.grid)){
                         input.updateCellCandidates(c);
                         return true;
                     }
@@ -121,7 +126,7 @@ public class Solver {
         return false;
     }
 
-    private static boolean findHiddenSingle(Cell currentCell, House house){
+    private static boolean findHiddenSingle(Cell currentCell, House house, String houseType, int row, int col, int[][] grid){
         HashSet<Integer> groupCandidates;
         HashSet<Integer> cellCandidates = new HashSet<Integer>(currentCell.getCandidates());
 
@@ -129,6 +134,7 @@ public class Solver {
         cellCandidates.removeAll(groupCandidates);
         if(cellCandidates.toArray().length == 1){
             currentCell.setValue((Integer) cellCandidates.toArray()[0]);
+            steps.add(new HiddenSingle((int)cellCandidates.toArray()[0], row, col, houseType, grid));
             return true;
         }
         return false;
