@@ -87,10 +87,12 @@ public class Solver {
                     c.setValue(c.getCandidates().get(0));
                     input.updateCellCandidates(c);
                     changeMade = true;
+                    return true;
                 }
             }
         }
-        return changeMade;
+        return false;
+        //return changeMade;
     }
 
     // =-=-=-=-= HIDDEN SINGLES =-=-=-=-= //
@@ -273,15 +275,17 @@ public class Solver {
                     Cell c2 = cells.get(j);
                     if (!c2.solved()){
                         ArrayList<Integer> shared = new ArrayList<Integer>(c1.getSharedCandidatesWith(c2));
-                        if(shared.size() > 2){
+                        if(shared.size() >= 2){
                             CellGroup othersInGroup = new CellGroup(group.getCellDifference(c1,c2));
                             for (int x = 0; x < shared.size() - 1; x++){
                                 for (int y = x + 1; y < shared.size(); y++){
                                     List<Integer> candidatePair = Arrays.asList(shared.get(x), shared.get(y));
                                     if (!othersInGroup.sharesAnyCandidateWith(candidatePair)){
-                                        removeCandidatesFromCellExcept(candidatePair,c1);
-                                        removeCandidatesFromCellExcept(candidatePair,c2);
-                                        return true;
+                                        if (c1.getCandidates().size() > 2 || c2.getCandidates().size() > 2){
+                                            removeCandidatesFromCellExcept(candidatePair,c1);
+                                            removeCandidatesFromCellExcept(candidatePair,c2);
+                                            return true;
+                                        }
                                     }
                                 }
                             }

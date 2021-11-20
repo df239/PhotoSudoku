@@ -4,11 +4,15 @@ public class Main {
 
     static int[][] sample = SudokuUtils.EXAMPLE13; //examples 1 - 11; 111 - 116
 
+    static int[][] grid;
+
     public static void main(String[] args) {
 	// write your code here
         System.out.println("Original:");
         printMatrix(sample);
         Sudoku sudoku = new Sudoku(sample);
+
+        grid = sudoku.grid;
 
         long elapsed;
         long start = System.currentTimeMillis();
@@ -17,18 +21,21 @@ public class Main {
             if (noChangeCounter == 3){
                 System.out.println("Could not solve. Using backtracking:");
                 int[][] grid = Solver.solveBacktracking(sudoku);
+                grid = sudoku.grid;
                 printMatrix(grid);
                 break;
             }
 
             if(Solver.solveNakedSingles(sudoku)){
                 System.out.println("Naked Singles:");
+                grid = sudoku.grid;
                 printMatrix(sudoku.grid);
                 continue;
             }
 
             if(Solver.solveHiddenSingles(sudoku)){
                 System.out.println("Hidden Singles:");
+                grid = sudoku.grid;
                 printMatrix(sudoku.grid);
                 continue;
             }
