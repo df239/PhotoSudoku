@@ -37,6 +37,15 @@ public class CellGroup {
         return set;
     }
 
+    public boolean sharesAnyCandidateWith(Collection<Integer> candidates){
+        for (int candidate : candidates){
+            if (this.getCandidates().contains(candidate)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public HashSet<Cell> getCells(){
         return this.group;
     }

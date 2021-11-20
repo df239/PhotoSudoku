@@ -1,5 +1,6 @@
 package com.company;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -62,5 +63,9 @@ public class House {
             }
         }
         return set;
+    }
+
+    public HashSet<Cell> getCellDifference(Cell... cells){
+        return this.getCellDifference(Arrays.asList(cells));
     }
 }

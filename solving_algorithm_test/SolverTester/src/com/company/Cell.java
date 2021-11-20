@@ -1,9 +1,6 @@
 package com.company;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class Cell {
     private int value;
@@ -86,5 +83,15 @@ public class Cell {
 
     public List<Integer> getCandidates(){
         return this.candidates;
+    }
+
+    public HashSet<Integer> getSharedCandidatesWith(Cell cell){
+        HashSet<Integer> shared = new HashSet<>();
+        for (int candidate : cell.getCandidates()){
+            if (this.getCandidates().contains(candidate)){
+                shared.add(candidate);
+            }
+        }
+        return shared;
     }
 }

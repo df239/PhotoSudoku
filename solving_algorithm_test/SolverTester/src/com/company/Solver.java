@@ -1,6 +1,6 @@
 package com.company;
 
-import sun.rmi.server.InactiveGroupException;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -254,14 +254,66 @@ public class Solver {
 
     private static boolean removeCandidatesOutsideOfPair(HashSet<Cell> group, List<Integer> pairCandidates, Collection<Cell> biValueCells){
         HashSet<Integer> candidates = new HashSet<Integer>(pairCandidates);
+        boolean changeMade = false;
         for (Cell cell : group){
             //by not being bi-value the cell is inherently not inside the bivalueCell list
             if (!cell.solved() && !biValueCells.contains(cell) &&
                     (cell.getCandidates().contains(pairCandidates.get(0)) || cell.getCandidates().contains(pairCandidates.get(1)))){
                 cell.removeCandidates(candidates);
+                changeMade = true;
+            }
+        }
+        return changeMade;
+    }
+
+    // =-=-=-=-= HIDDEN PAIRS =-=-=-=-= //
+    public static boolean solveHiddenPair(Sudoku input){
+        for (int i = 0; i < 9; i++){
+            if (findHiddenPairInsideGroup(input.getRow(i))){
+                return true;
+            }
+            if (findHiddenPairInsideGroup(input.getCol(i))){
+                return true;
+            }
+            if (findHiddenPairInsideGroup(input.getBox(i))){
                 return true;
             }
         }
         return false;
+    }
+
+    private static boolean findHiddenPairInsideGroup(House group){
+        ArrayList<Cell> cells = new ArrayList<Cell>(group.getGroup());
+        for(int i = 0; i < 8; i++){
+            Cell c1 = cells.get(i);
+            if (!c1.solved()){
+                for (int j = i + 1; j < 9; j++){
+                    Cell c2 = cells.get(j);
+                    if (!c2.solved()){
+                        ArrayList<Integer> shared = new ArrayList<Integer>(c1.getSharedCandidatesWith(c2));
+                        if(shared.size() > 2){
+                            CellGroup othersInGroup = new CellGroup(group.getCellDifference(c1,c2));
+                            for (int x = 0; x < shared.size() - 1; x++){
+                                for (int y = x + 1; y < shared.size(); y++){
+                                    List<Integer> candidatePair = Arrays.asList(shared.get(x), shared.get(y));
+                                    if (!othersInGroup.sharesAnyCandidateWith(candidatePair)){
+                                        removeCandidatesFromCellExcept(candidatePair,c1);
+                                        removeCandidatesFromCellExcept(candidatePair,c2);
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private static void removeCandidatesFromCellExcept(Collection<Integer> candidates, Cell cell){
+        HashSet<Integer> cellCandidates = new HashSet<Integer>(cell.getCandidates());
+        cellCandidates.removeAll(candidates);
+        cell.removeCandidates(cellCandidates);
     }
 }

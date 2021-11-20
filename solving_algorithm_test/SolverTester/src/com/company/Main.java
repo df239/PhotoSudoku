@@ -2,7 +2,7 @@ package com.company;
 
 public class Main {
 
-    static int[][] sample = SudokuUtils.EXAMPLE11; //examples 1 - 9; 111 - 116
+    static int[][] sample = SudokuUtils.EXAMPLE11; //examples 1 - 11; 111 - 116
 
     public static void main(String[] args) {
 	// write your code here
@@ -40,6 +40,11 @@ public class Main {
 
             if(Solver.solveNakedPair(sudoku)){
                 System.out.println("- Naked Pair -");
+                continue;
+            }
+
+            if(Solver.solveHiddenPair(sudoku)){
+                System.out.println("- Hidden Pair -");
                 continue;
             }
 
