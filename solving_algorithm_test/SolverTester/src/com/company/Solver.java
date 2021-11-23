@@ -2,13 +2,12 @@ package com.company;
 
 import com.company.solvingSteps.HiddenSingle;
 import com.company.solvingSteps.NakedSingle;
-import com.company.solvingSteps.SolvingStep;
-import javafx.util.Pair;
+import com.company.solvingSteps.ISolvingStep;
 
 import java.util.*;
 
 public class Solver {
-    public static List<SolvingStep> steps = new ArrayList<>();
+    public static List<ISolvingStep> steps = new ArrayList<>();
     private static int[][] matrix;
 
     // =-=-=-=-= BACKTRACKING =-=-=-=-= //

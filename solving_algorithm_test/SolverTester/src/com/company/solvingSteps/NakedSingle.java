@@ -1,6 +1,6 @@
 package com.company.solvingSteps;
 
-public class NakedSingle implements SolvingStep{
+public class NakedSingle implements ISolvingStep {
     private final int[][] grid = new int[9][9];
     private final int value;
     private final int row;

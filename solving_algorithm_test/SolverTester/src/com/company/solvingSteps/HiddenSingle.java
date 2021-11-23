@@ -1,6 +1,6 @@
 package com.company.solvingSteps;
 
-public class HiddenSingle implements SolvingStep{
+public class HiddenSingle implements ISolvingStep {
     private final int[][] grid = new int[9][9];
     private final int value;
     private final int row;

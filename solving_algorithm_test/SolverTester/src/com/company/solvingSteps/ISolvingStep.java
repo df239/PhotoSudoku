@@ -1,6 +1,6 @@
 package com.company.solvingSteps;
 
-public interface SolvingStep {
+public interface ISolvingStep {
     public int[][] getGrid();
     public String getMessage();
 }

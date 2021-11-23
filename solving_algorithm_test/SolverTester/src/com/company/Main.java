@@ -1,6 +1,7 @@
 package com.company;
 
-import com.company.solvingSteps.SolvingStep;
+import com.company.solvingSteps.ISolvingStep;
+import com.company.solvingSteps.NakedSingle;
 
 public class Main {
 
@@ -62,7 +63,7 @@ public class Main {
         elapsed = System.currentTimeMillis() - start;
         System.out.println("Time: "+elapsed+"ms");
         System.out.println();
-        for (SolvingStep step : Solver.steps){
+        for (ISolvingStep step : Solver.steps){
             System.out.println(step.getMessage());
         }
 
