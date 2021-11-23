@@ -1,11 +1,10 @@
 package com.company;
 
 import com.company.solvingSteps.ISolvingStep;
-import com.company.solvingSteps.NakedSingle;
 
 public class Main {
 
-    static int[][] sample = SudokuUtils.EXAMPLE14; //examples 1 - 11; 111 - 116
+    static int[][] sample = SudokuUtils.EXAMPLE9; //examples 1 - 11; 111 - 116
 
     static int[][] grid;
 
@@ -21,7 +20,7 @@ public class Main {
         long start = System.currentTimeMillis();
         int noChangeCounter = 0;
         while(!sudoku.solved()){
-            if (noChangeCounter == 3){
+            if (noChangeCounter == 1){
                 System.out.println("Could not solve. Using backtracking:");
                 int[][] grid = Solver.solveBacktracking(sudoku);
                 grid = sudoku.grid;
@@ -30,31 +29,26 @@ public class Main {
             }
 
             if(Solver.solveNakedSingles(sudoku)){
-                System.out.println("Naked Singles");
                 //grid = sudoku.grid;
                 //printMatrix(sudoku.grid);
                 continue;
             }
 
             if(Solver.solveHiddenSingles(sudoku)){
-                System.out.println("Hidden Singles");
                 //grid = sudoku.grid;
                 //printMatrix(sudoku.grid);
                 continue;
             }
 
             if(Solver.solvePointingCandidates(sudoku)){
-                System.out.println("- Pointing Candidates -");
                 continue;
             }
 
             if(Solver.solveNakedPair(sudoku)){
-                System.out.println("- Naked Pair -");
                 continue;
             }
 
             if(Solver.solveHiddenPair(sudoku)){
-                System.out.println("- Hidden Pair -");
                 continue;
             }
 

@@ -1,8 +1,6 @@
 package com.company;
 
-import com.company.solvingSteps.HiddenSingle;
-import com.company.solvingSteps.NakedSingle;
-import com.company.solvingSteps.ISolvingStep;
+import com.company.solvingSteps.*;
 
 import java.util.*;
 
@@ -180,12 +178,14 @@ public class Solver {
                     for (Cell c : groupExclusive.getCells()){
                         c.removeCandidate(sharedCandidate);
                     }
+                    steps.add(new PointingCandidates());
                     return true;
                 }
                 else if (!groupExclusive.getCandidates().contains(sharedCandidate) && boxExclusive.getCandidates().contains(sharedCandidate)){
                     for (Cell c : boxExclusive.getCells()){
                         c.removeCandidate(sharedCandidate);
                     }
+                    steps.add(new PointingCandidates());
                     return true;
                 }
             }
@@ -220,6 +220,7 @@ public class Solver {
             Cell temp = bivalueCells.get(0);
             if (temp.getCandidates().containsAll(bivalueCells.get(1).getCandidates())){
                 if(removeCandidatesOutsideOfPair(group.getGroup(),temp.getCandidates(),bivalueCells)){
+                    steps.add(new NakedPair());
                     return true;
                 }
             }
@@ -231,6 +232,7 @@ public class Solver {
                     Cell tempY = bivalueCells.get(y);
                     if (tempX.getCandidates().containsAll(tempY.getCandidates())){
                         if(removeCandidatesOutsideOfPair(group.getGroup(),tempX.getCandidates(),new ArrayList<Cell>(Arrays.asList(tempX,tempY)))){
+                            steps.add(new NakedPair());
                             return true;
                         }
                     }
@@ -288,6 +290,7 @@ public class Solver {
                                         if (c1.getCandidates().size() > 2 || c2.getCandidates().size() > 2){
                                             removeCandidatesFromCellExcept(candidatePair,c1);
                                             removeCandidatesFromCellExcept(candidatePair,c2);
+                                            steps.add(new HiddenPair());
                                             return true;
                                         }
                                     }

@@ -6,10 +6,13 @@ import androidx.core.content.ContextCompat;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -66,11 +69,14 @@ public class Solving_page extends AppCompatActivity {
             table.addView(tableRow);
             for (int col = 0; col < 9; col++){
                 TextView cell = new TextView(this);
-                cell.setEms(1);
-                cell.setInputType(InputType.TYPE_CLASS_NUMBER);
+                //cell.setEms(1);
+                //cell.setInputType(InputType.TYPE_CLASS_NUMBER);
+                //cell.setHeight(110);
                 cell.setLayoutParams(rowParams);
                 cell.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                cell.setMaxEms(1);
+                cell.setTextColor(Color.BLACK);
+                cell.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
+                //cell.setMaxEms(1);
 
                 cell.setPadding(0,padding_px,0,padding_px);
 
@@ -80,6 +86,7 @@ public class Solving_page extends AppCompatActivity {
 
                 if (sudoku[row][col] != 0){
                     cell.setText(String.valueOf(sudoku[row][col]));
+                    cell.setTypeface(null,Typeface.BOLD);
                 }
             }
         }

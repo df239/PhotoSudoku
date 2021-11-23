@@ -26,6 +26,7 @@ public class HiddenSingle implements ISolvingStep {
 
     @Override
     public String getMessage() {
-        return "Hidden Single: Inserted number "+value+" at [row "+(row+1)+" column "+(col+1)+"] as the only square in its "+house+" where it can be placed.";
+        return "- Hidden Single -";
+        //return "Hidden Single: Inserted number "+value+" at [row "+(row+1)+" column "+(col+1)+"] as the only square in its "+house+" where it can be placed.";
     }
 }
