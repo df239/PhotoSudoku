@@ -9,28 +9,21 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
-import android.text.InputType;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.photosudoku.processing.ImageProcessingThread;
 import com.example.photosudoku.sudoku.Solver;
 import com.example.photosudoku.sudoku.Sudoku;
 import com.example.photosudoku.sudoku.solvingSteps.HiddenSingle;
 import com.example.photosudoku.sudoku.solvingSteps.ISolvingStep;
 import com.example.photosudoku.sudoku.solvingSteps.NakedSingle;
-import com.google.android.gms.tasks.TaskCompletionSource;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Solving_page extends AppCompatActivity {
@@ -42,7 +35,7 @@ public class Solving_page extends AppCompatActivity {
     Button solveButton;
     TextView messageView;
 
-    int[][] grid;
+    int[][] original;
     Sudoku sudoku;
     int[][] solution;
     List<ISolvingStep> steps;
@@ -64,13 +57,18 @@ public class Solving_page extends AppCompatActivity {
 
         Intent intent = getIntent();
         int[][] sudoku = (int[][])intent.getSerializableExtra(SudokuDisplayPage.SUDOKU_KEY);
-        this.grid = sudoku;
+        this.original = new int[9][9];
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 9; j++){
+                this.original[i][j] = sudoku[i][j];
+            }
+        }
 
         nextButton.setOnClickListener(v -> nextButtonClick());
 
         prevButton.setOnClickListener(v -> prevButtonClick());
 
-        solveButton.setOnClickListener(v -> rewriteGrid(this.solution));
+        solveButton.setOnClickListener(v -> solveButtonClick());
 
         createSudokuUI(sudoku);
         solveSudoku(sudoku);
@@ -138,8 +136,9 @@ public class Solving_page extends AppCompatActivity {
         for (int row = 0; row < 9; row++){
             TableRow tableRow = (TableRow)table.getChildAt(row);
             for (int col = 0; col < 9; col++){
-                TextView view = (TextView)tableRow.getChildAt(col);
-                if (this.grid[row][col] != 0){
+                if (this.original[row][col] == 0){
+                    TextView view = (TextView)tableRow.getChildAt(col);
+                    view.setTextColor(Color.BLACK);
                     if(grid[row][col] == 0){
                         view.setText("");
                     }
@@ -152,8 +151,21 @@ public class Solving_page extends AppCompatActivity {
     }
 
     private void rewriteGrid(ISolvingStep step){
-        if (step instanceof NakedSingle || step instanceof HiddenSingle){
+        if (step instanceof  NakedSingle){
             rewriteGrid(step.getGrid());
+            int row = ((NakedSingle) step).getAffectedRow();
+            int col = ((NakedSingle) step).getAffectedCol();
+            TextView view = (TextView)((TableRow)table.getChildAt(row)).getChildAt(col);
+            view.setTextColor(ContextCompat.getColor(this,R.color.red));
+            view.setText(String.valueOf(((NakedSingle) step).getNewValue()));
+        }
+        else if (step instanceof HiddenSingle){
+            rewriteGrid(step.getGrid());
+            int row = ((HiddenSingle) step).getAffectedRow();
+            int col = ((HiddenSingle) step).getAffectedCol();
+            TextView view = (TextView)((TableRow)table.getChildAt(row)).getChildAt(col);
+            view.setTextColor(ContextCompat.getColor(this,R.color.red));
+            view.setText(String.valueOf(((HiddenSingle) step).getNewValue()));
         }
     }
 
@@ -189,8 +201,14 @@ public class Solving_page extends AppCompatActivity {
         this.steps = Solver.steps;
     }
 
+    public void solveButtonClick(){
+        rewriteGrid(this.solution);
+        stepIndex = steps.size() - 1;
+        messageView.setText(String.valueOf(stepIndex+1) + this.steps.get(stepIndex).getMessage());
+    }
+
     public void nextButtonClick(){
-        if(stepIndex < steps.size()){
+        if(stepIndex < steps.size() - 1){
             stepIndex ++;
             messageView.setText(String.valueOf(stepIndex+1) + this.steps.get(stepIndex).getMessage());
             rewriteGrid(this.steps.get(stepIndex));
@@ -205,6 +223,10 @@ public class Solving_page extends AppCompatActivity {
             stepIndex --;
             messageView.setText(String.valueOf(stepIndex+1) + this.steps.get(stepIndex).getMessage());
             rewriteGrid(this.steps.get(stepIndex));
+        }
+        else if(stepIndex == 0){
+            stepIndex --;
+            rewriteGrid(this.original);
         }
         else{
             messageView.setText("");

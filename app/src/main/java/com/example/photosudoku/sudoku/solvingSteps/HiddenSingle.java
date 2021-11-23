@@ -19,6 +19,10 @@ public class HiddenSingle implements ISolvingStep {
         }
     }
 
+    public int getNewValue(){return this.value;}
+    public int getAffectedRow(){return this.row;}
+    public int getAffectedCol(){return this.col;}
+
     @Override
     public int[][] getGrid() {
         return this.grid;
