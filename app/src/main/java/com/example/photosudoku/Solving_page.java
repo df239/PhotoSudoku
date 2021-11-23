@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -28,7 +30,10 @@ public class Solving_page extends AppCompatActivity {
 
     TableLayout table;
     ConstraintLayout mainLayout;
+    ImageButton nextButton;
+    ImageButton prevButton;
     Button solveButton;
+
 
     int[][] grid;
 
@@ -41,12 +46,14 @@ public class Solving_page extends AppCompatActivity {
 
         table = (TableLayout)findViewById(R.id.sudokuSolvingTable);
         mainLayout = (ConstraintLayout)findViewById(R.id.sudokuSolvingLayout);
+        nextButton = (ImageButton)findViewById(R.id.nextButton);
+        prevButton = (ImageButton)findViewById(R.id.prevButton);
         solveButton = (Button)findViewById(R.id.solveButton);
 
-        solveButton.setOnClickListener(new View.OnClickListener() {
+        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                solveButtonClick();
+                nextButtonClick();
             }
         });
 
@@ -115,7 +122,7 @@ public class Solving_page extends AppCompatActivity {
         return ContextCompat.getDrawable(this,R.drawable.thin_cell_border);
     }
 
-    public void solveButtonClick(){
+    public void nextButtonClick(){
         try{
             Sudoku sudoku = new Sudoku(this.grid);
             sudoku = Solver.solveNakedSingles(sudoku);
@@ -125,6 +132,5 @@ public class Solving_page extends AppCompatActivity {
         catch (Exception e){
             Log.d(TAG,e.getMessage());
         }
-
     }
 }
