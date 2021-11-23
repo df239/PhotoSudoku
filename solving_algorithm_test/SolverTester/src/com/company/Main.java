@@ -4,7 +4,7 @@ import com.company.solvingSteps.SolvingStep;
 
 public class Main {
 
-    static int[][] sample = SudokuUtils.EXAMPLE3; //examples 1 - 11; 111 - 116
+    static int[][] sample = SudokuUtils.EXAMPLE14; //examples 1 - 11; 111 - 116
 
     static int[][] grid;
 
@@ -43,7 +43,7 @@ public class Main {
             }
 
             if(Solver.solvePointingCandidates(sudoku)){
-                //System.out.println("- Pointing Candidates -");
+                System.out.println("- Pointing Candidates -");
                 continue;
             }
 

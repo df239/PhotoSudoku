@@ -97,7 +97,6 @@ public class Solver {
             }
         }
         return false;
-        //return changeMade;
     }
 
     // =-=-=-=-= HIDDEN SINGLES =-=-=-=-= //
@@ -108,15 +107,15 @@ public class Solver {
             for (int col = 0; col <grid.length; col++){
                 Cell c = grid[row][col];
                 if (!c.solved()){
-                    if(findHiddenSingle(c,input.getRow(c.ROW),"row", row, col, input.grid)){
+                    if(findHiddenSingle(c,input.getRow(c.ROW), row, col, input.grid)){
                         input.updateCellCandidates(c);
                         return true;
                     }
-                    if(findHiddenSingle(c,input.getCol(c.COL),"column", row, col, input.grid)){
+                    if(findHiddenSingle(c,input.getCol(c.COL), row, col, input.grid)){
                         input.updateCellCandidates(c);
                         return true;
                     }
-                    if(findHiddenSingle(c,input.getBox(c.BOX),"box", row, col, input.grid)){
+                    if(findHiddenSingle(c,input.getBox(c.BOX), row, col, input.grid)){
                         input.updateCellCandidates(c);
                         return true;
                     }
@@ -126,7 +125,7 @@ public class Solver {
         return false;
     }
 
-    private static boolean findHiddenSingle(Cell currentCell, House house, String houseType, int row, int col, int[][] grid){
+    private static boolean findHiddenSingle(Cell currentCell, House house, int row, int col, int[][] grid){
         HashSet<Integer> groupCandidates;
         HashSet<Integer> cellCandidates = new HashSet<Integer>(currentCell.getCandidates());
 
@@ -134,7 +133,7 @@ public class Solver {
         cellCandidates.removeAll(groupCandidates);
         if(cellCandidates.toArray().length == 1){
             currentCell.setValue((Integer) cellCandidates.toArray()[0]);
-            steps.add(new HiddenSingle((int)cellCandidates.toArray()[0], row, col, houseType, grid));
+            steps.add(new HiddenSingle((int)cellCandidates.toArray()[0], row, col, house.TYPE, grid));
             return true;
         }
         return false;

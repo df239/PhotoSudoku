@@ -21,9 +21,9 @@ public class Sudoku {
         this.boxes = new ArrayList<House>();
 
         for(int i = 0; i < 9; i++) {
-            this.rows.add(new House());
-            this.cols.add(new House());
-            this.boxes.add(new House());
+            this.rows.add(new House("row"));
+            this.cols.add(new House("column"));
+            this.boxes.add(new House("box"));
         }
 
         this.sudoku = buildSudoku(sudokuGrid);

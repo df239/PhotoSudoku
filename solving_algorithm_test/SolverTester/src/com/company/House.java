@@ -9,7 +9,10 @@ public class House {
     private HashSet<Integer> solvedValues;
     private HashSet<Integer> candidates;
 
-    public House() {
+    public final String TYPE;
+
+    public House(String houseType) {
+        this.TYPE = houseType;
         this.group = new HashSet<Cell>();
         this.solvedValues = new HashSet<Integer>();
         this.candidates = new HashSet<Integer>();
