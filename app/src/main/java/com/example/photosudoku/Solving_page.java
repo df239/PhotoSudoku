@@ -25,6 +25,13 @@ import android.widget.TextView;
 import com.example.photosudoku.processing.ImageProcessingThread;
 import com.example.photosudoku.sudoku.Solver;
 import com.example.photosudoku.sudoku.Sudoku;
+import com.example.photosudoku.sudoku.solvingSteps.HiddenSingle;
+import com.example.photosudoku.sudoku.solvingSteps.ISolvingStep;
+import com.example.photosudoku.sudoku.solvingSteps.NakedSingle;
+import com.google.android.gms.tasks.TaskCompletionSource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Solving_page extends AppCompatActivity {
 
@@ -33,9 +40,13 @@ public class Solving_page extends AppCompatActivity {
     ImageButton nextButton;
     ImageButton prevButton;
     Button solveButton;
-
+    TextView messageView;
 
     int[][] grid;
+    Sudoku sudoku;
+    int[][] solution;
+    List<ISolvingStep> steps;
+    int stepIndex = -1;
 
     private static String TAG = "CameraActivity";
 
@@ -49,19 +60,20 @@ public class Solving_page extends AppCompatActivity {
         nextButton = (ImageButton)findViewById(R.id.nextButton);
         prevButton = (ImageButton)findViewById(R.id.prevButton);
         solveButton = (Button)findViewById(R.id.solveButton);
-
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nextButtonClick();
-            }
-        });
+        messageView = (TextView)findViewById(R.id.messageView);
 
         Intent intent = getIntent();
-
         int[][] sudoku = (int[][])intent.getSerializableExtra(SudokuDisplayPage.SUDOKU_KEY);
         this.grid = sudoku;
+
+        nextButton.setOnClickListener(v -> nextButtonClick());
+
+        prevButton.setOnClickListener(v -> prevButtonClick());
+
+        solveButton.setOnClickListener(v -> rewriteGrid(this.solution));
+
         createSudokuUI(sudoku);
+        solveSudoku(sudoku);
     }
 
     private void createSudokuUI(int[][] sudoku){
@@ -122,15 +134,80 @@ public class Solving_page extends AppCompatActivity {
         return ContextCompat.getDrawable(this,R.drawable.thin_cell_border);
     }
 
-    public void nextButtonClick(){
-        try{
-            Sudoku sudoku = new Sudoku(this.grid);
-            sudoku = Solver.solveNakedSingles(sudoku);
-            sudoku.updateCellCandidates();
-            System.out.print(sudoku.grid);
+    private void rewriteGrid(int[][] grid){
+        for (int row = 0; row < 9; row++){
+            TableRow tableRow = (TableRow)table.getChildAt(row);
+            for (int col = 0; col < 9; col++){
+                TextView view = (TextView)tableRow.getChildAt(col);
+                if (this.grid[row][col] != 0){
+                    if(grid[row][col] == 0){
+                        view.setText("");
+                    }
+                    else{
+                        view.setText(String.valueOf(grid[row][col]));
+                    }
+                }
+            }
         }
-        catch (Exception e){
-            Log.d(TAG,e.getMessage());
+    }
+
+    private void rewriteGrid(ISolvingStep step){
+        if (step instanceof NakedSingle || step instanceof HiddenSingle){
+            rewriteGrid(step.getGrid());
+        }
+    }
+
+    private void solveSudoku(int[][] matrix){
+        sudoku = new Sudoku(matrix);
+
+        int noChangeCounter = 0;
+        while(!sudoku.solved()){
+            if (noChangeCounter == 1){
+                //System.out.println("Could not solve. Using backtracking:");
+                this.solution = Solver.solveBacktracking(sudoku);
+                break;
+            }
+            if(Solver.solveNakedSingles(sudoku)){
+                continue;
+            }
+            if(Solver.solveHiddenSingles(sudoku)){
+                continue;
+            }
+            if(Solver.solvePointingCandidates(sudoku)){
+                continue;
+            }
+            if(Solver.solveNakedPair(sudoku)){
+                continue;
+            }
+            if(Solver.solveHiddenPair(sudoku)){
+                continue;
+            }
+            noChangeCounter++;
+        }
+
+        this.solution = sudoku.grid;
+        this.steps = Solver.steps;
+    }
+
+    public void nextButtonClick(){
+        if(stepIndex < steps.size()){
+            stepIndex ++;
+            messageView.setText(String.valueOf(stepIndex+1) + this.steps.get(stepIndex).getMessage());
+            rewriteGrid(this.steps.get(stepIndex));
+        }
+        else{
+            messageView.setText("");
+        }
+    }
+
+    public void prevButtonClick(){
+        if(stepIndex - 1 >= 0){
+            stepIndex --;
+            messageView.setText(String.valueOf(stepIndex+1) + this.steps.get(stepIndex).getMessage());
+            rewriteGrid(this.steps.get(stepIndex));
+        }
+        else{
+            messageView.setText("");
         }
     }
 }

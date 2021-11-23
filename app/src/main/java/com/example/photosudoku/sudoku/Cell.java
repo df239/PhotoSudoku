@@ -1,25 +1,22 @@
 package com.example.photosudoku.sudoku;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.example.photosudoku.sudoku.SudokuUtils.getBox;
+import java.util.*;
 
 public class Cell {
     private int value;
     private boolean isSolved;
+    private boolean isBiValue;
 
     public final int ROW;
     public final int COL;
     public final int BOX;
 
-    public List<Integer> candidates;
+    private List<Integer> candidates;
     //private HashSet<Integer> forbiddenValues;
 
     public Cell(int value, int row, int col){
         this.value = value;
-        this.ROW = col;
-        this.COL = row;
+        this.ROW = row;
+        this.COL = col;
         this.BOX = SudokuUtils.getBox(row,col);
 
         this.isSolved = value != 0;
@@ -42,6 +39,10 @@ public class Cell {
         return this.isSolved;
     }
 
+    public boolean biValue(){
+        return this.isBiValue;
+    }
+
     public boolean containsCandidate(int candidate) {
         return this.candidates.contains(candidate);
     }
@@ -57,5 +58,39 @@ public class Cell {
         this.value = value;
         this.isSolved = true;
         this.candidates.clear();
+    }
+
+    public void unsolve(){
+        this.value = 0;
+        this.isSolved = false;
+        this.candidates = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
+    }
+
+    public void removeCandidate(int candidate){
+        this.candidates.remove((Integer)candidate);
+        if(this.candidates.size() == 2){
+            this.isBiValue = true;
+        }
+    }
+
+    public void removeCandidates(Collection<Integer> candidates){
+        this.candidates.removeAll(candidates);
+        if(this.candidates.size() == 2){
+            this.isBiValue = true;
+        }
+    }
+
+    public List<Integer> getCandidates(){
+        return this.candidates;
+    }
+
+    public HashSet<Integer> getSharedCandidatesWith(Cell cell){
+        HashSet<Integer> shared = new HashSet<>();
+        for (int candidate : cell.getCandidates()){
+            if (this.getCandidates().contains(candidate)){
+                shared.add(candidate);
+            }
+        }
+        return shared;
     }
 }
