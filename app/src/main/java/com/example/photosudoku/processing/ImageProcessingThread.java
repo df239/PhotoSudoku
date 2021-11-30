@@ -298,7 +298,7 @@ public class ImageProcessingThread extends Thread{
 
         int row = 0,col = 0;
 
-        double ratio = 0.85;
+        double ratio = 0.5;
         int Wactual = (int)(Wninth * ratio);
         int Hactual = (int)(Hninth * ratio);
         int Wdisplacement = (int)((Wninth - Wactual)/2);
@@ -316,12 +316,14 @@ public class ImageProcessingThread extends Thread{
         try{
             for (row = 0; row < 9; row++){
                 for (col = 0; col < 9; col++){
-                    Rect cellroi = new Rect(Wninth * col + Wdisplacement, Hninth * row + Hdisplacement, Wactual, Hactual);
-                    Mat cellMat = new Mat(mat,cellroi);
-                    double nonZero = Core.countNonZero(cellMat);
-                    int size = cellMat.rows()*cellMat.cols();
-                    if (nonZero / size > 0.04){
-                        Bitmap cellBmp = Bitmap.createBitmap(Wactual,Hactual,Bitmap.Config.ARGB_8888);
+                    Rect centerroi = new Rect(Wninth * col + Wdisplacement, Hninth * row + Hdisplacement, Wactual, Hactual);
+                    Mat centerMat = new Mat(mat,centerroi);
+
+                    double nonZero = Core.countNonZero(centerMat);
+                    int size = centerMat.rows()*centerMat.cols();
+                    if (nonZero / size > 0.05){
+                        Mat cellMat = new Mat(mat,new Rect(Wninth * col, Hninth * row, Wninth, Hninth));
+                        Bitmap cellBmp = Bitmap.createBitmap(Wninth,Hninth,Bitmap.Config.ARGB_8888);
 
                         Utils.matToBitmap(cellMat,cellBmp);
 
@@ -350,7 +352,7 @@ public class ImageProcessingThread extends Thread{
 
             //String[] strings = tasks.get(0).getResult().getText().trim().split("\\W+");
             service.shutdown();
-            if(!service.awaitTermination(5, TimeUnit.SECONDS)) service.shutdownNow();
+            if(!service.awaitTermination(8, TimeUnit.SECONDS)) service.shutdownNow();
             for (int i = 0; i < values.size(); i++) {
                 //Text result = Tasks.await(recognizer.process(image));
                 String str = values.get(i);
