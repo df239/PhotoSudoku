@@ -1,5 +1,6 @@
 package com.example.photosudoku;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -8,6 +9,7 @@ import androidx.core.content.ContextCompat;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.InputType;
@@ -28,6 +30,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     TextView textView;
     TableLayout table;
     ConstraintLayout mainLayout;
+    private int[][] sudoku;
 
     public static final String SUDOKU_KEY = "sudoku";
 
@@ -46,10 +49,8 @@ public class SudokuDisplayPage extends AppCompatActivity {
 //        Bitmap bmp = (Bitmap)intent.getParcelableExtra(CameraPage.BitmapKey);
 //        imageView.setImageBitmap(bmp);
 
-        int[][] sudoku = (int[][])intent.getSerializableExtra(SUDOKU_KEY);
-        createSudokuUI(sudoku);
-
-
+        this.sudoku = (int[][])intent.getSerializableExtra(SUDOKU_KEY);
+        createSudokuUI(this.sudoku);
 
         //String str = arrayToString(sudoku);
         //textView.setText(str);
@@ -59,6 +60,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
         int[][] sudoku = getSudokuGridFromUITable();
         Intent intent = new Intent(this,Solving_page.class);
         intent.putExtra(SUDOKU_KEY,sudoku);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
     }
 
@@ -104,6 +106,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
 
                 if (sudoku[row][col] != 0){
                     cell.setText(String.valueOf(sudoku[row][col]));
+                    cell.setTypeface(null, Typeface.BOLD);
                 }
             }
         }

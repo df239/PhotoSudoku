@@ -274,19 +274,19 @@ public class ImageProcessingThread extends Thread{
         Imgproc.bilateralFilter(input,mat,15,70,100);
         Imgproc.adaptiveThreshold(mat,mat, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 2);
 
-        Utils.matToBitmap(mat,bitmap);
+        //Utils.matToBitmap(mat,bitmap);
         Imgproc.erode(mat,mat,new Mat(9,9,0));
-        Utils.matToBitmap(mat,bitmap);
+        //Utils.matToBitmap(mat,bitmap);
         Imgproc.dilate(mat,mat,new Mat(7,7,0));
-        Utils.matToBitmap(mat,bitmap);
+        //Utils.matToBitmap(mat,bitmap);
         Core.bitwise_not(mat,mat);
-        Utils.matToBitmap(mat,bitmap);
+        //Utils.matToBitmap(mat,bitmap);
 
         Mat output = new Mat();
         Core.bitwise_not(output,output);
         Core.bitwise_and(input,input,input,mat);
 
-        Utils.matToBitmap(input,bitmap);
+        //Utils.matToBitmap(input,bitmap);
 
         int[][] sudokuMatrix = new int[9][9];
 
