@@ -25,12 +25,15 @@ import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import java.util.concurrent.TimeUnit;
+
 public class SudokuDisplayPage extends AppCompatActivity {
 
     TextView textView;
     TableLayout table;
     ConstraintLayout mainLayout;
     private int[][] sudoku;
+    private long duration = 0;
 
     public static final String SUDOKU_KEY = "sudoku";
 
@@ -40,7 +43,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
 
         setContentView(R.layout.activity_sudoku_display_page);
 
-        //textView = (TextView)findViewById(R.id.sudokuTextView);
+        textView = (TextView)findViewById(R.id.tempText);
         table = (TableLayout)findViewById(R.id.sudokuTable);
         mainLayout = (ConstraintLayout)findViewById(R.id.sudokuDisplayLayout);
 
@@ -50,7 +53,10 @@ public class SudokuDisplayPage extends AppCompatActivity {
 //        imageView.setImageBitmap(bmp);
 
         this.sudoku = (int[][])intent.getSerializableExtra(SUDOKU_KEY);
+        duration = (long)intent.getLongExtra("duration",0);
         createSudokuUI(this.sudoku);
+        String output = TimeUnit.NANOSECONDS.toMillis(duration) +" ms";
+        textView.setText(output);
 
         //String str = arrayToString(sudoku);
         //textView.setText(str);

@@ -78,6 +78,8 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
     Canvas canvas;
     Paint paint;
 
+    long startMeasureTime=0;
+
     public static final String BitmapKey = "Bitmap";
 
     private static String TAG = "CameraActivity";
@@ -110,10 +112,13 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
             public void handleMessage(@NonNull Message msg) {
                 ProcessingTask task = (ProcessingTask)msg.obj;
                 if(msg.what == ProcessingTask.STATE_COMPLETE){
+                    long endMeasureTime = System.nanoTime();
+                    long duration = endMeasureTime - startMeasureTime;
                     bar.dismiss();
                     Intent sudokuDisplayIntent = new Intent(CameraPage.this,SudokuDisplayPage.class);
                     int[][] sudoku = (int[][])task.getObject();
                     sudokuDisplayIntent.putExtra(SudokuDisplayPage.SUDOKU_KEY,sudoku);
+                    sudokuDisplayIntent.putExtra("duration",duration);
 //                    sudokuDisplayIntent.putExtra(BitmapKey,(Bitmap)task.getObject());
                     startActivity(sudokuDisplayIntent);
                     t=null;
@@ -214,6 +219,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                 t = new ImageProcessingThread(temp,rotation,CameraPage.this);
                 bar.setDuration(Snackbar.LENGTH_INDEFINITE);
                 bar.show();
+                startMeasureTime = System.nanoTime();
                 t.start();
             }
             //bar.dismiss();

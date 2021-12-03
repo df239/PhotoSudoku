@@ -25,6 +25,7 @@ import com.example.photosudoku.sudoku.solvingSteps.ISolvingStep;
 import com.example.photosudoku.sudoku.solvingSteps.NakedSingle;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Solving_page extends AppCompatActivity {
 
@@ -34,6 +35,7 @@ public class Solving_page extends AppCompatActivity {
     ImageButton prevButton;
     Button solveButton;
     TextView messageView;
+    TextView textView;
 
     int[][] original;
     Sudoku sudoku;
@@ -54,6 +56,7 @@ public class Solving_page extends AppCompatActivity {
         prevButton = (ImageButton)findViewById(R.id.prevButton);
         solveButton = (Button)findViewById(R.id.solveButton);
         messageView = (TextView)findViewById(R.id.messageView);
+        textView = (TextView)findViewById(R.id.tempView);
 
         Intent intent = getIntent();
         int[][] sudoku = (int[][])intent.getSerializableExtra(SudokuDisplayPage.SUDOKU_KEY);
@@ -71,7 +74,11 @@ public class Solving_page extends AppCompatActivity {
         solveButton.setOnClickListener(v -> solveButtonClick());
 
         createSudokuUI(sudoku);
+        long startTime = System.nanoTime();
         solveSudoku(sudoku);
+        long endTime = System.nanoTime();
+        String output = TimeUnit.NANOSECONDS.toMillis(endTime - startTime) +" ms";
+        textView.setText(output);
     }
 
     private void createSudokuUI(int[][] sudoku){
