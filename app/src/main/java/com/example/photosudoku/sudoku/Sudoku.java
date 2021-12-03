@@ -1,10 +1,13 @@
 package com.example.photosudoku.sudoku;
 
+import com.example.photosudoku.sudoku.solvingSteps.ISolvingStep;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 public class Sudoku {
+    public List<ISolvingStep> steps;
 
     public int[][] grid;
     private int[][] solution;
@@ -19,6 +22,7 @@ public class Sudoku {
         this.rows = new ArrayList<House>();
         this.cols = new ArrayList<House>();
         this.boxes = new ArrayList<House>();
+        steps = new ArrayList<>();
 
         for(int i = 0; i < 9; i++) {
             this.rows.add(new House("row"));

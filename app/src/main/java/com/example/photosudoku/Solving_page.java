@@ -205,7 +205,7 @@ public class Solving_page extends AppCompatActivity {
         }
 
         this.solution = sudoku.grid;
-        this.steps = Solver.steps;
+        this.steps = sudoku.steps;
     }
 
     public void solveButtonClick(){

@@ -5,7 +5,6 @@ import com.example.photosudoku.sudoku.solvingSteps.*;
 import java.util.*;
 
 public class Solver {
-    public static List<ISolvingStep> steps = new ArrayList<>();
     private static int[][] matrix;
 
     // =-=-=-=-= BACKTRACKING =-=-=-=-= //
@@ -87,7 +86,7 @@ public class Solver {
                 if(!c.solved() && c.getCandidates().size() == 1) {
                     int candidate = c.getCandidates().get(0);
                     c.setValue(candidate);
-                    steps.add(new NakedSingle(candidate,row,col,input.grid));
+                    input.steps.add(new NakedSingle(candidate,row,col,input.grid));
                     input.updateCellCandidates(c);
                     return true;
                 }
@@ -104,15 +103,15 @@ public class Solver {
             for (int col = 0; col <grid.length; col++){
                 Cell c = grid[row][col];
                 if (!c.solved()){
-                    if(findHiddenSingle(c,input.getRow(c.ROW), row, col, input.grid)){
+                    if(findHiddenSingle(input,c,input.getRow(c.ROW), row, col, input.grid)){
                         input.updateCellCandidates(c);
                         return true;
                     }
-                    if(findHiddenSingle(c,input.getCol(c.COL), row, col, input.grid)){
+                    if(findHiddenSingle(input,c,input.getCol(c.COL), row, col, input.grid)){
                         input.updateCellCandidates(c);
                         return true;
                     }
-                    if(findHiddenSingle(c,input.getBox(c.BOX), row, col, input.grid)){
+                    if(findHiddenSingle(input,c,input.getBox(c.BOX), row, col, input.grid)){
                         input.updateCellCandidates(c);
                         return true;
                     }
@@ -122,7 +121,7 @@ public class Solver {
         return false;
     }
 
-    private static boolean findHiddenSingle(Cell currentCell, House house, int row, int col, int[][] grid){
+    private static boolean findHiddenSingle(Sudoku input, Cell currentCell, House house, int row, int col, int[][] grid){
         HashSet<Integer> groupCandidates;
         HashSet<Integer> cellCandidates = new HashSet<Integer>(currentCell.getCandidates());
 
@@ -130,7 +129,7 @@ public class Solver {
         cellCandidates.removeAll(groupCandidates);
         if(cellCandidates.toArray().length == 1){
             currentCell.setValue((Integer) cellCandidates.toArray()[0]);
-            steps.add(new HiddenSingle((int)cellCandidates.toArray()[0], row, col, house.TYPE, grid));
+            input.steps.add(new HiddenSingle((int)cellCandidates.toArray()[0], row, col, house.TYPE, grid));
             return true;
         }
         return false;
@@ -152,14 +151,14 @@ public class Solver {
             House box = input.getBox(boxIndex);
             int rowStart = (boxIndex / 3) * 3;
             for (int rowIndex = rowStart; rowIndex < rowStart + 3; rowIndex++){
-                if (removePointingCandidates(box, input.getRow(rowIndex))){
+                if (removePointingCandidates(box, input.getRow(rowIndex), input)){
                     return true;
                 }
 
             }
             int colStart = (boxIndex % 3) * 3;
             for (int colIndex = colStart; colIndex < colStart + 3; colIndex++){
-                if (removePointingCandidates(box, input.getCol(colIndex))){
+                if (removePointingCandidates(box, input.getCol(colIndex), input)){
                     return true;
                 }
             }
@@ -167,7 +166,7 @@ public class Solver {
         return false;
     }
 
-    private static boolean removePointingCandidates(House box, House group){
+    private static boolean removePointingCandidates(House box, House group, Sudoku input){
         CellGroup crossSection = new CellGroup(box.getCrossSection(group));
         HashSet<Integer> sharedCandidates = crossSection.getSharedCandidates();
         if (crossSection.size() > 1 && sharedCandidates.size() != 0){
@@ -178,14 +177,14 @@ public class Solver {
                     for (Cell c : groupExclusive.getCells()){
                         c.removeCandidate(sharedCandidate);
                     }
-                    steps.add(new PointingCandidates());
+                    input.steps.add(new PointingCandidates());
                     return true;
                 }
                 else if (!groupExclusive.getCandidates().contains(sharedCandidate) && boxExclusive.getCandidates().contains(sharedCandidate)){
                     for (Cell c : boxExclusive.getCells()){
                         c.removeCandidate(sharedCandidate);
                     }
-                    steps.add(new PointingCandidates());
+                    input.steps.add(new PointingCandidates());
                     return true;
                 }
             }
@@ -196,20 +195,20 @@ public class Solver {
     // =-=-=-=-= NAKED PAIRS =-=-=-=-= //
     public static boolean solveNakedPair(Sudoku input){
         for (int i = 0; i < 9; i++){
-            if (findNakedPairInsideGroup(input.getRow(i))){
+            if (findNakedPairInsideGroup(input.getRow(i), input)){
                 return true;
             }
-            if (findNakedPairInsideGroup(input.getCol(i))){
+            if (findNakedPairInsideGroup(input.getCol(i), input)){
                 return true;
             }
-            if (findNakedPairInsideGroup(input.getBox(i))){
+            if (findNakedPairInsideGroup(input.getBox(i), input)){
                 return true;
             }
         }
         return false;
     }
 
-    private static boolean findNakedPairInsideGroup(House group){
+    private static boolean findNakedPairInsideGroup(House group, Sudoku input){
         List<Cell> bivalueCells = new ArrayList<Cell>();
         for (Cell cell : group.getGroup()){
             if (!cell.solved() && cell.biValue()){
@@ -220,7 +219,7 @@ public class Solver {
             Cell temp = bivalueCells.get(0);
             if (temp.getCandidates().containsAll(bivalueCells.get(1).getCandidates())){
                 if(removeCandidatesOutsideOfPair(group.getGroup(),temp.getCandidates(),bivalueCells)){
-                    steps.add(new NakedPair());
+                    input.steps.add(new NakedPair());
                     return true;
                 }
             }
@@ -232,7 +231,7 @@ public class Solver {
                     Cell tempY = bivalueCells.get(y);
                     if (tempX.getCandidates().containsAll(tempY.getCandidates())){
                         if(removeCandidatesOutsideOfPair(group.getGroup(),tempX.getCandidates(),new ArrayList<Cell>(Arrays.asList(tempX,tempY)))){
-                            steps.add(new NakedPair());
+                            input.steps.add(new NakedPair());
                             return true;
                         }
                     }
@@ -259,20 +258,20 @@ public class Solver {
     // =-=-=-=-= HIDDEN PAIRS =-=-=-=-= //
     public static boolean solveHiddenPair(Sudoku input){
         for (int i = 0; i < 9; i++){
-            if (findHiddenPairInsideGroup(input.getRow(i))){
+            if (findHiddenPairInsideGroup(input.getRow(i), input)){
                 return true;
             }
-            if (findHiddenPairInsideGroup(input.getCol(i))){
+            if (findHiddenPairInsideGroup(input.getCol(i), input)){
                 return true;
             }
-            if (findHiddenPairInsideGroup(input.getBox(i))){
+            if (findHiddenPairInsideGroup(input.getBox(i), input)){
                 return true;
             }
         }
         return false;
     }
 
-    private static boolean findHiddenPairInsideGroup(House group){
+    private static boolean findHiddenPairInsideGroup(House group, Sudoku input){
         ArrayList<Cell> cells = new ArrayList<Cell>(group.getGroup());
         for(int i = 0; i < 8; i++){
             Cell c1 = cells.get(i);
@@ -290,7 +289,7 @@ public class Solver {
                                         if (c1.getCandidates().size() > 2 || c2.getCandidates().size() > 2){
                                             removeCandidatesFromCellExcept(candidatePair,c1);
                                             removeCandidatesFromCellExcept(candidatePair,c2);
-                                            steps.add(new HiddenPair());
+                                            input.steps.add(new HiddenPair());
                                             return true;
                                         }
                                     }
