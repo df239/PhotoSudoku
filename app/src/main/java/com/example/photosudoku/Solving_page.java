@@ -77,7 +77,7 @@ public class Solving_page extends AppCompatActivity {
         long startTime = System.nanoTime();
         solveSudoku(sudoku);
         long endTime = System.nanoTime();
-        String output = TimeUnit.NANOSECONDS.toMillis(endTime - startTime) +" ms";
+        String output = TimeUnit.NANOSECONDS.toMicros(endTime - startTime) +" μs";
         textView.setText(output);
     }
 
