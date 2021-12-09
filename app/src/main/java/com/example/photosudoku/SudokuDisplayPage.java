@@ -103,6 +103,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
                 cell.setLayoutParams(rowParams);
                 cell.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                 cell.setMaxEms(1);
+                cell.setTypeface(null, Typeface.BOLD);
 
                 cell.setPadding(0,padding_px,0,padding_px);
 
@@ -112,7 +113,6 @@ public class SudokuDisplayPage extends AppCompatActivity {
 
                 if (sudoku[row][col] != 0){
                     cell.setText(String.valueOf(sudoku[row][col]));
-                    cell.setTypeface(null, Typeface.BOLD);
                 }
             }
         }
