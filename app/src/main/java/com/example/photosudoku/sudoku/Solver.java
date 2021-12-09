@@ -177,14 +177,14 @@ public class Solver {
                     for (Cell c : groupExclusive.getCells()){
                         c.removeCandidate(sharedCandidate);
                     }
-                    input.steps.add(new PointingCandidates());
+                    input.steps.add(new PointingCandidates(sharedCandidate,group,box,crossSection.getCells(),input.grid));
                     return true;
                 }
                 else if (!groupExclusive.getCandidates().contains(sharedCandidate) && boxExclusive.getCandidates().contains(sharedCandidate)){
                     for (Cell c : boxExclusive.getCells()){
                         c.removeCandidate(sharedCandidate);
                     }
-                    input.steps.add(new PointingCandidates());
+                    input.steps.add(new PointingCandidates(sharedCandidate,box,group,crossSection.getCells(),input.grid));
                     return true;
                 }
             }

@@ -66,11 +66,12 @@ public class Cell {
         this.candidates = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
     }
 
-    public void removeCandidate(int candidate){
-        this.candidates.remove((Integer)candidate);
+    public boolean removeCandidate(int candidate){
+        boolean status = this.candidates.remove((Integer)candidate);
         if(this.candidates.size() == 2){
             this.isBiValue = true;
         }
+        return status;
     }
 
     public void removeCandidates(Collection<Integer> candidates){
