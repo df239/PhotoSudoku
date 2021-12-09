@@ -12,4 +12,9 @@ public class PointingCandidates implements ISolvingStep{
     public String getMessage() {
         return "- Pointing Candidates -";
     }
+
+    @Override
+    public String getTitle(){
+        return "Pointing Candidates";
+    }
 }

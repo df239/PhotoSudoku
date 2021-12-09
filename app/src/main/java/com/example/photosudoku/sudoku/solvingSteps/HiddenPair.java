@@ -11,4 +11,9 @@ public class HiddenPair implements ISolvingStep{
     public String getMessage() {
         return "- Hidden Pair -";
     }
+
+    @Override
+    public String getTitle(){
+        return "Hidden Pair";
+    }
 }

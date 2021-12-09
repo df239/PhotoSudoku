@@ -11,4 +11,10 @@ public class NakedPair implements ISolvingStep{
     public String getMessage() {
         return "- Naked Pair -";
     }
+
+
+    @Override
+    public String getTitle(){
+        return "Naked Pair";
+    }
 }

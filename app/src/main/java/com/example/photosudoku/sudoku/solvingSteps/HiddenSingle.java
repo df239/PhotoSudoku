@@ -33,4 +33,9 @@ public class HiddenSingle implements ISolvingStep {
         return "- Hidden Single -";
         //return "Hidden Single: Inserted number "+value+" at [row "+(row+1)+" column "+(col+1)+"] as the only square in its "+house+" where it can be placed.";
     }
+
+    @Override
+    public String getTitle(){
+        return "Hidden Single ("+value+") at R"+(row+1)+"C"+(col+1);
+    }
 }
