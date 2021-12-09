@@ -43,7 +43,7 @@ public class HiddenSingle implements ISolvingStep {
             houseNum = SudokuUtils.getBox(this.row, this.col);
         }
 
-        return "Value "+value+" is the only square in "+house+" "+(houseNum+1)+", where it can be placed.";
+        return "R"+(row+1)+"C"+(col+1)+" is the only cell in "+house+" "+(houseNum+1)+", where value "+value+" can be placed.";
     }
 
     @Override
