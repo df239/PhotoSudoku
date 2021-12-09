@@ -211,13 +211,15 @@ public class Solving_page extends AppCompatActivity {
     public void solveButtonClick(){
         rewriteGrid(this.solution);
         stepIndex = steps.size() - 1;
-        messageView.setText(String.valueOf(stepIndex+1) + " - "  + this.steps.get(stepIndex).getTitle());
+        String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
+        messageView.setText(message);
     }
 
     public void nextButtonClick(){
         if(stepIndex < steps.size() - 1){
             stepIndex ++;
-            messageView.setText(String.valueOf(stepIndex+1) + " - " + this.steps.get(stepIndex).getTitle());
+            String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
+            messageView.setText(message);
             rewriteGrid(this.steps.get(stepIndex));
         }
         else{
@@ -228,7 +230,8 @@ public class Solving_page extends AppCompatActivity {
     public void prevButtonClick(){
         if(stepIndex - 1 >= 0){
             stepIndex --;
-            messageView.setText(String.valueOf(stepIndex+1) + " - "  + this.steps.get(stepIndex).getTitle());
+            String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
+            messageView.setText(message);
             rewriteGrid(this.steps.get(stepIndex));
         }
         else if(stepIndex == 0){

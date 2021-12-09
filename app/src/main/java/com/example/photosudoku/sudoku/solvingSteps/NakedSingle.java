@@ -28,8 +28,8 @@ public class NakedSingle implements ISolvingStep {
 
     @Override
     public String getMessage() {
-        return "- Naked Single -";
-        //return "Naked Single: Inserted number "+value+" at [row "+(row+1)+" column "+(col+1)+"] as the only possible value in that square.";
+        //return "- Naked Single -";
+        return "Value "+value+" is the only possible value in square R"+(row+1)+"C"+(col+1);
     }
 
     @Override

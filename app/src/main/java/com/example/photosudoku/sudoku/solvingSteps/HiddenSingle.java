@@ -1,5 +1,7 @@
 package com.example.photosudoku.sudoku.solvingSteps;
 
+import com.example.photosudoku.sudoku.SudokuUtils;
+
 public class HiddenSingle implements ISolvingStep {
     private final int[][] grid = new int[9][9];
     private final int value;
@@ -30,8 +32,18 @@ public class HiddenSingle implements ISolvingStep {
 
     @Override
     public String getMessage() {
-        return "- Hidden Single -";
-        //return "Hidden Single: Inserted number "+value+" at [row "+(row+1)+" column "+(col+1)+"] as the only square in its "+house+" where it can be placed.";
+        int houseNum = 0;
+        if(this.house.equals("row")){
+            houseNum = this.row;
+        }
+        else if (this.house.equals("column")){
+            houseNum = this.col;
+        }
+        else if(this.house.equals("box")){
+            houseNum = SudokuUtils.getBox(this.row, this.col);
+        }
+
+        return "Value "+value+" is the only square in "+house+" "+(houseNum+1)+", where it can be placed.";
     }
 
     @Override
