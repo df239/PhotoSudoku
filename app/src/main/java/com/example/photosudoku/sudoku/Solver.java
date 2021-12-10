@@ -289,7 +289,7 @@ public class Solver {
                                         if (c1.getCandidates().size() > 2 || c2.getCandidates().size() > 2){
                                             removeCandidatesFromCellExcept(candidatePair,c1);
                                             removeCandidatesFromCellExcept(candidatePair,c2);
-                                            input.steps.add(new HiddenPair());
+                                            input.steps.add(new HiddenPair(c1,c2,candidatePair,group,input.grid));
                                             return true;
                                         }
                                     }
