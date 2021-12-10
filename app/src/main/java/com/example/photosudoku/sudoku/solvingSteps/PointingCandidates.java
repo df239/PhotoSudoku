@@ -6,16 +6,18 @@ import com.example.photosudoku.sudoku.SudokuUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class PointingCandidates implements ISolvingStep{
     private final int candidate;
     private final House affected;
     private final House comparative;
     private Cell sample;
+    private List<Cell> cells;
     private final int[][] grid;
 
     String message="";
-    String cells_string="";
+    String title = "";
 
     public PointingCandidates(int candidate, House affected_house, House comparative_house, Collection<Cell> cells, int[][] grid){
         this.candidate = candidate;
@@ -27,20 +29,17 @@ public class PointingCandidates implements ISolvingStep{
                 this.grid[i][j] = grid[i][j];
             }
         }
-        for(Cell c : cells){
-            if (c.containsCandidate(candidate)){
-                cells_string += ("R"+(c.ROW+1)+"C"+(c.COL+1));
-                cells_string += " ";
-                this.sample = c;
-            }
-        }
-        buildMessage();
+        this.cells = new ArrayList<>(cells);
+        this.sample = this.cells.get(0);
+        buildStrings();
     }
 
-    private void buildMessage(){
+    private void buildStrings(){
+        String cells_string = "R"+(this.sample.ROW+1)+"C"+(this.sample.COL+1)+", "+"R"+(this.cells.get(1).ROW+1)+"C"+(this.cells.get(1).COL+1);
         int affected_num = getHouseNum(this.affected);
         int comparative_num = getHouseNum(this.comparative);
 
+        this.title = "Pointing candidate "+candidate+" in cells "+cells_string+".";
         this.message = "Cells ("+cells_string+") are the only cells in "+comparative.TYPE+" "+(comparative_num+1)+" where candidate "+candidate+" is possible.";
         this.message += " It can be, therefore, removed from all other cells in "+affected.TYPE+" "+(affected_num+1)+".";
     }
@@ -72,6 +71,6 @@ public class PointingCandidates implements ISolvingStep{
 
     @Override
     public String getTitle(){
-        return "Pointing candidate "+candidate+" in cells "+this.cells_string+".";
+        return this.title;
     }
 }
