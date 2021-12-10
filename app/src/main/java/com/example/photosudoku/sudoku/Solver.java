@@ -219,7 +219,7 @@ public class Solver {
             Cell temp = bivalueCells.get(0);
             if (temp.getCandidates().containsAll(bivalueCells.get(1).getCandidates())){
                 if(removeCandidatesOutsideOfPair(group.getGroup(),temp.getCandidates(),bivalueCells)){
-                    input.steps.add(new NakedPair());
+                    input.steps.add(new NakedPair(temp,bivalueCells.get(1),group, input.grid));
                     return true;
                 }
             }
@@ -231,7 +231,7 @@ public class Solver {
                     Cell tempY = bivalueCells.get(y);
                     if (tempX.getCandidates().containsAll(tempY.getCandidates())){
                         if(removeCandidatesOutsideOfPair(group.getGroup(),tempX.getCandidates(),new ArrayList<Cell>(Arrays.asList(tempX,tempY)))){
-                            input.steps.add(new NakedPair());
+                            input.steps.add(new NakedPair(tempX,tempY,group,input.grid));
                             return true;
                         }
                     }
