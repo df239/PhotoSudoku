@@ -24,6 +24,7 @@ import com.example.photosudoku.sudoku.Solver;
 import com.example.photosudoku.sudoku.Sudoku;
 import com.example.photosudoku.sudoku.solvingSteps.HiddenSingle;
 import com.example.photosudoku.sudoku.solvingSteps.ISolvingStep;
+import com.example.photosudoku.sudoku.solvingSteps.NakedPair;
 import com.example.photosudoku.sudoku.solvingSteps.NakedSingle;
 import com.example.photosudoku.sudoku.solvingSteps.PointingCandidates;
 
@@ -183,6 +184,15 @@ public class Solving_page extends AppCompatActivity {
         }
         else if (step instanceof PointingCandidates){
             int[] positions = ((PointingCandidates) step).getCellsLocations();
+            for(int i = 0; i < positions.length/2; i++){
+                int row = positions[2*i];
+                int col = positions[2*i + 1];
+                TextView view = (TextView)((TableRow)table.getChildAt(row)).getChildAt(col);
+                view.setBackgroundColor(ContextCompat.getColor(this,R.color.light_red));
+            }
+        }
+        else if (step instanceof NakedPair){
+            int[] positions = ((NakedPair)step).getCellsLocations();
             for(int i = 0; i < positions.length/2; i++){
                 int row = positions[2*i];
                 int col = positions[2*i + 1];

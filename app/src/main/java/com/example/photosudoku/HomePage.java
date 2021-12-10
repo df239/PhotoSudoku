@@ -35,9 +35,9 @@ public class HomePage extends AppCompatActivity {
 
     public void OpenSudokuEditor(View view){
         Intent sudokuEditIntent = new Intent(this,SudokuDisplayPage.class);
-//        int[][] empty = new int[9][9];
-//        sudokuEditIntent.putExtra(SudokuDisplayPage.SUDOKU_KEY,empty);
-        sudokuEditIntent.putExtra(SudokuDisplayPage.SUDOKU_KEY, SudokuUtils.EXAMPLE1);
+        int[][] empty = new int[9][9];
+        sudokuEditIntent.putExtra(SudokuDisplayPage.SUDOKU_KEY,empty);
+        //sudokuEditIntent.putExtra(SudokuDisplayPage.SUDOKU_KEY, SudokuUtils.EXAMPLE1);
         startActivity(sudokuEditIntent);
     }
 }
