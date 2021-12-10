@@ -25,6 +25,7 @@ import com.example.photosudoku.sudoku.Sudoku;
 import com.example.photosudoku.sudoku.solvingSteps.HiddenSingle;
 import com.example.photosudoku.sudoku.solvingSteps.ISolvingStep;
 import com.example.photosudoku.sudoku.solvingSteps.NakedSingle;
+import com.example.photosudoku.sudoku.solvingSteps.PointingCandidates;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -163,25 +164,31 @@ public class Solving_page extends AppCompatActivity {
     }
 
     private void rewriteGrid(ISolvingStep step){
+        rewriteGrid(step.getGrid());
         if (step instanceof  NakedSingle){
-            rewriteGrid(step.getGrid());
             int row = ((NakedSingle) step).getAffectedRow();
             int col = ((NakedSingle) step).getAffectedCol();
             TextView view = (TextView)((TableRow)table.getChildAt(row)).getChildAt(col);
             view.setTextColor(ContextCompat.getColor(this,R.color.red));
             view.setText(String.valueOf(((NakedSingle) step).getNewValue()));
-            //change drawable color
             view.setBackgroundColor(ContextCompat.getColor(this,R.color.light_red));
         }
         else if (step instanceof HiddenSingle){
-            rewriteGrid(step.getGrid());
             int row = ((HiddenSingle) step).getAffectedRow();
             int col = ((HiddenSingle) step).getAffectedCol();
             TextView view = (TextView)((TableRow)table.getChildAt(row)).getChildAt(col);
             view.setTextColor(ContextCompat.getColor(this,R.color.red));
             view.setText(String.valueOf(((HiddenSingle) step).getNewValue()));
-            //change drawable color
             view.setBackgroundColor(ContextCompat.getColor(this,R.color.light_red));
+        }
+        else if (step instanceof PointingCandidates){
+            int[] positions = ((PointingCandidates) step).getCellsLocations();
+            for(int i = 0; i < positions.length/2; i++){
+                int row = positions[2*i];
+                int col = positions[2*i + 1];
+                TextView view = (TextView)((TableRow)table.getChildAt(row)).getChildAt(col);
+                view.setBackgroundColor(ContextCompat.getColor(this,R.color.light_red));
+            }
         }
     }
 

@@ -73,4 +73,13 @@ public class PointingCandidates implements ISolvingStep{
     public String getTitle(){
         return this.title;
     }
+
+    public int[] getCellsLocations(){
+        int[] arr = new int[this.cells.size() * 2];
+        for(int i = 0; i < this.cells.size(); i++){
+            arr[2*i] = this.cells.get(i).ROW;
+            arr[2*i + 1] = this.cells.get(i).COL;
+        }
+        return arr;
+    }
 }
