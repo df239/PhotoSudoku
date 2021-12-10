@@ -67,4 +67,13 @@ public class HiddenPair implements ISolvingStep{
     public String getTitle(){
         return this.title;
     }
+
+    public int[] getCellsLocations(){
+        int[] arr = new int[4];
+        arr[0] = c1.ROW;
+        arr[1] = c1.COL;
+        arr[2] = c2.ROW;
+        arr[3] = c2.COL;
+        return arr;
+    }
 }
