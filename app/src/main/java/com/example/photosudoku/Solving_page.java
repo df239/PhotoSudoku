@@ -38,6 +38,7 @@ public class Solving_page extends AppCompatActivity {
     Button solveButton;
     TextView messageView;
     TextView textView;
+    Button toggleMessageButton;
 
     int[][] original;
     Sudoku sudoku;
@@ -59,6 +60,7 @@ public class Solving_page extends AppCompatActivity {
         solveButton = (Button)findViewById(R.id.solveButton);
         messageView = (TextView)findViewById(R.id.messageView);
         textView = (TextView)findViewById(R.id.tempView);
+        toggleMessageButton = (Button)findViewById(R.id.toggleMessageButton);
 
         Intent intent = getIntent();
         int[][] sudoku = (int[][])intent.getSerializableExtra(SudokuDisplayPage.SUDOKU_KEY);
@@ -248,5 +250,10 @@ public class Solving_page extends AppCompatActivity {
         else{
             messageView.setText("");
         }
+    }
+
+    public void toggleMessageVisible(View view){
+        if(this.messageView.getVisibility() == View.VISIBLE) this.messageView.setVisibility(View.INVISIBLE);
+        else this.messageView.setVisibility(View.VISIBLE);
     }
 }
