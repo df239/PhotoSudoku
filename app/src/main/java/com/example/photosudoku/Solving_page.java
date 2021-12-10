@@ -1,8 +1,10 @@
 package com.example.photosudoku;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import android.app.ActionBar;
 import android.content.Intent;
@@ -146,6 +148,7 @@ public class Solving_page extends AppCompatActivity {
                 if (this.original[row][col] == 0){
                     TextView view = (TextView)tableRow.getChildAt(col);
                     view.setTextColor(Color.BLACK);
+                    view.setBackground(getCellBorder(row,col));
                     if(grid[row][col] == 0){
                         view.setText("");
                     }
@@ -165,6 +168,8 @@ public class Solving_page extends AppCompatActivity {
             TextView view = (TextView)((TableRow)table.getChildAt(row)).getChildAt(col);
             view.setTextColor(ContextCompat.getColor(this,R.color.red));
             view.setText(String.valueOf(((NakedSingle) step).getNewValue()));
+            //change drawable color
+            view.setBackgroundColor(ContextCompat.getColor(this,R.color.light_red));
         }
         else if (step instanceof HiddenSingle){
             rewriteGrid(step.getGrid());
@@ -173,6 +178,8 @@ public class Solving_page extends AppCompatActivity {
             TextView view = (TextView)((TableRow)table.getChildAt(row)).getChildAt(col);
             view.setTextColor(ContextCompat.getColor(this,R.color.red));
             view.setText(String.valueOf(((HiddenSingle) step).getNewValue()));
+            //change drawable color
+            view.setBackgroundColor(ContextCompat.getColor(this,R.color.light_red));
         }
     }
 

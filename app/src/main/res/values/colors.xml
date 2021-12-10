@@ -10,6 +10,7 @@
     <color name="red">#FFFF0000</color>
 
     <!-- custom colours -->
+    <color name="light_red">#ffd6d6</color>
     <color name="bg_main">#FFcfe7cd</color>
     <color name="primary_button">#FF7bad5f</color>
     <color name="primary_button_pressed">#FF61874c</color>
