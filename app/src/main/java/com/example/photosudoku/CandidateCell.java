@@ -2,6 +2,7 @@ package com.example.photosudoku;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -28,11 +29,16 @@ public class CandidateCell extends LinearLayout {
     TextView bottomRight;
     EditText valText;
 
-    public CandidateCell(Context context, boolean editMode){
+    public CandidateCell(Context context){
         super(context);
         this.context = context;
         this.candidates = new ArrayList<>();
-        this.editMode = editMode;
+        init();
+    }
+
+    public CandidateCell(Context context, AttributeSet attrs){
+        super(context, attrs);
+        this.context = context;
         init();
     }
 

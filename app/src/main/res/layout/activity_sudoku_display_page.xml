@@ -8,6 +8,15 @@
     android:background="@color/bg_main"
     tools:context=".SudokuDisplayPage">
 
+    <androidx.fragment.app.FragmentContainerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sudoku_grid_fragment"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="196dp"
+        android:name="com.example.photosudoku.SudokuGrid"/>
+
+    <!--
     <TableLayout
         android:id="@+id/sudokuTable"
         android:layout_width="match_parent"
@@ -16,6 +25,7 @@
         android:layout_margin="8dp"
         tools:layout_editor_absoluteX="196dp">
     </TableLayout>
+    -->
 
     <Button
         android:id="@+id/button4"

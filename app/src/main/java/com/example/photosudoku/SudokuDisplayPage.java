@@ -44,7 +44,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
         setContentView(R.layout.activity_sudoku_display_page);
 
         textView = (TextView)findViewById(R.id.tempText);
-        table = (TableLayout)findViewById(R.id.sudokuTable);
+        table = (TableLayout)findViewById(R.id.table);
         mainLayout = (ConstraintLayout)findViewById(R.id.sudokuDisplayLayout);
 
         Intent intent = getIntent();
@@ -54,7 +54,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
 
         this.sudoku = (int[][])intent.getSerializableExtra(SUDOKU_KEY);
         duration = (long)intent.getLongExtra("duration",0);
-        createSudokuUI(this.sudoku);
+        //createSudokuUI(this.sudoku);
         String output = TimeUnit.NANOSECONDS.toMillis(duration) +" ms";
         textView.setText(output);
 
@@ -117,7 +117,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
                 }
                 */
 
-                CandidateCell cell = new CandidateCell(this,true);
+                CandidateCell cell = new CandidateCell(this);
                 cell.setValue(sudoku[row][col]);
                 cell.setBackground(getCellBorder(row,col));
                 cell.setLayoutParams(rowParams);
