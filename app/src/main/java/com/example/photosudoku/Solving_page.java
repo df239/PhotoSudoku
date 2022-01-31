@@ -43,7 +43,9 @@ public class Solving_page extends AppCompatActivity {
     TextView textView;
     Button toggleMessageButton;
 
-    int[][] original;
+    SudokuBoard sudokuBoard;
+
+    public static int[][] original;
     Sudoku sudoku;
     int[][] solution;
     List<ISolvingStep> steps;
@@ -73,6 +75,8 @@ public class Solving_page extends AppCompatActivity {
                 this.original[i][j] = sudoku[i][j];
             }
         }
+
+        sudokuBoard = findViewById(R.id.sudokuBoard);
 
         nextButton.setOnClickListener(v -> nextButtonClick());
 

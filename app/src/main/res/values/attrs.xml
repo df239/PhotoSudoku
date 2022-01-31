@@ -2,5 +2,8 @@
 <resources>
     <declare-styleable name="SudokuBoard">
         <attr name="boardColor" format="color"/>
+        <attr name="letterColor" format="color"/>
+        <attr name="letterNewColor" format="color"/>
+        <attr name="cellHighlightColor" format="color"/>
     </declare-styleable>
 </resources>

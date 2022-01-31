@@ -26,6 +26,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintVertical_bias="0.0"
         custom:boardColor="#000000"
+        custom:letterColor="#000000"
         custom:layout_constraintBottom_toTopOf="@+id/tempView"
         custom:layout_constraintEnd_toEndOf="parent"
         custom:layout_constraintStart_toStartOf="parent"
