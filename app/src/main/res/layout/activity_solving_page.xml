@@ -23,14 +23,11 @@
         android:id="@+id/sudokuBoard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintVertical_bias="0.0"
         custom:boardColor="#000000"
-        custom:letterColor="#000000"
-        custom:layout_constraintBottom_toTopOf="@+id/tempView"
         custom:layout_constraintEnd_toEndOf="parent"
         custom:layout_constraintStart_toStartOf="parent"
-        custom:layout_constraintTop_toTopOf="parent">
+        custom:layout_constraintTop_toTopOf="parent"
+        custom:letterColor="#000000">
 
     </com.example.photosudoku.SudokuBoard>
 
@@ -84,9 +81,8 @@
         android:text="ms"
         app:layout_constraintBottom_toTopOf="@+id/messageView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/sudokuBoard" />
+        app:layout_constraintTop_toBottomOf="@+id/sudokuBoard" />
 
     <Button
         android:id="@+id/toggleMessageButton"

@@ -46,7 +46,7 @@ public class Solving_page extends AppCompatActivity {
     SudokuBoard sudokuBoard;
 
     public static int[][] original;
-    Sudoku sudoku;
+    public static Sudoku sudoku;
     int[][] solution;
     List<ISolvingStep> steps;
     int stepIndex = -1;
@@ -69,14 +69,12 @@ public class Solving_page extends AppCompatActivity {
 
         Intent intent = getIntent();
         int[][] sudoku = (int[][])intent.getSerializableExtra(SudokuDisplayPage.SUDOKU_KEY);
-        this.original = new int[9][9];
+        original = new int[9][9];
         for(int i = 0; i < 9; i++){
             for(int j = 0; j < 9; j++){
-                this.original[i][j] = sudoku[i][j];
+                original[i][j] = sudoku[i][j];
             }
         }
-
-        sudokuBoard = findViewById(R.id.sudokuBoard);
 
         nextButton.setOnClickListener(v -> nextButtonClick());
 
@@ -90,6 +88,8 @@ public class Solving_page extends AppCompatActivity {
         long endTime = System.nanoTime();
         String output = TimeUnit.NANOSECONDS.toMicros(endTime - startTime) +" μs";
         textView.setText(output);
+
+        sudokuBoard = findViewById(R.id.sudokuBoard);
     }
 
     private void createSudokuUI(int[][] sudoku){
