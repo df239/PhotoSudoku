@@ -56,7 +56,7 @@ public class Solving_page extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_solving_page);
 
-        table = (TableLayout)findViewById(R.id.sudokuSolvingTable);
+        //table = (TableLayout)findViewById(R.id.sudokuSolvingTable);
         mainLayout = (ConstraintLayout)findViewById(R.id.sudokuSolvingLayout);
         nextButton = (ImageButton)findViewById(R.id.nextButton);
         prevButton = (ImageButton)findViewById(R.id.prevButton);
@@ -80,7 +80,7 @@ public class Solving_page extends AppCompatActivity {
 
         solveButton.setOnClickListener(v -> solveButtonClick());
 
-        createSudokuUI(sudoku);
+        //createSudokuUI(sudoku);
         long startTime = System.nanoTime();
         solveSudoku(sudoku);
         long endTime = System.nanoTime();

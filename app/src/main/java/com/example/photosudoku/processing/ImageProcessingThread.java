@@ -147,20 +147,27 @@ public class ImageProcessingThread extends Thread{
 
         //applyCLAHE(mat,mat);
 
+        //copy of the unprocessed mat, used to cut out the found sudoku from
         Mat copy = mat.clone();
 
         //image processing
         //https://www.pyimagesearch.com/2020/08/10/opencv-sudoku-solver-and-ocr/
         Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2GRAY);
+        Utils.matToBitmap(mat,bitmap);
         Mat temp = new Mat();
         Imgproc.bilateralFilter(mat,temp,7,70,100);
         temp.copyTo(mat);
+        Utils.matToBitmap(mat,bitmap);
         //Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(7,7),3);
         Imgproc.adaptiveThreshold(mat,mat, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 2);
+        Utils.matToBitmap(mat,bitmap);
         //Imgproc.Canny(mat,mat,150,150);
         Imgproc.dilate(mat,mat,new Mat(3,3,0));
+        Utils.matToBitmap(mat,bitmap);
         Imgproc.erode(mat,mat,new Mat(2,2,0));
+        Utils.matToBitmap(mat,bitmap);
         Core.bitwise_not(mat,mat);
+        Utils.matToBitmap(mat,bitmap);
         //Imgproc.dilate(mat,mat,new Mat(2,2,0));
 
         //contour detection
@@ -195,7 +202,12 @@ public class ImageProcessingThread extends Thread{
         if(maxCurve.total() != 4) throw new Exception(originalPage.getString(R.string.sudoku_not_located_error));
 
 //        //largestContour = new MatOfPoint2f(contours.get(maxAreaIdx));
-        //Imgproc.drawContours(copy,contours,maxAreaIdx,new Scalar(255,0,0),20);
+        Mat copy2 = copy.clone();
+        Mat copy_black = mat.clone();
+        Imgproc.drawContours(copy2,contours,maxAreaIdx,new Scalar(255,0,0),20);
+        Utils.matToBitmap(copy2,bitmap);
+        Imgproc.drawContours(copy2,contours,maxAreaIdx,new Scalar(255,0,0),20);
+        Utils.matToBitmap(copy_black,bitmap);
 //        //https://stackoverflow.com/questions/17361693/cant-get-opencvs-warpperspective-to-work-on-android
 //        //https://stackoverflow.com/questions/17637730/android-opencv-getperspectivetransform-and-warpperspective
 //        //https://www.pyimagesearch.com/2014/08/25/4-point-opencv-getperspective-transform-example/
@@ -226,14 +238,15 @@ public class ImageProcessingThread extends Thread{
         Mat perspectiveTransform = Imgproc.getPerspectiveTransform(startM, endM);
         Mat outputMat = new Mat(resultValue,resultValue, CvType.CV_8UC4);
 
-        Imgproc.warpPerspective(copy, outputMat, perspectiveTransform, new Size(resultValue, resultValue));
+        Imgproc.warpPerspective(mat, outputMat, perspectiveTransform, new Size(resultValue, resultValue));
         //Imgproc.erode(mat,mat,new Mat(5,5,0));
         Bitmap output = Bitmap.createBitmap(resultValue,resultValue,Bitmap.Config.ARGB_8888);
-
+        Utils.matToBitmap(outputMat,output);
 
 //        Bitmap output = Bitmap.createBitmap(contourRect.width,contourRect.height,Bitmap.Config.ARGB_8888);
 //        Mat outputMat = new Mat(copy,contourRect);
 
+        Imgproc.warpPerspective(copy, outputMat, perspectiveTransform, new Size(resultValue, resultValue));
         Utils.matToBitmap(outputMat,output);
         return output;
 
@@ -266,6 +279,7 @@ public class ImageProcessingThread extends Thread{
     }
 
     private int[][] getMatrixFromBitmap(Bitmap bitmap) throws Exception {
+
         Mat input = new Mat();
         Utils.bitmapToMat(bitmap,input);
         Mat mat = new Mat(input.rows(), input.cols(), input.type());
@@ -280,13 +294,21 @@ public class ImageProcessingThread extends Thread{
         Imgproc.dilate(mat,mat,new Mat(7,7,0));
         //Utils.matToBitmap(mat,bitmap);
         Core.bitwise_not(mat,mat);
-        //Utils.matToBitmap(mat,bitmap);
+        Utils.matToBitmap(mat,bitmap);
 
         Mat output = new Mat();
         Core.bitwise_not(output,output);
         Core.bitwise_and(input,input,input,mat);
 
         //Utils.matToBitmap(input,bitmap);
+
+        /*
+        Mat mat = new Mat();
+        Utils.bitmapToMat(bitmap,mat);
+        Imgproc.dilate(mat,mat,new Mat(9,9,0));
+        Imgproc.erode(mat,mat,new Mat(7,7,0));
+        Utils.matToBitmap(mat,bitmap);
+        */
 
         int[][] sudokuMatrix = new int[9][9];
 
