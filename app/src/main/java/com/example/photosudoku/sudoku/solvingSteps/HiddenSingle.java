@@ -24,7 +24,9 @@ public class HiddenSingle implements ISolvingStep {
             for (int j = 0; j < 9; j++){
                 this.grid[i][j] = grid[i][j];
                 if(grid[i][j] != 0){
-                    this.candidates.put(Integer.toString(i)+j,new ArrayList<>(cellMatrix[i][j].getCandidates()));
+                    List<Integer> temp = new ArrayList<>();
+                    temp.addAll(cellMatrix[i][j].getCandidates());
+                    this.candidates.put(Integer.toString(i)+j,temp);
                 }
             }
         }

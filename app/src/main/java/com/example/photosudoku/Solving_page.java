@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -30,6 +31,7 @@ import com.example.photosudoku.sudoku.solvingSteps.NakedPair;
 import com.example.photosudoku.sudoku.solvingSteps.NakedSingle;
 import com.example.photosudoku.sudoku.solvingSteps.PointingCandidates;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -249,6 +251,41 @@ public class Solving_page extends AppCompatActivity {
         this.steps = sudoku.steps;
     }
 
+    private void rewriteSudokuBoard(ISolvingStep step){
+        if (step instanceof  NakedSingle){
+            NakedSingle ns = (NakedSingle)step;
+            Log.d("CameraActivity",ns.getCandidates().toString());
+            Log.d("CameraActivity",ns.getTitle());
+            for(int row = 0; row < 9; row++){
+                for(int col = 0; col < 9; col++){
+                    if (ns.getGrid()[row][col] != 0){
+                        this.sudokuBoard.drawNumber(ns.getGrid()[row][col],row,col,false);
+                    }
+                    else{
+                        this.sudokuBoard.drawCandidates(row,col,ns.getCandidates().get(Integer.toString(row)+col),false);
+                    }
+                }
+            }
+        }
+        else if (step instanceof HiddenSingle){
+            HiddenSingle hs = (HiddenSingle)step;
+            Log.d("CameraActivity",hs.getCandidates().toString());
+            Log.d("CameraActivity",hs.getTitle());
+            for(int row = 0; row < 9; row++){
+                for(int col = 0; col < 9; col++){
+                    if (hs.getGrid()[row][col] != 0){
+                        this.sudokuBoard.drawNumber(hs.getGrid()[row][col],row,col,false);
+                    }
+                    else{
+                        this.sudokuBoard.drawCandidates(row,col,hs.getCandidates().get(Integer.toString(row)+col),false);
+                    }
+                }
+            }
+        }
+
+        sudokuBoard.invalidate();
+    }
+
     public void solveButtonClick(){
         rewriteGrid(this.solution);
         stepIndex = steps.size() - 1;
@@ -261,7 +298,8 @@ public class Solving_page extends AppCompatActivity {
             stepIndex ++;
             String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
             messageView.setText(message);
-            rewriteGrid(this.steps.get(stepIndex));
+            rewriteSudokuBoard(this.steps.get(stepIndex));
+            //rewriteGrid(this.steps.get(stepIndex));
         }
         else{
             messageView.setText("");
@@ -273,7 +311,8 @@ public class Solving_page extends AppCompatActivity {
             stepIndex --;
             String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
             messageView.setText(message);
-            rewriteGrid(this.steps.get(stepIndex));
+            rewriteSudokuBoard(this.steps.get(stepIndex));
+            //rewriteGrid(this.steps.get(stepIndex));
         }
         else if(stepIndex == 0){
             stepIndex --;

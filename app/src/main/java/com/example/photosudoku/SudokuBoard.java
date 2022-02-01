@@ -87,7 +87,6 @@ public class SudokuBoard extends View {
                 }
                 else{
                     String key = Integer.toString(row)+col;
-                    Log.d("CameraActivity",candidates.get(key).toString());
                     drawCandidates(row,col, candidates.get(key),false);
                 }
             }
@@ -137,7 +136,6 @@ public class SudokuBoard extends View {
         width = candidatePaint.measureText(sampleText);
         height = candidateBounds.height();
         for (int candidate : candidates){
-            Log.e("CameraActivity",Integer.toString(candidate));
             float x,y;
             if(candidate % 3 == 1){ // column 1: 1,4,7
                 x = (col*cellSize)  + (rectDimension - width);
