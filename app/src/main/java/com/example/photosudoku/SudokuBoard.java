@@ -13,9 +13,11 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import com.example.photosudoku.sudoku.Sudoku;
+import com.example.photosudoku.sudoku.solvingSteps.Beginning;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class SudokuBoard extends View {
@@ -72,15 +74,21 @@ public class SudokuBoard extends View {
 
         canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
         drawBoard(canvas);
-        int[][] sudoku = Solving_page.original;
-        //Sudoku sudoku1 = Solving_page.sudoku;
+        Sudoku sudoku = Solving_page.sudoku;
+        Beginning step1 = (Beginning)sudoku.steps.get(0);
+        int[][] grid = step1.getGrid();
+        HashMap<String,List<Integer>> candidates = step1.getCandidates();
+        Log.d("CameraActivity",candidates.toString());
+        Log.d("CameraActivity",step1.getTitle());
         for (int row = 0; row < 9; row++){
             for (int col = 0; col < 9; col++){
-                if (sudoku[row][col] != 0){
-                    drawNumber(sudoku[row][col],row,col);
+                if (grid[row][col] != 0){
+                    drawNumber(grid[row][col],row,col,false);
                 }
                 else{
-                    drawCandidates(row,col, Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
+                    String key = Integer.toString(row)+col;
+                    Log.d("CameraActivity",candidates.get(key).toString());
+                    drawCandidates(row,col, candidates.get(key),false);
                 }
             }
         }
@@ -106,7 +114,7 @@ public class SudokuBoard extends View {
         }
     }
 
-    public void drawNumber(int number, int row, int col){
+    public void drawNumber(int number, int row, int col, boolean highlighted){
         String text = Integer.toString(number);
         letterColorPaint.setTextSize((int)(cellSize * 0.8));
         letterColorPaint.setColor(letterColor);
@@ -119,7 +127,7 @@ public class SudokuBoard extends View {
         this.canvas.drawText(text,x ,y , letterColorPaint);
     }
 
-    public void drawCandidates(int row, int col, List<Integer> candidates){
+    public void drawCandidates(int row, int col, List<Integer> candidates, boolean highlighted){
         int rectDimension = (int)(cellSize / 3.3);
         String sampleText = "0";
         candidatePaint.setTextSize(rectDimension);

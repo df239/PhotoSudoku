@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.example.photosudoku.sudoku.Solver;
 import com.example.photosudoku.sudoku.Sudoku;
+import com.example.photosudoku.sudoku.solvingSteps.Beginning;
 import com.example.photosudoku.sudoku.solvingSteps.HiddenPair;
 import com.example.photosudoku.sudoku.solvingSteps.HiddenSingle;
 import com.example.photosudoku.sudoku.solvingSteps.ISolvingStep;

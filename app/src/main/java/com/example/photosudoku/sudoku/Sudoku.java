@@ -1,5 +1,6 @@
 package com.example.photosudoku.sudoku;
 
+import com.example.photosudoku.sudoku.solvingSteps.Beginning;
 import com.example.photosudoku.sudoku.solvingSteps.ISolvingStep;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class Sudoku {
 
         this.sudoku = buildSudoku(sudokuGrid);
         this.updateCellCandidates();
+        this.steps.add(new Beginning(this.sudoku));
     }
 
     private Cell[][] buildSudoku(int[][] grid){
