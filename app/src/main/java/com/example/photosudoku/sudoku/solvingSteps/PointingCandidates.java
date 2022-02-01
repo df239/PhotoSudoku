@@ -6,6 +6,7 @@ import com.example.photosudoku.sudoku.SudokuUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class PointingCandidates implements ISolvingStep{
@@ -62,6 +63,11 @@ public class PointingCandidates implements ISolvingStep{
     @Override
     public int[][] getGrid() {
         return this.grid;
+    }
+
+    @Override
+    public HashMap<String, List<Integer>> getCandidates() {
+        return null;
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.example.photosudoku.sudoku.House;
 import com.example.photosudoku.sudoku.SudokuUtils;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class NakedPair implements ISolvingStep{
@@ -52,6 +53,11 @@ public class NakedPair implements ISolvingStep{
     @Override
     public int[][] getGrid() {
         return this.grid;
+    }
+
+    @Override
+    public HashMap<String, List<Integer>> getCandidates() {
+        return null;
     }
 
     @Override

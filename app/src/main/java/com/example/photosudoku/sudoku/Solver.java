@@ -86,7 +86,7 @@ public class Solver {
                 if(!c.solved() && c.getCandidates().size() == 1) {
                     int candidate = c.getCandidates().get(0);
                     c.setValue(candidate);
-                    input.steps.add(new NakedSingle(candidate,row,col,input.grid));
+                    input.steps.add(new NakedSingle(candidate,row,col,input.grid,input.getCellMatrix()));
                     input.updateCellCandidates(c);
                     return true;
                 }
@@ -129,7 +129,7 @@ public class Solver {
         cellCandidates.removeAll(groupCandidates);
         if(cellCandidates.toArray().length == 1){
             currentCell.setValue((Integer) cellCandidates.toArray()[0]);
-            input.steps.add(new HiddenSingle((int)cellCandidates.toArray()[0], row, col, house.TYPE, grid));
+            input.steps.add(new HiddenSingle((int)cellCandidates.toArray()[0], row, col, house.TYPE, grid, input.getCellMatrix()));
             return true;
         }
         return false;

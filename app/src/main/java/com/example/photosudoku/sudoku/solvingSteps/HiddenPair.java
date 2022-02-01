@@ -5,6 +5,7 @@ import com.example.photosudoku.sudoku.House;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class HiddenPair implements ISolvingStep{
@@ -56,6 +57,11 @@ public class HiddenPair implements ISolvingStep{
     @Override
     public int[][] getGrid() {
         return this.grid;
+    }
+
+    @Override
+    public HashMap<String, List<Integer>> getCandidates() {
+        return null;
     }
 
     @Override

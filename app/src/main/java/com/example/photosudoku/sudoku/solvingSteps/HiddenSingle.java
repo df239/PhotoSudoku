@@ -1,15 +1,21 @@
 package com.example.photosudoku.sudoku.solvingSteps;
 
+import com.example.photosudoku.sudoku.Cell;
 import com.example.photosudoku.sudoku.SudokuUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class HiddenSingle implements ISolvingStep {
     private final int[][] grid = new int[9][9];
+    private final HashMap<String, List<Integer>> candidates = new HashMap<String,List<Integer>>();
     private final int value;
     private final int row;
     private final int col;
     private final String house;
 
-    public HiddenSingle(int value, int row, int col, String house, int[][] grid){
+    public HiddenSingle(int value, int row, int col, String house, int[][] grid, Cell[][] cellMatrix){
         this.value = value;
         this.row = row;
         this.col = col;
@@ -17,6 +23,9 @@ public class HiddenSingle implements ISolvingStep {
         for(int i = 0; i < 9; i++){
             for (int j = 0; j < 9; j++){
                 this.grid[i][j] = grid[i][j];
+                if(grid[i][j] != 0){
+                    this.candidates.put(Integer.toString(i)+j,new ArrayList<>(cellMatrix[i][j].getCandidates()));
+                }
             }
         }
     }
@@ -28,6 +37,11 @@ public class HiddenSingle implements ISolvingStep {
     @Override
     public int[][] getGrid() {
         return this.grid;
+    }
+
+    @Override
+    public HashMap<String, List<Integer>> getCandidates() {
+        return this.candidates;
     }
 
     @Override
