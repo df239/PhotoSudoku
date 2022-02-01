@@ -3,6 +3,7 @@ package com.example.photosudoku;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -78,11 +79,11 @@ public class SudokuBoard extends View {
                 if (sudoku[row][col] != 0){
                     drawNumber(sudoku[row][col],row,col);
                 }
+                else{
+                    drawCandidates(row,col, Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
+                }
             }
         }
-        drawCandidates(0,0, Arrays.asList(1, 2, 3, 6, 7, 8, 9));
-        drawCandidates(5,2, Arrays.asList(1, 3, 5, 7, 9));
-        drawCandidates(8,8, Arrays.asList(1, 3, 5, 7, 9));
     }
 
     private void drawBoard(Canvas canvas){
@@ -113,41 +114,41 @@ public class SudokuBoard extends View {
         letterColorPaint.getTextBounds(text, 0, text.length(), letterPaintBounds);
         width = letterColorPaint.measureText(text);
         height = letterPaintBounds.height();
-        this.canvas.drawText(text, (col*cellSize) + (cellSize - width)/2, (row*cellSize + cellSize) - (cellSize - height)/2, letterColorPaint);
+        float x = (col*cellSize) + (cellSize - width)/2;
+        float y = (row*cellSize + cellSize) - (cellSize - height)/2;
+        this.canvas.drawText(text,x ,y , letterColorPaint);
     }
 
     public void drawCandidates(int row, int col, List<Integer> candidates){
-        int rectDimension = (int)(cellSize / 3);
+        int rectDimension = (int)(cellSize / 3.3);
         String sampleText = "0";
         candidatePaint.setTextSize(rectDimension);
         candidatePaint.setColor(letterColor);
         candidatePaint.getTextBounds(sampleText, 0, sampleText.length(), candidateBounds);
-        float width, height, cellwidth, cellheight;
+        float width, height;
         width = candidatePaint.measureText(sampleText);
         height = candidateBounds.height();
-        cellwidth = letterColorPaint.measureText(sampleText);
-        cellheight = letterPaintBounds.height();
         for (int candidate : candidates){
             Log.e("CameraActivity",Integer.toString(candidate));
             float x,y;
             if(candidate % 3 == 1){ // column 1: 1,4,7
-                x = (col*cellSize) + (cellSize - cellwidth)/2 - (int)(width*1);
+                x = (col*cellSize)  + (rectDimension - width);
             }
             else if(candidate % 3 == 2){  //column 2: 2,5,8
-                x = (col*cellSize) + (cellSize - cellwidth)/2 + width/2;
+                x = (col*cellSize) + (rectDimension*2f - width) ;
             }
             else{ //column 3: 3,6,9
-                x = (col*cellSize) + (cellSize - cellwidth)/2 + (int)(width*2);
+                x = (col*cellSize) + (rectDimension*3f - width) ;
             }
 
             if((candidate-1) / 3 == 0){
-                y = (row*cellSize + cellSize) - (cellSize - cellheight)/2 - (int)(height*2);
+                y = (row*cellSize + cellSize) - (rectDimension*3f - height);
             }
             else if((candidate-1) / 3 == 1){
-                y = (row*cellSize + cellSize) - (cellSize - cellheight)/2 - height/2;
+                y = (row*cellSize + cellSize) - (rectDimension*2f - height);
             }
             else{
-                y = (row*cellSize + cellSize) - (cellSize - cellheight)/2 + (int)(height*1);
+                y = (row*cellSize + cellSize) - (rectDimension - height);
             }
             this.canvas.drawText(Integer.toString(candidate), x, y, candidatePaint);
         }
