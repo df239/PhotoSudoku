@@ -86,8 +86,10 @@ public class Solver {
                 if(!c.solved() && c.getCandidates().size() == 1) {
                     int candidate = c.getCandidates().get(0);
                     c.setValue(candidate);
-                    input.steps.add(new NakedSingle(candidate,row,col,input.grid,input.getCellMatrix()));
+                    //input.grid[row][col]=candidate;
                     input.updateCellCandidates(c);
+                    input.steps.add(new NakedSingle(candidate,row,col,input.grid,input.getCellMatrix()));
+
                     return true;
                 }
             }
@@ -104,15 +106,12 @@ public class Solver {
                 Cell c = grid[row][col];
                 if (!c.solved()){
                     if(findHiddenSingle(input,c,input.getRow(c.ROW), row, col, input.grid)){
-                        input.updateCellCandidates(c);
                         return true;
                     }
                     if(findHiddenSingle(input,c,input.getCol(c.COL), row, col, input.grid)){
-                        input.updateCellCandidates(c);
                         return true;
                     }
                     if(findHiddenSingle(input,c,input.getBox(c.BOX), row, col, input.grid)){
-                        input.updateCellCandidates(c);
                         return true;
                     }
                 }
@@ -129,6 +128,8 @@ public class Solver {
         cellCandidates.removeAll(groupCandidates);
         if(cellCandidates.toArray().length == 1){
             currentCell.setValue((Integer) cellCandidates.toArray()[0]);
+            //input.grid[row][col]=(Integer) cellCandidates.toArray()[0];
+            input.updateCellCandidates(currentCell);
             input.steps.add(new HiddenSingle((int)cellCandidates.toArray()[0], row, col, house.TYPE, grid, input.getCellMatrix()));
             return true;
         }

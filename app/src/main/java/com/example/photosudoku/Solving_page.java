@@ -52,7 +52,7 @@ public class Solving_page extends AppCompatActivity {
     public static Sudoku sudoku;
     int[][] solution;
     List<ISolvingStep> steps;
-    int stepIndex = -1;
+    public static int stepIndex = 0;
 
     private static String TAG = "CameraActivity";
 
@@ -298,8 +298,9 @@ public class Solving_page extends AppCompatActivity {
             stepIndex ++;
             String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
             messageView.setText(message);
-            rewriteSudokuBoard(this.steps.get(stepIndex));
+            //rewriteSudokuBoard(this.steps.get(stepIndex));
             //rewriteGrid(this.steps.get(stepIndex));
+            sudokuBoard.invalidate();
         }
         else{
             messageView.setText("");
@@ -307,16 +308,13 @@ public class Solving_page extends AppCompatActivity {
     }
 
     public void prevButtonClick(){
-        if(stepIndex - 1 >= 0){
+        if(stepIndex > 0){
             stepIndex --;
             String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
             messageView.setText(message);
-            rewriteSudokuBoard(this.steps.get(stepIndex));
+            //rewriteSudokuBoard(this.steps.get(stepIndex));
             //rewriteGrid(this.steps.get(stepIndex));
-        }
-        else if(stepIndex == 0){
-            stepIndex --;
-            rewriteGrid(this.original);
+            sudokuBoard.invalidate();
         }
         else{
             messageView.setText("");

@@ -1,5 +1,7 @@
 package com.example.photosudoku.sudoku.solvingSteps;
 
+import android.util.Log;
+
 import com.example.photosudoku.sudoku.Cell;
 
 import java.util.ArrayList;
@@ -20,7 +22,7 @@ public class NakedSingle implements ISolvingStep {
         for(int i = 0; i < 9; i++){
             for (int j = 0; j < 9; j++){
                 this.grid[i][j] = grid[i][j];
-                if(grid[i][j] != 0){
+                if(grid[i][j] == 0){
                     List<Integer> temp = new ArrayList<>();
                     temp.addAll(cellMatrix[i][j].getCandidates());
                     this.candidates.put(Integer.toString(i)+j,temp);

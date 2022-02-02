@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import com.example.photosudoku.sudoku.Sudoku;
 import com.example.photosudoku.sudoku.solvingSteps.Beginning;
+import com.example.photosudoku.sudoku.solvingSteps.ISolvingStep;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,11 +76,11 @@ public class SudokuBoard extends View {
         canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
         drawBoard(canvas);
         Sudoku sudoku = Solving_page.sudoku;
-        Beginning step1 = (Beginning)sudoku.steps.get(0);
-        int[][] grid = step1.getGrid();
-        HashMap<String,List<Integer>> candidates = step1.getCandidates();
+        ISolvingStep step = sudoku.steps.get(Solving_page.stepIndex);
+        int[][] grid = step.getGrid();
+        HashMap<String,List<Integer>> candidates = step.getCandidates();
         Log.d("CameraActivity",candidates.toString());
-        Log.d("CameraActivity",step1.getTitle());
+        Log.d("CameraActivity",step.getTitle());
         for (int row = 0; row < 9; row++){
             for (int col = 0; col < 9; col++){
                 if (grid[row][col] != 0){
