@@ -31,8 +31,9 @@ public class SudokuDisplayPage extends AppCompatActivity {
 
     TextView textView;
     TableLayout table;
+    SudokuBoard sudokuBoard;
     ConstraintLayout mainLayout;
-    private int[][] sudoku;
+    public static int[][] sudoku;
     private long duration = 0;
 
     public static final String SUDOKU_KEY = "sudoku";
@@ -44,17 +45,18 @@ public class SudokuDisplayPage extends AppCompatActivity {
         setContentView(R.layout.activity_sudoku_display_page);
 
         textView = (TextView)findViewById(R.id.tempText);
-        table = (TableLayout)findViewById(R.id.sudokuTable);
+        //table = (TableLayout)findViewById(R.id.sudokuTable);
         mainLayout = (ConstraintLayout)findViewById(R.id.sudokuDisplayLayout);
+        sudokuBoard = findViewById(R.id.sudokuBoard_displayPage);
 
         Intent intent = getIntent();
 
 //        Bitmap bmp = (Bitmap)intent.getParcelableExtra(CameraPage.BitmapKey);
 //        imageView.setImageBitmap(bmp);
 
-        this.sudoku = (int[][])intent.getSerializableExtra(SUDOKU_KEY);
+        sudoku = (int[][])intent.getSerializableExtra(SUDOKU_KEY);
         duration = (long)intent.getLongExtra("duration",0);
-        createSudokuUI(this.sudoku);
+        //createSudokuUI(this.sudoku);
         String output = TimeUnit.NANOSECONDS.toMillis(duration) +" ms";
         textView.setText(output);
 
@@ -63,7 +65,6 @@ public class SudokuDisplayPage extends AppCompatActivity {
     }
 
     public void openSolvingScreen(View view){
-        int[][] sudoku = getSudokuGridFromUITable();
         Intent intent = new Intent(this,Solving_page.class);
         intent.putExtra(SUDOKU_KEY,sudoku);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

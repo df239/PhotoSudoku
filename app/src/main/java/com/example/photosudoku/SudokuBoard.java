@@ -106,6 +106,20 @@ public class SudokuBoard extends View {
                 }
             }
         }
+        else if(this.currentPage.equals("displayPage")){
+            Log.d("CameraActivity","drawingOnDisplayPage");
+            int[][] grid = SudokuDisplayPage.sudoku;
+            canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
+            drawBoard(canvas);
+            for (int row = 0; row < 9; row++){
+                for (int col = 0; col < 9; col++){
+                    if (grid[row][col] != 0) {
+                        drawNumber(grid[row][col], row, col, false);
+                    }
+                }
+            }
+
+        }
 
     }
 

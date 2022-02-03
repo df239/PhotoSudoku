@@ -2,12 +2,29 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/sudokuDisplayLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_main"
     tools:context=".SudokuDisplayPage">
 
+    <com.example.photosudoku.SudokuBoard
+        android:id="@+id/sudokuBoard_displayPage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        custom:boardColor="#000000"
+        custom:layout_constraintEnd_toEndOf="parent"
+        custom:layout_constraintStart_toStartOf="parent"
+        custom:layout_constraintTop_toTopOf="parent"
+        custom:letterColor="#000000"
+        custom:cellHighlightColor="@color/light_red"
+        custom:letterNewColor="@color/red"
+        custom:selectedPage="displayPage"
+        android:background="@color/white">
+    </com.example.photosudoku.SudokuBoard>
+
+    <!--
     <TableLayout
         android:id="@+id/sudokuTable"
         android:layout_width="match_parent"
@@ -16,6 +33,7 @@
         android:layout_margin="8dp"
         tools:layout_editor_absoluteX="196dp">
     </TableLayout>
+    -->
 
     <Button
         android:id="@+id/button4"
