@@ -29,7 +29,6 @@ public class SudokuBoard extends View {
 
     private final Paint boardColorPaint = new Paint();
     private final Paint letterColorPaint= new Paint();
-    private final Paint letterNewColorPaint = new Paint();
     private final Paint cellHighlightColorPaint = new Paint();
     private final Paint candidatePaint = new Paint();
 
@@ -38,6 +37,7 @@ public class SudokuBoard extends View {
 
     private int cellSize;
     private Canvas canvas;
+    private String currentPage;
 
     public SudokuBoard(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -48,6 +48,7 @@ public class SudokuBoard extends View {
             letterColor = a.getInteger(R.styleable.SudokuBoard_letterColor, 0);
             letterNewColor = a.getInteger(R.styleable.SudokuBoard_letterNewColor, 0);
             cellHighlightColor = a.getInteger(R.styleable.SudokuBoard_cellHighlightColor, 0);
+            currentPage = a.getString(R.styleable.SudokuBoard_selectedPage);
         }
         finally{
             a.recycle();
@@ -78,31 +79,34 @@ public class SudokuBoard extends View {
         cellHighlightColorPaint.setAntiAlias(true);
 
 
-        Sudoku sudoku = Solving_page.sudoku;
-        ISolvingStep step = sudoku.steps.get(Solving_page.stepIndex);
-        int[][] grid = step.getGrid();
-        HashMap<String,List<Integer>> candidates = step.getCandidates();
-        Log.d("CameraActivity",candidates.toString());
-        Log.d("CameraActivity",step.getTitle());
-        int[] highlightedSquares = step.getAffectedSquares();
-        if(highlightedSquares.length > 0){
-            for(int i = 0; i < highlightedSquares.length; i += 2){
-                drawHighlightedCell(canvas,highlightedSquares[i],highlightedSquares[i+1]);
-            }
-        }
-        canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
-        drawBoard(canvas);
-        for (int row = 0; row < 9; row++){
-            for (int col = 0; col < 9; col++){
-                if (grid[row][col] != 0){
-                    drawNumber(grid[row][col],row,col, isToBeHighlighted(row, col, highlightedSquares));
-                }
-                else{
-                    String key = Integer.toString(row)+col;
-                    drawCandidates(row,col, candidates.get(key));
+        if(this.currentPage.equals("solvingPage")){
+            Sudoku sudoku = Solving_page.sudoku;
+            ISolvingStep step = sudoku.steps.get(Solving_page.stepIndex);
+            int[][] grid = step.getGrid();
+            HashMap<String,List<Integer>> candidates = step.getCandidates();
+            Log.d("CameraActivity",candidates.toString());
+            Log.d("CameraActivity",step.getTitle());
+            int[] highlightedSquares = step.getAffectedSquares();
+            if(highlightedSquares.length > 0){
+                for(int i = 0; i < highlightedSquares.length; i += 2){
+                    drawHighlightedCell(canvas,highlightedSquares[i],highlightedSquares[i+1]);
                 }
             }
+            canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
+            drawBoard(canvas);
+            for (int row = 0; row < 9; row++){
+                for (int col = 0; col < 9; col++){
+                    if (grid[row][col] != 0){
+                        drawNumber(grid[row][col],row,col, isToBeHighlighted(row, col, highlightedSquares));
+                    }
+                    else{
+                        String key = Integer.toString(row)+col;
+                        drawCandidates(row,col, candidates.get(key));
+                    }
+                }
+            }
         }
+
     }
 
     private boolean isToBeHighlighted(int row, int col, int[]highlighted){

@@ -29,7 +29,8 @@
         custom:layout_constraintTop_toTopOf="parent"
         custom:letterColor="#000000"
         custom:cellHighlightColor="@color/light_red"
-        custom:letterNewColor="@color/red">
+        custom:letterNewColor="@color/red"
+        custom:selectedPage="solvingPage">
 
     </com.example.photosudoku.SudokuBoard>
 

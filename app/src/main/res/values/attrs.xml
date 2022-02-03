@@ -5,5 +5,6 @@
         <attr name="letterColor" format="color"/>
         <attr name="letterNewColor" format="color"/>
         <attr name="cellHighlightColor" format="color"/>
+        <attr name="selectedPage" format="string"/>
     </declare-styleable>
 </resources>
