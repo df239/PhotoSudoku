@@ -30,7 +30,7 @@ public class SudokuBoard extends View {
     private final Paint boardColorPaint = new Paint();
     private final Paint letterColorPaint= new Paint();
     private final Paint letterNewColorPaint = new Paint();
-    private final Paint CellHighlightColorPaint = new Paint();
+    private final Paint cellHighlightColorPaint = new Paint();
     private final Paint candidatePaint = new Paint();
 
     private final Rect letterPaintBounds = new Rect();
@@ -73,14 +73,25 @@ public class SudokuBoard extends View {
         boardColorPaint.setColor(boardColor);
         boardColorPaint.setAntiAlias(true);
 
-        canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
-        drawBoard(canvas);
+        cellHighlightColorPaint.setStyle(Paint.Style.FILL);
+        cellHighlightColorPaint.setColor(cellHighlightColor);
+        cellHighlightColorPaint.setAntiAlias(true);
+
+
         Sudoku sudoku = Solving_page.sudoku;
         ISolvingStep step = sudoku.steps.get(Solving_page.stepIndex);
         int[][] grid = step.getGrid();
         HashMap<String,List<Integer>> candidates = step.getCandidates();
         Log.d("CameraActivity",candidates.toString());
         Log.d("CameraActivity",step.getTitle());
+        int[] highlightedSquares = step.getAffectedSquares();
+        if(highlightedSquares.length > 0){
+            for(int i = 0; i < highlightedSquares.length; i += 2){
+                drawHighlightedCell(canvas,highlightedSquares[i],highlightedSquares[i+1]);
+            }
+        }
+        canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
+        drawBoard(canvas);
         for (int row = 0; row < 9; row++){
             for (int col = 0; col < 9; col++){
                 if (grid[row][col] != 0){
@@ -112,6 +123,10 @@ public class SudokuBoard extends View {
             }
             canvas.drawLine(0, cellSize * row, getHeight(), cellSize * row, boardColorPaint);
         }
+    }
+
+    private void drawHighlightedCell(Canvas canvas, int row, int col){
+        canvas.drawRect(col*cellSize, row*cellSize, (col+1)*cellSize, (row+1)*cellSize, cellHighlightColorPaint);
     }
 
     public void drawNumber(int number, int row, int col, boolean highlighted){

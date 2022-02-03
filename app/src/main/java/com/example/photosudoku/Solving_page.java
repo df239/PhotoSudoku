@@ -317,7 +317,7 @@ public class Solving_page extends AppCompatActivity {
             sudokuBoard.invalidate();
         }
         else{
-            messageView.setText("");
+            stepIndex = 0;
         }
     }
 

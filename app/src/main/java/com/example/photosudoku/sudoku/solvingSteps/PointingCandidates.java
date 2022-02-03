@@ -66,6 +66,11 @@ public class PointingCandidates implements ISolvingStep{
     }
 
     @Override
+    public int[] getAffectedSquares() {
+        return new int[0];
+    }
+
+    @Override
     public HashMap<String, List<Integer>> getCandidates() {
         return null;
     }

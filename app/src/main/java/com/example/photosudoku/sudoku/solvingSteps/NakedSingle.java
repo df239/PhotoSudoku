@@ -41,6 +41,11 @@ public class NakedSingle implements ISolvingStep {
     }
 
     @Override
+    public int[] getAffectedSquares() {
+        return new int[]{this.row,this.col};
+    }
+
+    @Override
     public HashMap<String, List<Integer>> getCandidates() {
         return this.candidates;
     }

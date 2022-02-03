@@ -45,6 +45,11 @@ public class Beginning implements ISolvingStep{
     }
 
     @Override
+    public int[] getAffectedSquares() {
+        return new int[0];
+    }
+
+    @Override
     public String getTitle() {
         return "beginning";
     }
