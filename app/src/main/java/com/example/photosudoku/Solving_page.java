@@ -79,6 +79,8 @@ public class Solving_page extends AppCompatActivity {
             }
         }
 
+        stepIndex = 0;
+
         nextButton.setOnClickListener(v -> nextButtonClick());
 
         prevButton.setOnClickListener(v -> prevButtonClick());
@@ -252,10 +254,10 @@ public class Solving_page extends AppCompatActivity {
     }
 
     public void solveButtonClick(){
-        rewriteGrid(this.solution);
         stepIndex = steps.size() - 1;
         String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
         messageView.setText(message);
+        sudokuBoard.invalidate();
     }
 
     public void nextButtonClick(){
