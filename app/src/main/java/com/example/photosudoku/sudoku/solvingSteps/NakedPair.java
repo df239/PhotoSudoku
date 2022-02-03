@@ -4,6 +4,7 @@ import com.example.photosudoku.sudoku.Cell;
 import com.example.photosudoku.sudoku.House;
 import com.example.photosudoku.sudoku.SudokuUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -14,11 +15,12 @@ public class NakedPair implements ISolvingStep{
     private final List<Integer> candidates;
     private final House house;
     private final int[][] grid;
+    private final HashMap<String, List<Integer>> gridCandidates = new HashMap<String,List<Integer>>();
 
     private String title;
     private String message;
 
-    public NakedPair(Cell cell1, Cell cell2, House affectedHouse, int[][] grid){
+    public NakedPair(Cell cell1, Cell cell2, House affectedHouse, int[][] grid, Cell[][] cellMatrix){
         this.c1 = cell1;
         this.c2 = cell2;
         this.candidates = cell1.getCandidates();
@@ -27,6 +29,11 @@ public class NakedPair implements ISolvingStep{
         for(int i = 0; i < 9; i++){
             for (int j = 0; j < 9; j++){
                 this.grid[i][j] = grid[i][j];
+                if(grid[i][j] == 0){
+                    List<Integer> temp = new ArrayList<>();
+                    temp.addAll(cellMatrix[i][j].getCandidates());
+                    this.gridCandidates.put(Integer.toString(i)+j,temp);
+                }
             }
         }
         buildStrings();
@@ -57,12 +64,17 @@ public class NakedPair implements ISolvingStep{
 
     @Override
     public int[] getAffectedSquares() {
-        return new int[0];
+        int[] arr = new int[4];
+        arr[0] = c1.ROW;
+        arr[1] = c1.COL;
+        arr[2] = c2.ROW;
+        arr[3] = c2.COL;
+        return arr;
     }
 
     @Override
     public HashMap<String, List<Integer>> getCandidates() {
-        return null;
+        return this.gridCandidates;
     }
 
     @Override

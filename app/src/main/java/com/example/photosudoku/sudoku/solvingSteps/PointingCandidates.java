@@ -11,6 +11,7 @@ import java.util.List;
 
 public class PointingCandidates implements ISolvingStep{
     private final int candidate;
+    private final HashMap<String, List<Integer>> candidates = new HashMap<String,List<Integer>>();
     private final House affected;
     private final House comparative;
     private Cell sample;
@@ -20,7 +21,7 @@ public class PointingCandidates implements ISolvingStep{
     String message="";
     String title = "";
 
-    public PointingCandidates(int candidate, House affected_house, House comparative_house, Collection<Cell> cells, int[][] grid){
+    public PointingCandidates(int candidate, House affected_house, House comparative_house, Collection<Cell> cells, int[][] grid, Cell[][] cellMatrix){
         this.candidate = candidate;
         this.affected = affected_house;
         this.comparative = comparative_house;
@@ -28,6 +29,11 @@ public class PointingCandidates implements ISolvingStep{
         for(int i = 0; i < 9; i++){
             for (int j = 0; j < 9; j++){
                 this.grid[i][j] = grid[i][j];
+                if(grid[i][j] == 0){
+                    List<Integer> temp = new ArrayList<>();
+                    temp.addAll(cellMatrix[i][j].getCandidates());
+                    this.candidates.put(Integer.toString(i)+j,temp);
+                }
             }
         }
         this.cells = new ArrayList<>(cells);
@@ -67,12 +73,17 @@ public class PointingCandidates implements ISolvingStep{
 
     @Override
     public int[] getAffectedSquares() {
-        return new int[0];
+        int[] arr = new int[this.cells.size() * 2];
+        for(int i = 0; i < this.cells.size(); i++){
+            arr[2*i] = this.cells.get(i).ROW;
+            arr[2*i + 1] = this.cells.get(i).COL;
+        }
+        return arr;
     }
 
     @Override
     public HashMap<String, List<Integer>> getCandidates() {
-        return null;
+        return this.candidates;
     }
 
     @Override

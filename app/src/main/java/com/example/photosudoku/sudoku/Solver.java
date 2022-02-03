@@ -178,14 +178,14 @@ public class Solver {
                     for (Cell c : groupExclusive.getCells()){
                         c.removeCandidate(sharedCandidate);
                     }
-                    input.steps.add(new PointingCandidates(sharedCandidate,group,box,crossSection.getCells(),input.grid));
+                    input.steps.add(new PointingCandidates(sharedCandidate,group,box,crossSection.getCells(),input.grid,input.getCellMatrix()));
                     return true;
                 }
                 else if (!groupExclusive.getCandidates().contains(sharedCandidate) && boxExclusive.getCandidates().contains(sharedCandidate)){
                     for (Cell c : boxExclusive.getCells()){
                         c.removeCandidate(sharedCandidate);
                     }
-                    input.steps.add(new PointingCandidates(sharedCandidate,box,group,crossSection.getCells(),input.grid));
+                    input.steps.add(new PointingCandidates(sharedCandidate,box,group,crossSection.getCells(),input.grid,input.getCellMatrix()));
                     return true;
                 }
             }
@@ -220,7 +220,7 @@ public class Solver {
             Cell temp = bivalueCells.get(0);
             if (temp.getCandidates().containsAll(bivalueCells.get(1).getCandidates())){
                 if(removeCandidatesOutsideOfPair(group.getGroup(),temp.getCandidates(),bivalueCells)){
-                    input.steps.add(new NakedPair(temp,bivalueCells.get(1),group, input.grid));
+                    input.steps.add(new NakedPair(temp,bivalueCells.get(1),group, input.grid, input.getCellMatrix()));
                     return true;
                 }
             }
@@ -232,7 +232,7 @@ public class Solver {
                     Cell tempY = bivalueCells.get(y);
                     if (tempX.getCandidates().containsAll(tempY.getCandidates())){
                         if(removeCandidatesOutsideOfPair(group.getGroup(),tempX.getCandidates(),new ArrayList<Cell>(Arrays.asList(tempX,tempY)))){
-                            input.steps.add(new NakedPair(tempX,tempY,group,input.grid));
+                            input.steps.add(new NakedPair(tempX,tempY,group,input.grid,input.getCellMatrix()));
                             return true;
                         }
                     }
@@ -290,7 +290,7 @@ public class Solver {
                                         if (c1.getCandidates().size() > 2 || c2.getCandidates().size() > 2){
                                             removeCandidatesFromCellExcept(candidatePair,c1);
                                             removeCandidatesFromCellExcept(candidatePair,c2);
-                                            input.steps.add(new HiddenPair(c1,c2,candidatePair,group,input.grid));
+                                            input.steps.add(new HiddenPair(c1,c2,candidatePair,group,input.grid, input.getCellMatrix()));
                                             return true;
                                         }
                                     }
