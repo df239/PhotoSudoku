@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -39,8 +40,13 @@ public class SudokuBoard extends View {
     private Canvas canvas;
     private String currentPage;
 
+    private int selectedRow, selectedCol;
+
     public SudokuBoard(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+
+        this.selectedCol = -1;
+        this.selectedRow = -1;
 
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.SudokuBoard,0,0);
         try{
@@ -52,6 +58,23 @@ public class SudokuBoard extends View {
         }
         finally{
             a.recycle();
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+
+        int action = event.getAction();
+        if(action == MotionEvent.ACTION_DOWN){
+            this.selectedRow = (int)Math.ceil(y/cellSize)-1;
+            this.selectedCol = (int)Math.ceil(x/cellSize)-1;
+            this.invalidate();
+            return true;
+        }
+        else{
+            return false;
         }
     }
 
@@ -110,6 +133,9 @@ public class SudokuBoard extends View {
             Log.d("CameraActivity","drawingOnDisplayPage");
             int[][] grid = SudokuDisplayPage.sudoku;
             canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
+            if(this.selectedRow != -1 && this.selectedCol != -1){
+                drawHighlightedCell(canvas,this.selectedRow,this.selectedCol);
+            }
             drawBoard(canvas);
             for (int row = 0; row < 9; row++){
                 for (int col = 0; col < 9; col++){
@@ -204,5 +230,21 @@ public class SudokuBoard extends View {
             }
             this.canvas.drawText(Integer.toString(candidate), x, y, candidatePaint);
         }
+    }
+
+    public void setSelectedRow(int row){
+        this.selectedRow = row;
+    }
+
+    public void setSelectedCol(int col){
+        this.selectedCol = col;
+    }
+
+    public int getSelectedRow(){
+        return this.selectedRow;
+    }
+
+    public int getSelectedCol(){
+        return this.selectedCol;
     }
 }

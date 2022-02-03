@@ -33,6 +33,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     TableLayout table;
     SudokuBoard sudokuBoard;
     ConstraintLayout mainLayout;
+
     public static int[][] sudoku;
     private long duration = 0;
 
@@ -69,6 +70,76 @@ public class SudokuDisplayPage extends AppCompatActivity {
         intent.putExtra(SUDOKU_KEY,sudoku);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
+    }
+
+    public void buttonOneClick(View view){
+        if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1){
+            sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 1;
+            sudokuBoard.invalidate();
+        }
+    }
+
+    public void buttonTwoClick(View view){
+        if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
+            sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 2;
+            sudokuBoard.invalidate();
+        }
+    }
+
+    public void buttonThreeClick(View view){
+        if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
+            sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 3;
+            sudokuBoard.invalidate();
+        }
+    }
+
+    public void buttonFourClick(View view){
+        if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
+            sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 4;
+            sudokuBoard.invalidate();
+        }
+    }
+
+    public void buttonFiveClick(View view){
+        if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
+            sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 5;
+            sudokuBoard.invalidate();
+        }
+    }
+
+    public void buttonSixClick(View view){
+        if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
+            sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 6;
+            sudokuBoard.invalidate();
+        }
+    }
+
+    public void buttonSevenClick(View view){
+        if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
+            sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 7;
+            sudokuBoard.invalidate();
+        }
+    }
+
+    public void buttonEightClick(View view){
+        if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
+            sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 8;
+            sudokuBoard.invalidate();
+        }
+    }
+
+    public void buttonNineClick(View view){
+        if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
+            sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 9;
+            sudokuBoard.invalidate();
+        }
+    }
+
+    public void buttonDelClick(View view){
+        if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1){
+            sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 0;
+            sudokuBoard.invalidate();
+        }
     }
 
     private String arrayToString(int[][] array){
