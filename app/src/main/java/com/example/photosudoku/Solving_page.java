@@ -251,41 +251,6 @@ public class Solving_page extends AppCompatActivity {
         this.steps = sudoku.steps;
     }
 
-    private void rewriteSudokuBoard(ISolvingStep step){
-        if (step instanceof  NakedSingle){
-            NakedSingle ns = (NakedSingle)step;
-            Log.d("CameraActivity",ns.getCandidates().toString());
-            Log.d("CameraActivity",ns.getTitle());
-            for(int row = 0; row < 9; row++){
-                for(int col = 0; col < 9; col++){
-                    if (ns.getGrid()[row][col] != 0){
-                        this.sudokuBoard.drawNumber(ns.getGrid()[row][col],row,col,false);
-                    }
-                    else{
-                        this.sudokuBoard.drawCandidates(row,col,ns.getCandidates().get(Integer.toString(row)+col),false);
-                    }
-                }
-            }
-        }
-        else if (step instanceof HiddenSingle){
-            HiddenSingle hs = (HiddenSingle)step;
-            Log.d("CameraActivity",hs.getCandidates().toString());
-            Log.d("CameraActivity",hs.getTitle());
-            for(int row = 0; row < 9; row++){
-                for(int col = 0; col < 9; col++){
-                    if (hs.getGrid()[row][col] != 0){
-                        this.sudokuBoard.drawNumber(hs.getGrid()[row][col],row,col,false);
-                    }
-                    else{
-                        this.sudokuBoard.drawCandidates(row,col,hs.getCandidates().get(Integer.toString(row)+col),false);
-                    }
-                }
-            }
-        }
-
-        sudokuBoard.invalidate();
-    }
-
     public void solveButtonClick(){
         rewriteGrid(this.solution);
         stepIndex = steps.size() - 1;

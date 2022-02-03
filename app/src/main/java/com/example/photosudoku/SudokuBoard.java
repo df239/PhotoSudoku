@@ -95,14 +95,23 @@ public class SudokuBoard extends View {
         for (int row = 0; row < 9; row++){
             for (int col = 0; col < 9; col++){
                 if (grid[row][col] != 0){
-                    drawNumber(grid[row][col],row,col,false);
+                    drawNumber(grid[row][col],row,col, isToBeHighlighted(row, col, highlightedSquares));
                 }
                 else{
                     String key = Integer.toString(row)+col;
-                    drawCandidates(row,col, candidates.get(key),false);
+                    drawCandidates(row,col, candidates.get(key));
                 }
             }
         }
+    }
+
+    private boolean isToBeHighlighted(int row, int col, int[]highlighted){
+        for(int i = 0; i < highlighted.length; i += 2){
+            if(highlighted[i] == row && highlighted[i+1] == col){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void drawBoard(Canvas canvas){
@@ -132,7 +141,10 @@ public class SudokuBoard extends View {
     public void drawNumber(int number, int row, int col, boolean highlighted){
         String text = Integer.toString(number);
         letterColorPaint.setTextSize((int)(cellSize * 0.8));
-        letterColorPaint.setColor(letterColor);
+
+        if(highlighted) letterColorPaint.setColor(letterNewColor);
+        else letterColorPaint.setColor(letterColor);
+
         float width, height;
         letterColorPaint.getTextBounds(text, 0, text.length(), letterPaintBounds);
         width = letterColorPaint.measureText(text);
@@ -142,7 +154,7 @@ public class SudokuBoard extends View {
         this.canvas.drawText(text,x ,y , letterColorPaint);
     }
 
-    public void drawCandidates(int row, int col, List<Integer> candidates, boolean highlighted){
+    public void drawCandidates(int row, int col, List<Integer> candidates){
         int rectDimension = (int)(cellSize / 3.3);
         String sampleText = "0";
         candidatePaint.setTextSize(rectDimension);
