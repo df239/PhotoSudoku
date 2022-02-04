@@ -8,8 +8,7 @@
     android:layout_height="match_parent"
     android:background="@color/bg_main"
     tools:context=".SudokuDisplayPage">
-
-
+    
 
     <com.example.photosudoku.SudokuBoard
         android:id="@+id/sudokuBoard_displayPage"
@@ -146,6 +145,13 @@
 
 
     </LinearLayout>
+    <androidx.fragment.app.FragmentContainerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sudoku_grid_fragment"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="196dp"
+        android:name="com.example.photosudoku.SudokuGrid"/>
 
     <!--
     <TableLayout

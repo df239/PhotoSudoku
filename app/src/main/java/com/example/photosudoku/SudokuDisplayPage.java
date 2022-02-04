@@ -46,6 +46,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
         setContentView(R.layout.activity_sudoku_display_page);
 
         textView = (TextView)findViewById(R.id.tempText);
+
         //table = (TableLayout)findViewById(R.id.sudokuTable);
         mainLayout = (ConstraintLayout)findViewById(R.id.sudokuDisplayLayout);
         sudokuBoard = findViewById(R.id.sudokuBoard_displayPage);
@@ -169,6 +170,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
             TableRow tableRow = new TableRow(this);
             table.addView(tableRow);
             for (int col = 0; col < 9; col++){
+                /*
                 EditText cell = new EditText(this);
                 cell.setEms(1);
                 cell.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -186,6 +188,14 @@ public class SudokuDisplayPage extends AppCompatActivity {
                 if (sudoku[row][col] != 0){
                     cell.setText(String.valueOf(sudoku[row][col]));
                 }
+                */
+
+                CandidateCell cell = new CandidateCell(this);
+                cell.setValue(sudoku[row][col]);
+                cell.setBackground(getCellBorder(row,col));
+                cell.setLayoutParams(rowParams);
+                tableRow.addView(cell);
+                cell.displayCell();
             }
         }
     }
