@@ -69,8 +69,16 @@ public class SudokuBoard extends View {
 
         int action = event.getAction();
         if(action == MotionEvent.ACTION_DOWN){
-            this.selectedRow = (int)Math.ceil(y/cellSize)-1;
-            this.selectedCol = (int)Math.ceil(x/cellSize)-1;
+            int tappedRow = (int)Math.ceil(y/cellSize)-1;
+            int tappedCol = (int)Math.ceil(x/cellSize)-1;
+            if((this.selectedRow != -1 && this.selectedRow == tappedRow) && (this.selectedCol != -1 && this.selectedCol == tappedCol)){
+                this.selectedRow = -1;
+                this.selectedCol = -1;
+            }
+            else{
+                this.selectedCol = tappedCol;
+                this.selectedRow = tappedRow;
+            }
             this.invalidate();
             return true;
         }
