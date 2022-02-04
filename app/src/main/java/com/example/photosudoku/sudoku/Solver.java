@@ -10,8 +10,10 @@ public class Solver {
     // =-=-=-=-= BACKTRACKING =-=-=-=-= //
     public static int[][] solveBacktracking(Sudoku input){
         matrix = input.grid;
-        if(backtrack(0,0))
+        if(backtrack(0,0)){
+            input.steps.add(new BruteForce(matrix));
             return matrix;
+        }
         return null;
     }
 

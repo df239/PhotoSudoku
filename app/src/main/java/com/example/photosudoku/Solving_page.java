@@ -79,8 +79,6 @@ public class Solving_page extends AppCompatActivity {
             }
         }
 
-        stepIndex = 0;
-
         nextButton.setOnClickListener(v -> nextButtonClick());
 
         prevButton.setOnClickListener(v -> prevButtonClick());
@@ -95,6 +93,10 @@ public class Solving_page extends AppCompatActivity {
         textView.setText(output);
 
         sudokuBoard = findViewById(R.id.sudokuBoard);
+
+        stepIndex = 0;
+        String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
+        messageView.setText(message);
     }
 
     private void createSudokuUI(int[][] sudoku){
@@ -270,7 +272,7 @@ public class Solving_page extends AppCompatActivity {
             sudokuBoard.invalidate();
         }
         else{
-            messageView.setText("");
+            stepIndex = steps.size() - 1;
         }
     }
 

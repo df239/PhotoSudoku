@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class SudokuBoard extends View {
     private final int boardColor;
@@ -116,7 +117,7 @@ public class SudokuBoard extends View {
             ISolvingStep step = sudoku.steps.get(Solving_page.stepIndex);
             int[][] grid = step.getGrid();
             HashMap<String,List<Integer>> candidates = step.getCandidates();
-            Log.d("CameraActivity",candidates.toString());
+            //Log.d("CameraActivity",candidates.toString());
             Log.d("CameraActivity",step.getTitle());
             int[] highlightedSquares = step.getAffectedSquares();
             if(highlightedSquares.length > 0){
@@ -133,7 +134,7 @@ public class SudokuBoard extends View {
                     }
                     else{
                         String key = Integer.toString(row)+col;
-                        drawCandidates(row,col, candidates.get(key));
+                        drawCandidates(row,col, Objects.requireNonNull(candidates.get(key)));
                     }
                 }
             }

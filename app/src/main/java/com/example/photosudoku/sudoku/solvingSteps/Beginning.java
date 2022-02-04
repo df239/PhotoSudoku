@@ -51,7 +51,7 @@ public class Beginning implements ISolvingStep{
 
     @Override
     public String getTitle() {
-        return "beginning";
+        return "The Beginning";
     }
 
     @Override
