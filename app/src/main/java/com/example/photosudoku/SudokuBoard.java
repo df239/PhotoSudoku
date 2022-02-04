@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -120,7 +121,7 @@ public class SudokuBoard extends View {
             for (int row = 0; row < 9; row++){
                 for (int col = 0; col < 9; col++){
                     if (grid[row][col] != 0){
-                        drawNumber(grid[row][col],row,col, isToBeHighlighted(row, col, highlightedSquares));
+                        drawNumber(grid[row][col],row,col, isToBeHighlighted(row, col, highlightedSquares), sudoku.original[row][col] != 0);
                     }
                     else{
                         String key = Integer.toString(row)+col;
@@ -132,15 +133,15 @@ public class SudokuBoard extends View {
         else if(this.currentPage.equals("displayPage")){
             Log.d("CameraActivity","drawingOnDisplayPage");
             int[][] grid = SudokuDisplayPage.sudoku;
-            canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
             if(this.selectedRow != -1 && this.selectedCol != -1){
                 drawHighlightedCell(canvas,this.selectedRow,this.selectedCol);
             }
+            canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
             drawBoard(canvas);
             for (int row = 0; row < 9; row++){
                 for (int col = 0; col < 9; col++){
                     if (grid[row][col] != 0) {
-                        drawNumber(grid[row][col], row, col, false);
+                        drawNumber(grid[row][col], row, col, false, true);
                     }
                 }
             }
@@ -182,12 +183,15 @@ public class SudokuBoard extends View {
         canvas.drawRect(col*cellSize, row*cellSize, (col+1)*cellSize, (row+1)*cellSize, cellHighlightColorPaint);
     }
 
-    public void drawNumber(int number, int row, int col, boolean highlighted){
+    public void drawNumber(int number, int row, int col, boolean highlighted, boolean original){
         String text = Integer.toString(number);
-        letterColorPaint.setTextSize((int)(cellSize * 0.8));
+        letterColorPaint.setTextSize((int)(cellSize * 0.7));
 
         if(highlighted) letterColorPaint.setColor(letterNewColor);
         else letterColorPaint.setColor(letterColor);
+
+        if(original) letterColorPaint.setTypeface(Typeface.DEFAULT_BOLD);
+        else letterColorPaint.setTypeface(Typeface.DEFAULT);
 
         float width, height;
         letterColorPaint.getTextBounds(text, 0, text.length(), letterPaintBounds);

@@ -11,6 +11,7 @@ public class Sudoku {
     public List<ISolvingStep> steps;
 
     public int[][] grid;
+    public final int[][] original;
     private int[][] solution;
     private Cell[][] sudoku;
 
@@ -20,6 +21,7 @@ public class Sudoku {
 
     public Sudoku(int[][] sudokuGrid){
         this.grid = sudokuGrid;
+        this.original = new int[sudokuGrid.length][sudokuGrid.length];
         this.rows = new ArrayList<House>();
         this.cols = new ArrayList<House>();
         this.boxes = new ArrayList<House>();
@@ -40,6 +42,7 @@ public class Sudoku {
         Cell[][] matrix = new Cell[grid.length][grid.length];
         for(int x = 0; x < grid.length; x++){
             for(int y = 0; y < grid.length; y++){
+                this.original[x][y] = grid[x][y];
                 Cell c = new Cell(grid[x][y],x,y);
                 matrix[x][y] = c;
                 House temp = this.rows.get(c.ROW);
