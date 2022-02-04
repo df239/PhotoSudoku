@@ -189,13 +189,6 @@ public class SudokuDisplayPage extends AppCompatActivity {
                     cell.setText(String.valueOf(sudoku[row][col]));
                 }
                 */
-
-                CandidateCell cell = new CandidateCell(this);
-                cell.setValue(sudoku[row][col]);
-                cell.setBackground(getCellBorder(row,col));
-                cell.setLayoutParams(rowParams);
-                tableRow.addView(cell);
-                cell.displayCell();
             }
         }
     }
