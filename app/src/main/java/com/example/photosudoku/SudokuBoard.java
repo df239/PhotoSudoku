@@ -147,6 +147,10 @@ public class SudokuBoard extends View {
         }
         else if(this.currentPage.equals("displayPage")){
             Log.d("CameraActivity","drawingOnDisplayPage");
+            ArrayList<Integer> invalidSquares = SudokuDisplayPage.invalidSquares;
+            for(int i = 0; i < invalidSquares.size(); i+=2){
+                drawHighlightedCell(canvas,invalidSquares.get(i),invalidSquares.get(i+1),cellHighlightColorPaint);
+            }
             int[][] grid = SudokuDisplayPage.sudoku;
             if(this.selectedRow != -1 && this.selectedCol != -1){
                 drawHighlightedCell(canvas,this.selectedRow,this.selectedCol, cellSelectColorPaint);
