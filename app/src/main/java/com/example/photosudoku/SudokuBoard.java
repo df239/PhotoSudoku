@@ -29,11 +29,13 @@ public class SudokuBoard extends View {
     private final int letterColor;
     private final int letterNewColor;
     private final int cellHighlightColor;
+    private final int cellSelectColor;
 
     private final Paint boardColorPaint = new Paint();
     private final Paint letterColorPaint= new Paint();
     private final Paint cellHighlightColorPaint = new Paint();
     private final Paint candidatePaint = new Paint();
+    private final Paint cellSelectColorPaint = new Paint();
 
     private final Rect letterPaintBounds = new Rect();
     Rect candidateBounds = new Rect();
@@ -57,6 +59,7 @@ public class SudokuBoard extends View {
             letterNewColor = a.getInteger(R.styleable.SudokuBoard_letterNewColor, 0);
             cellHighlightColor = a.getInteger(R.styleable.SudokuBoard_cellHighlightColor, 0);
             currentPage = a.getString(R.styleable.SudokuBoard_selectedPage);
+            cellSelectColor = a.getInteger(R.styleable.SudokuBoard_cellSelectColor,0);
         }
         finally{
             a.recycle();
@@ -111,6 +114,9 @@ public class SudokuBoard extends View {
         cellHighlightColorPaint.setColor(cellHighlightColor);
         cellHighlightColorPaint.setAntiAlias(true);
 
+        cellSelectColorPaint.setStyle(Paint.Style.FILL);
+        cellSelectColorPaint.setColor(cellSelectColor);
+        cellSelectColorPaint.setAntiAlias(true);
 
         if(this.currentPage.equals("solvingPage")){
             Sudoku sudoku = Solving_page.sudoku;
@@ -122,7 +128,7 @@ public class SudokuBoard extends View {
             int[] highlightedSquares = step.getAffectedSquares();
             if(highlightedSquares.length > 0){
                 for(int i = 0; i < highlightedSquares.length; i += 2){
-                    drawHighlightedCell(canvas,highlightedSquares[i],highlightedSquares[i+1]);
+                    drawHighlightedCell(canvas,highlightedSquares[i],highlightedSquares[i+1], cellHighlightColorPaint);
                 }
             }
             canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
@@ -143,7 +149,7 @@ public class SudokuBoard extends View {
             Log.d("CameraActivity","drawingOnDisplayPage");
             int[][] grid = SudokuDisplayPage.sudoku;
             if(this.selectedRow != -1 && this.selectedCol != -1){
-                drawHighlightedCell(canvas,this.selectedRow,this.selectedCol);
+                drawHighlightedCell(canvas,this.selectedRow,this.selectedCol, cellSelectColorPaint);
             }
             canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
             drawBoard(canvas);
@@ -188,8 +194,8 @@ public class SudokuBoard extends View {
         }
     }
 
-    private void drawHighlightedCell(Canvas canvas, int row, int col){
-        canvas.drawRect(col*cellSize, row*cellSize, (col+1)*cellSize, (row+1)*cellSize, cellHighlightColorPaint);
+    private void drawHighlightedCell(Canvas canvas, int row, int col, Paint highlightPaint){
+        canvas.drawRect(col*cellSize, row*cellSize, (col+1)*cellSize, (row+1)*cellSize, highlightPaint);
     }
 
     public void drawNumber(int number, int row, int col, boolean highlighted, boolean original){

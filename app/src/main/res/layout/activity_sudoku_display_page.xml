@@ -22,6 +22,7 @@
         custom:cellHighlightColor="@color/light_red"
         custom:letterNewColor="@color/red"
         custom:selectedPage="displayPage"
+        custom:cellSelectColor="#b1ccb5"
         android:background="@color/white">
     </com.example.photosudoku.SudokuBoard>
 
