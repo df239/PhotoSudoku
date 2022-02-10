@@ -314,9 +314,9 @@ public class Solving_page extends AppCompatActivity {
 
         if (row != -1 && col != -1){
             sudokuBoard.addCompletedSquare(row,col,sudoku.solution[row][col]);
-        }
 
-        this.prevButton.setEnabled(false);
-        this.nextButton.setEnabled(false);
+            this.prevButton.setEnabled(false);
+            this.nextButton.setEnabled(false);
+        }
     }
 }

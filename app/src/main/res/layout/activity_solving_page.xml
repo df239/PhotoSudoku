@@ -35,44 +35,13 @@
 
     </com.example.photosudoku.SudokuBoard>
 
-    <Button
-        android:id="@+id/solveButton"
-        android:layout_width="117dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="16dp"
-        android:text="Solution"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/prevButton"
-        app:layout_constraintHorizontal_bias="0.666"
-        app:layout_constraintStart_toEndOf="@+id/toggleMessageButton" />
-
-    <ImageButton
-        android:id="@+id/prevButton"
-        android:layout_width="67dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/nextButton"
-        app:srcCompat="@drawable/arrow_back" />
-
-    <ImageButton
-        android:id="@+id/nextButton"
-        android:layout_width="68dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/arrow_forward" />
-
     <TextView
         android:id="@+id/messageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/solveButton"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_panel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent" />
@@ -91,8 +60,8 @@
         android:id="@+id/toggleMessageButton"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/round_button"
         android:insetTop="0dp"
         android:insetBottom="0dp"
@@ -102,30 +71,82 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:iconPadding="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/writeButton"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageButton
-        android:id="@+id/writeButton"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:onClick="solveParticularSquare"
-        app:layout_constraintBottom_toBottomOf="parent"
-
-        app:layout_constraintStart_toStartOf="parent"
-        custom:srcCompat="@drawable/ic_baseline_write" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sudokuBoard" />
 
     <ToggleButton
         android:id="@+id/toggleCandidatesButton"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
         android:checked="true"
         android:text=""
-        app:layout_constraintBottom_toTopOf="@+id/toggleMessageButton"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sudokuBoard" />
+
+    <LinearLayout
+        android:id="@+id/bottom_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+        </Space>
+
+        <ImageButton
+            android:id="@+id/writeButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:onClick="solveParticularSquare"
+            custom:srcCompat="@drawable/ic_baseline_write" />
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+        </Space>
+
+        <Button
+            android:id="@+id/solveButton"
+            android:layout_width="117dp"
+            android:layout_height="50dp"
+            android:text="Solution" />
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+        </Space>
+
+        <ImageButton
+            android:id="@+id/prevButton"
+            android:layout_width="67dp"
+            android:layout_height="50dp"
+            app:srcCompat="@drawable/arrow_back" />
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+        </Space>
+
+        <ImageButton
+            android:id="@+id/nextButton"
+            android:layout_width="68dp"
+            android:layout_height="50dp"
+            app:srcCompat="@drawable/arrow_forward" />
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+        </Space>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
