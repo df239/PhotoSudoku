@@ -259,7 +259,10 @@ public class Solving_page extends AppCompatActivity {
         stepIndex = steps.size() - 1;
         String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
         messageView.setText(message);
+        this.sudokuBoard.clearHandpickedValues();
         sudokuBoard.invalidate();
+        this.prevButton.setEnabled(true);
+        this.nextButton.setEnabled(true);
     }
 
     public void nextButtonClick(){
@@ -293,5 +296,17 @@ public class Solving_page extends AppCompatActivity {
     public void toggleMessageVisible(View view){
         if(this.messageView.getVisibility() == View.VISIBLE) this.messageView.setVisibility(View.INVISIBLE);
         else this.messageView.setVisibility(View.VISIBLE);
+    }
+
+    public void solveParticularSquare(View view){
+        int row = this.sudokuBoard.getSelectedRow();
+        int col = this.sudokuBoard.getSelectedCol();
+
+        if (row != -1 && col != -1){
+            sudokuBoard.addCompletedSquare(row,col,sudoku.solution[row][col]);
+        }
+
+        this.prevButton.setEnabled(false);
+        this.nextButton.setEnabled(false);
     }
 }

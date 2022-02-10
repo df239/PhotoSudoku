@@ -30,6 +30,7 @@
         custom:letterColor="#000000"
         custom:cellHighlightColor="@color/light_red"
         custom:letterNewColor="@color/red"
+        custom:cellSelectColor="#b1ccb5"
         custom:selectedPage="solvingPage">
 
     </com.example.photosudoku.SudokuBoard>
@@ -37,7 +38,7 @@
     <Button
         android:id="@+id/solveButton"
         android:layout_width="117dp"
-        android:layout_height="54dp"
+        android:layout_height="50dp"
         android:layout_marginBottom="16dp"
         android:text="Solution"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -48,7 +49,7 @@
     <ImageButton
         android:id="@+id/prevButton"
         android:layout_width="67dp"
-        android:layout_height="52dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -58,7 +59,7 @@
     <ImageButton
         android:id="@+id/nextButton"
         android:layout_width="68dp"
-        android:layout_height="51dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -80,9 +81,8 @@
         android:id="@+id/tempView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginTop="16dp"
         android:text="ms"
-        app:layout_constraintBottom_toTopOf="@+id/messageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sudokuBoard" />
@@ -91,9 +91,9 @@
         android:id="@+id/toggleMessageButton"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="20dp"
-        android:background="#FFFFFF"
+        android:layout_marginStart="21dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/round_button"
         android:insetTop="0dp"
         android:insetBottom="0dp"
         android:onClick="toggleMessageVisible"
@@ -102,7 +102,19 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:iconPadding="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/writeButton"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/writeButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="solveParticularSquare"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        custom:srcCompat="@drawable/ic_baseline_write" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

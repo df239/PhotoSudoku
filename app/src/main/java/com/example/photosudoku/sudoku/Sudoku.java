@@ -12,7 +12,7 @@ public class Sudoku {
 
     public int[][] grid;
     public final int[][] original;
-    private int[][] solution;
+    public int[][] solution;
     private Cell[][] sudoku;
 
     private List<House> rows;

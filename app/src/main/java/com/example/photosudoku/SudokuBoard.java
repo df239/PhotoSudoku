@@ -45,12 +45,15 @@ public class SudokuBoard extends View {
     private String currentPage;
 
     private int selectedRow, selectedCol;
+    private ArrayList<int[]> handPickedNumbers;
 
     public SudokuBoard(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         this.selectedCol = -1;
         this.selectedRow = -1;
+
+        this.handPickedNumbers = new ArrayList<int[]>();
 
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.SudokuBoard,0,0);
         try{
@@ -131,6 +134,9 @@ public class SudokuBoard extends View {
                     drawHighlightedCell(canvas,highlightedSquares[i],highlightedSquares[i+1], cellHighlightColorPaint);
                 }
             }
+            if(this.selectedRow != -1 && this.selectedCol != -1){
+                drawHighlightedCell(canvas,this.selectedRow,this.selectedCol, cellSelectColorPaint);
+            }
             canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
             drawBoard(canvas);
             for (int row = 0; row < 9; row++){
@@ -138,11 +144,14 @@ public class SudokuBoard extends View {
                     if (grid[row][col] != 0){
                         drawNumber(grid[row][col],row,col, isToBeHighlighted(row, col, highlightedSquares), sudoku.original[row][col] != 0);
                     }
-                    else{
+                    else if(this.handPickedNumbers.size() == 0){
                         String key = Integer.toString(row)+col;
                         drawCandidates(row,col, Objects.requireNonNull(candidates.get(key)));
                     }
                 }
+            }
+            for(int[] arr : this.handPickedNumbers){
+                drawNumber(arr[2],arr[0],arr[1],false,false);
             }
         }
         else if(this.currentPage.equals("displayPage")){
@@ -255,12 +264,13 @@ public class SudokuBoard extends View {
         }
     }
 
-    public void setSelectedRow(int row){
-        this.selectedRow = row;
+    public void addCompletedSquare(int row, int col, int value){
+        this.handPickedNumbers.add(new int[]{row, col, value});
+        this.invalidate();
     }
 
-    public void setSelectedCol(int col){
-        this.selectedCol = col;
+    public void clearHandpickedValues(){
+        this.handPickedNumbers.clear();
     }
 
     public int getSelectedRow(){
