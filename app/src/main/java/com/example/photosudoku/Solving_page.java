@@ -16,10 +16,12 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.example.photosudoku.sudoku.Solver;
 import com.example.photosudoku.sudoku.Sudoku;
@@ -45,6 +47,7 @@ public class Solving_page extends AppCompatActivity {
     TextView messageView;
     TextView textView;
     Button toggleMessageButton;
+    ToggleButton toggleCandidatesButton;
 
     SudokuBoard sudokuBoard;
 
@@ -53,6 +56,7 @@ public class Solving_page extends AppCompatActivity {
     int[][] solution;
     List<ISolvingStep> steps;
     public static int stepIndex = 0;
+    public static boolean candidatesVisible = true;
 
     private static String TAG = "CameraActivity";
 
@@ -69,6 +73,7 @@ public class Solving_page extends AppCompatActivity {
         messageView = (TextView)findViewById(R.id.messageView);
         textView = (TextView)findViewById(R.id.tempView);
         toggleMessageButton = (Button)findViewById(R.id.toggleMessageButton);
+        toggleCandidatesButton = (ToggleButton)findViewById(R.id.toggleCandidatesButton);
 
         Intent intent = getIntent();
         int[][] sudoku = (int[][])intent.getSerializableExtra(SudokuDisplayPage.SUDOKU_KEY);
@@ -97,6 +102,11 @@ public class Solving_page extends AppCompatActivity {
         stepIndex = 0;
         String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
         messageView.setText(message);
+
+        toggleCandidatesButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            candidatesVisible = isChecked;
+            sudokuBoard.invalidate();
+        });
     }
 
     private void createSudokuUI(int[][] sudoku){

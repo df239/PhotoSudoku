@@ -144,7 +144,7 @@ public class SudokuBoard extends View {
                     if (grid[row][col] != 0){
                         drawNumber(grid[row][col],row,col, isToBeHighlighted(row, col, highlightedSquares), sudoku.original[row][col] != 0);
                     }
-                    else if(this.handPickedNumbers.size() == 0){
+                    else if(this.handPickedNumbers.size() == 0 && Solving_page.candidatesVisible){
                         String key = Integer.toString(row)+col;
                         drawCandidates(row,col, Objects.requireNonNull(candidates.get(key)));
                     }

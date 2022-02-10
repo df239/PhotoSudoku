@@ -89,9 +89,9 @@
 
     <Button
         android:id="@+id/toggleMessageButton"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="21dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
         android:layout_marginBottom="12dp"
         android:background="@drawable/round_button"
         android:insetTop="0dp"
@@ -116,5 +116,16 @@
 
         app:layout_constraintStart_toStartOf="parent"
         custom:srcCompat="@drawable/ic_baseline_write" />
+
+    <ToggleButton
+        android:id="@+id/toggleCandidatesButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:checked="true"
+        android:text=""
+        app:layout_constraintBottom_toTopOf="@+id/toggleMessageButton"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
