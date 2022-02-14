@@ -29,7 +29,7 @@ import org.opencv.android.OpenCVLoader;
 import java.io.IOException;
 
 public class HomePage extends AppCompatActivity implements ProcessingTaskHandler {
-    private boolean isProcessingImage = false;
+    private boolean isProcessingImage;
     Handler handler;
     ImageProcessingThread t;
     Snackbar bar;
@@ -65,6 +65,8 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
 
+        this.isProcessingImage = false;
+
         mainLaout = findViewById(R.id.main_page_layout);
 
         bar = Snackbar.make(mainLaout,getString(R.string.processing),Snackbar.LENGTH_INDEFINITE);
@@ -75,6 +77,7 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
                 ProcessingTask task = (ProcessingTask)msg.obj;
                 if(msg.what == ProcessingTask.STATE_COMPLETE){
                     bar.dismiss();
+                    isProcessingImage = false;
                     Intent sudokuDisplayIntent = new Intent(HomePage.this,SudokuDisplayPage.class);
                     int[][] sudoku = (int[][])task.getObject();
                     sudokuDisplayIntent.putExtra(SudokuDisplayPage.SUDOKU_KEY,sudoku);
@@ -86,10 +89,10 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
                 }
                 else if(msg.what == ProcessingTask.STATE_ERROR){
                     Snackbar.make(mainLaout,(String)task.getObject(),Snackbar.LENGTH_LONG).show();
+                    isProcessingImage = false;
                     bar.dismiss();
                     t=null;
                 }
-                isProcessingImage = false;
             }
         };
     }
@@ -112,11 +115,13 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
     }
 
     public void LoadSudokuFromGallery(View view){
-        mGetContent.launch("image/*");
+        if(!this.isProcessingImage){
+            mGetContent.launch("image/*");
+        }
     }
 
     private void processLoadedImage(Uri uri){
-        isProcessingImage = true;
+        this.isProcessingImage = true;
         Bitmap bitmap = null;
         try {
             bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
@@ -128,6 +133,7 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
         bar.setDuration(Snackbar.LENGTH_INDEFINITE);
         bar.show();
         t.start();
+
     }
 
     @Override
