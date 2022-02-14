@@ -43,7 +43,7 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
             }
         }
     );
-    
+
     private static String TAG = "CameraActivity";
     static{
         if(OpenCVLoader.initDebug()){
@@ -124,7 +124,7 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
             bar.setText(e.getMessage());
             bar.show();
         }
-        t = new ImageProcessingThread(bitmap,0,HomePage.this, getApplicationContext());
+        t = new ImageProcessingThread(bitmap,90,HomePage.this, getApplicationContext());
         bar.setDuration(Snackbar.LENGTH_INDEFINITE);
         bar.show();
         t.start();
