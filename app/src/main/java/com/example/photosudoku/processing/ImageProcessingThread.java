@@ -101,13 +101,7 @@ public class ImageProcessingThread extends Thread{
     public void run() {
         try{
             new ProcessingTask(originalPage,context.getString(R.string.locating_sudoku)).handleDecodeState(ProcessingTask.STATE_LOCATING_SUDOKU);
-            Bitmap rotated;
-            if(rotation != 0){
-                rotated = rotateImage(original,rotation);
-            }
-            else{
-                rotated = original;
-            }
+            Bitmap rotated = rotateImage(original,rotation);
             Bitmap processed = processImage(rotated);
             this.processed = processed;
 
@@ -144,17 +138,22 @@ public class ImageProcessingThread extends Thread{
         Imgproc.warpAffine(mat,dsc,rotationMatrix,size);
         */
         Bitmap bmp = null;
-        if(rotation == 90 || rotation == -270){
-            bmp = Bitmap.createBitmap(mat.rows(),mat.cols(), Bitmap.Config.ARGB_8888);
-            Core.rotate(mat,mat,Core.ROTATE_90_CLOCKWISE);
-        }
-        else if (rotation == 180 || rotation == -180){
-            bmp = Bitmap.createBitmap(mat.cols(),mat.rows(), Bitmap.Config.ARGB_8888);
-            Core.rotate(mat,mat,Core.ROTATE_180);
+        if (mat.height() > mat.width()){
+            bmp = bitmap;
         }
         else{
-            bmp = Bitmap.createBitmap(mat.rows(),mat.cols(), Bitmap.Config.ARGB_8888);
-            Core.rotate(mat,mat,Core.ROTATE_90_COUNTERCLOCKWISE);
+            if(rotation == 90 || rotation == -270){
+                bmp = Bitmap.createBitmap(mat.rows(),mat.cols(), Bitmap.Config.ARGB_8888);
+                Core.rotate(mat,mat,Core.ROTATE_90_CLOCKWISE);
+            }
+            else if (rotation == 180 || rotation == -180){
+                bmp = Bitmap.createBitmap(mat.cols(),mat.rows(), Bitmap.Config.ARGB_8888);
+                Core.rotate(mat,mat,Core.ROTATE_180);
+            }
+            else{
+                bmp = Bitmap.createBitmap(mat.rows(),mat.cols(), Bitmap.Config.ARGB_8888);
+                Core.rotate(mat,mat,Core.ROTATE_90_COUNTERCLOCKWISE);
+            }
         }
 
         Utils.matToBitmap(mat,bmp);
