@@ -3,6 +3,7 @@
     <string name="home_page_title">Photo Sudoku</string>
     <string name="enter_button">Enter</string>
     <string name="scan_button">Scan</string>
+    <string name="gallery_open_button">From Gallery</string>
     <string name="tutorial_button">How to Solve</string>
     <string name="locate_sudoku_text">Locate sudoku</string>
     <string name="sudoku_not_located_error">Sorry, I could not locate any sudoku. Try again.</string>

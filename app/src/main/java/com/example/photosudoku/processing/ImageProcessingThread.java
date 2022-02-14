@@ -1,6 +1,9 @@
 package com.example.photosudoku.processing;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.photosudoku.CameraPage;
 import com.example.photosudoku.R;
@@ -40,7 +43,8 @@ public class ImageProcessingThread extends Thread{
     //String OCRresult = "";
     Bitmap original;
     int rotation;
-    CameraPage originalPage;
+    ProcessingTaskHandler originalPage;
+    Context context;
 
     int[][] sudokuResult;
     Bitmap processed;
@@ -56,11 +60,12 @@ public class ImageProcessingThread extends Thread{
 //        observableSupport.addPropertyChangeListener(listener);
 //    }
 
-    public ImageProcessingThread(Bitmap originalBitmap, int rotationDegrees, CameraPage cameraPage){
+    public ImageProcessingThread(Bitmap originalBitmap, int rotationDegrees, ProcessingTaskHandler originalPage, Context context){
         super();
         original = originalBitmap;
         rotation = rotationDegrees;
-        originalPage = cameraPage;
+        this.originalPage = originalPage;
+        this.context = context;
         //recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
     }
 
@@ -95,14 +100,17 @@ public class ImageProcessingThread extends Thread{
     @Override
     public void run() {
         try{
-            new ProcessingTask(originalPage,originalPage.getString(R.string.locating_sudoku)).handleDecodeState(ProcessingTask.STATE_LOCATING_SUDOKU);
-            Bitmap rotated = rotateImage(original,rotation) ;
+            new ProcessingTask(originalPage,context.getString(R.string.locating_sudoku)).handleDecodeState(ProcessingTask.STATE_LOCATING_SUDOKU);
+            Bitmap rotated = original;
+            if(rotation != 0){
+                rotated = rotateImage(original,rotation);
+            }
             Bitmap processed = processImage(rotated);
             this.processed = processed;
 
 //            new ProcessingTask(originalPage,processed).handleDecodeState(ProcessingTask.STATE_COMPLETE);
 
-            new ProcessingTask(originalPage,originalPage.getString(R.string.reading_numbers)).handleDecodeState(ProcessingTask.STATE_READING_NUMBERS);
+            new ProcessingTask(originalPage,context.getString(R.string.reading_numbers)).handleDecodeState(ProcessingTask.STATE_READING_NUMBERS);
             int[][] sudokuMatrix = getMatrixFromBitmap(processed);
             new ProcessingTask(originalPage,sudokuMatrix).handleDecodeState(ProcessingTask.STATE_COMPLETE);
             sudokuResult = sudokuMatrix;
@@ -199,7 +207,7 @@ public class ImageProcessingThread extends Thread{
             }
         }
 
-        if(maxCurve.total() != 4) throw new Exception(originalPage.getString(R.string.sudoku_not_located_error));
+        if(maxCurve.total() != 4) throw new Exception(context.getString(R.string.sudoku_not_located_error));
 
 //        //largestContour = new MatOfPoint2f(contours.get(maxAreaIdx));
         Mat copy2 = copy.clone();
@@ -399,11 +407,11 @@ public class ImageProcessingThread extends Thread{
 
         }
         catch (Exception e){
-            throw new Exception(originalPage.getString(R.string.ocr_error)+" R"+(row+1)+"C"+(col+1));
+            throw new Exception(context.getString(R.string.ocr_error)+" R"+(row+1)+"C"+(col+1));
         }
 
         if (!valFound){
-            throw new Exception(originalPage.getString(R.string.ocr_error));
+            throw new Exception(context.getString(R.string.ocr_error));
         }
         return sudokuMatrix;
     }

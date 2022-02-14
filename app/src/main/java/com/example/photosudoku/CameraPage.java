@@ -38,6 +38,7 @@ import android.widget.TextView;
 
 import com.example.photosudoku.processing.ImageProcessingThread;
 import com.example.photosudoku.processing.ProcessingTask;
+import com.example.photosudoku.processing.ProcessingTaskHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -60,7 +61,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
-public class CameraPage extends AppCompatActivity implements PropertyChangeListener, SurfaceHolder.Callback {
+public class CameraPage extends AppCompatActivity implements PropertyChangeListener, SurfaceHolder.Callback, ProcessingTaskHandler {
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     PreviewView previewView;
@@ -216,7 +217,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                 int boxWidth = right - left;
                 Bitmap temp = Bitmap.createBitmap(photo,left,top,boxWidth,boxHeight);
 
-                t = new ImageProcessingThread(temp,rotation,CameraPage.this);
+                t = new ImageProcessingThread(temp,rotation,CameraPage.this, getApplicationContext());
                 bar.setDuration(Snackbar.LENGTH_INDEFINITE);
                 bar.show();
                 startMeasureTime = System.nanoTime();
@@ -253,6 +254,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
 
 
     //https://stackoverflow.com/questions/24341114/simple-illumination-correction-in-images-opencv-c
+    /*
     private void applyCLAHE(Mat srcArry, Mat dstArry) {
         //Function that applies the CLAHE algorithm to "dstArry".
 
@@ -280,7 +282,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         }
 
     }
-
+*/
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if(evt.getNewValue() instanceof int[][]){
