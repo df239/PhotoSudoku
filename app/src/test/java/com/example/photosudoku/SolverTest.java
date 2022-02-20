@@ -17,5 +17,16 @@ public class SolverTest {
         assertArrayEquals(TestingSamples.backtrack1result, Solver.solveBacktracking(sudoku2));
     }
 
+    @Test
+    public void naked_single_test(){
+        Sudoku sudoku1 = new Sudoku(TestingSamples.nakedSingle1);
+        assertTrue(Solver.solveNakedSingles(sudoku1));
+
+        Sudoku sudokuEmpty = new Sudoku(TestingSamples.empty);
+        assertFalse(Solver.solveNakedSingles(sudokuEmpty));
+
+        Sudoku sudoku2 = new Sudoku(TestingSamples.backtrack1);
+        assertFalse(Solver.solveNakedSingles(sudoku2));
+    }
 
 }
