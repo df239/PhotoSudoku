@@ -22,8 +22,8 @@ public class Beginning implements ISolvingStep{
                 Cell c = matrix[row][col];
                 if(!c.solved()){
                     String key = Integer.toString(row)+col;
-                    Log.d("CameraActivity",key);
-                    Log.d("CameraActivity",c.getCandidates().toString());
+                    //Log.d("CameraActivity",key);
+                    //Log.d("CameraActivity",c.getCandidates().toString());
                     List<Integer> temp = new ArrayList<>();
                     temp.addAll(c.getCandidates());
                     this.candidates.put(key,temp);
