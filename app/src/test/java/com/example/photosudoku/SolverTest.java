@@ -24,9 +24,21 @@ public class SolverTest {
 
         Sudoku sudokuEmpty = new Sudoku(TestingSamples.empty);
         assertFalse(Solver.solveNakedSingles(sudokuEmpty));
-
         Sudoku sudoku2 = new Sudoku(TestingSamples.backtrack1);
         assertFalse(Solver.solveNakedSingles(sudoku2));
+        Sudoku sudoku3 = new Sudoku(TestingSamples.hiddenSingle1);
+        assertFalse(Solver.solveNakedSingles(sudoku3));
+    }
+
+    @Test
+    public void hidden_single_test(){
+        Sudoku sudoku1 = new Sudoku(TestingSamples.hiddenSingle1);
+        assertTrue(Solver.solveHiddenSingles(sudoku1));
+
+        Sudoku sudokuEmpty = new Sudoku(TestingSamples.empty);
+        assertFalse(Solver.solveHiddenSingles(sudokuEmpty));
+        Sudoku sudoku2 = new Sudoku(TestingSamples.backtrack1);
+        assertFalse(Solver.solveHiddenSingles(sudoku2));
     }
 
 }
