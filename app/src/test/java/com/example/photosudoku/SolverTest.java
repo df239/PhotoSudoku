@@ -24,10 +24,12 @@ public class SolverTest {
 
         Sudoku sudokuEmpty = new Sudoku(TestingSamples.empty);
         assertFalse(Solver.solveNakedSingles(sudokuEmpty));
-        Sudoku sudoku2 = new Sudoku(TestingSamples.backtrack1);
-        assertFalse(Solver.solveNakedSingles(sudoku2));
-        Sudoku sudoku3 = new Sudoku(TestingSamples.hiddenSingle1);
-        assertFalse(Solver.solveNakedSingles(sudoku3));
+        Sudoku sudokuF2 = new Sudoku(TestingSamples.backtrack1);
+        assertFalse(Solver.solveNakedSingles(sudokuF2));
+        Sudoku sudokuF3 = new Sudoku(TestingSamples.hiddenSingle1);
+        assertFalse(Solver.solveNakedSingles(sudokuF3));
+        Sudoku sudokuF4 = new Sudoku(TestingSamples.pointingCandidates1);
+        assertFalse(Solver.solveNakedSingles(sudokuF4));
     }
 
     @Test
@@ -37,8 +39,23 @@ public class SolverTest {
 
         Sudoku sudokuEmpty = new Sudoku(TestingSamples.empty);
         assertFalse(Solver.solveHiddenSingles(sudokuEmpty));
-        Sudoku sudoku2 = new Sudoku(TestingSamples.backtrack1);
-        assertFalse(Solver.solveHiddenSingles(sudoku2));
+        Sudoku sudokuF2 = new Sudoku(TestingSamples.backtrack1);
+        assertFalse(Solver.solveHiddenSingles(sudokuF2));
+        Sudoku sudokuF3 = new Sudoku(TestingSamples.pointingCandidates1);
+        assertFalse(Solver.solveHiddenSingles(sudokuF3));
+    }
+
+    @Test
+    public void pointing_candidates_test(){
+        Sudoku sudoku1 = new Sudoku(TestingSamples.pointingCandidates1);
+        assertTrue(Solver.solvePointingCandidates(sudoku1));
+        Sudoku sudoku2 = new Sudoku(TestingSamples.pointingCandidates2);
+        assertTrue(Solver.solvePointingCandidates(sudoku2));
+
+        Sudoku sudokuEmpty = new Sudoku(TestingSamples.empty);
+        assertFalse(Solver.solvePointingCandidates(sudokuEmpty));
+        Sudoku sudokuF2 = new Sudoku(TestingSamples.backtrack1);
+        assertFalse(Solver.solvePointingCandidates(sudokuF2));
     }
 
 }
