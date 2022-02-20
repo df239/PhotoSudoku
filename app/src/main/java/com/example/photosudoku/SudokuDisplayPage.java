@@ -15,6 +15,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.photosudoku.sudoku.SudokuUtils;
+import com.example.photosudoku.utils.SudokuDisplayHelper;
+import com.example.photosudoku.utils.Validator;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -28,8 +30,8 @@ public class SudokuDisplayPage extends AppCompatActivity {
     SudokuBoard sudokuBoard;
     ConstraintLayout mainLayout;
 
-    public static int[][] sudoku;
-    public static ArrayList<Integer> invalidSquares;
+    private int[][] sudoku;
+    //public static ArrayList<Integer> invalidSquares;
 
     private long duration = 0;
     private boolean boardValid = true;
@@ -54,6 +56,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
 //        imageView.setImageBitmap(bmp);
 
         sudoku = (int[][])intent.getSerializableExtra(SUDOKU_KEY);
+        SudokuDisplayHelper.original = sudoku;
         duration = (long)intent.getLongExtra("duration",0);
         //createSudokuUI(this.sudoku);
         String output = TimeUnit.NANOSECONDS.toMillis(duration) +" ms";
@@ -61,8 +64,8 @@ public class SudokuDisplayPage extends AppCompatActivity {
 
         //String str = arrayToString(sudoku);
         //textView.setText(str);
-        invalidSquares = new ArrayList<>();
-        this.boardValid = checkBoardValidity(sudoku);
+        //invalidSquares = new ArrayList<>();
+        this.boardValid = Validator.checkBoardValidity(sudoku);
     }
 
     public void openSolvingScreen(View view){
@@ -80,7 +83,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     public void buttonOneClick(View view){
         if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1){
             sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 1;
-            this.boardValid = checkBoardValidity(sudoku);
+            this.boardValid = Validator.checkBoardValidity(sudoku);
             sudokuBoard.invalidate();
         }
     }
@@ -88,7 +91,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     public void buttonTwoClick(View view){
         if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
             sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 2;
-            this.boardValid = checkBoardValidity(sudoku);
+            this.boardValid = Validator.checkBoardValidity(sudoku);
             sudokuBoard.invalidate();
         }
     }
@@ -96,7 +99,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     public void buttonThreeClick(View view){
         if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
             sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 3;
-            this.boardValid = checkBoardValidity(sudoku);
+            this.boardValid = Validator.checkBoardValidity(sudoku);
             sudokuBoard.invalidate();
         }
     }
@@ -104,7 +107,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     public void buttonFourClick(View view){
         if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
             sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 4;
-            this.boardValid = checkBoardValidity(sudoku);
+            this.boardValid = Validator.checkBoardValidity(sudoku);
             sudokuBoard.invalidate();
         }
     }
@@ -112,7 +115,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     public void buttonFiveClick(View view){
         if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
             sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 5;
-            this.boardValid = checkBoardValidity(sudoku);
+            this.boardValid = Validator.checkBoardValidity(sudoku);
             sudokuBoard.invalidate();
         }
     }
@@ -120,7 +123,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     public void buttonSixClick(View view){
         if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
             sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 6;
-            this.boardValid = checkBoardValidity(sudoku);
+            this.boardValid = Validator.checkBoardValidity(sudoku);
             sudokuBoard.invalidate();
         }
     }
@@ -128,7 +131,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     public void buttonSevenClick(View view){
         if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
             sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 7;
-            this.boardValid = checkBoardValidity(sudoku);
+            this.boardValid = Validator.checkBoardValidity(sudoku);
             sudokuBoard.invalidate();
         }
     }
@@ -136,7 +139,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     public void buttonEightClick(View view){
         if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
             sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 8;
-            this.boardValid = checkBoardValidity(sudoku);
+            this.boardValid = Validator.checkBoardValidity(sudoku);
             sudokuBoard.invalidate();
         }
     }
@@ -144,7 +147,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     public void buttonNineClick(View view){
         if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1) {
             sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 9;
-            this.boardValid = checkBoardValidity(sudoku);
+            this.boardValid = Validator.checkBoardValidity(sudoku);
             sudokuBoard.invalidate();
         }
     }
@@ -152,95 +155,9 @@ public class SudokuDisplayPage extends AppCompatActivity {
     public void buttonDelClick(View view){
         if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1){
             sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 0;
-            this.boardValid = checkBoardValidity(sudoku);
+            this.boardValid = Validator.checkBoardValidity(sudoku);
             sudokuBoard.invalidate();
         }
-    }
-
-    private void findInvalidSquares(int[][] grid, int value, int row, int col, String type){
-        invalidSquares.clear();
-        switch(type){
-            case "row":{
-                for(int c = 0; c < 9; c++){
-                    if(grid[row][c] == value){
-                        invalidSquares.add(row);
-                        invalidSquares.add(c);
-                    }
-                }
-                break;
-            }
-            case "col":{
-                for(int r = 0; r < 9; r++){
-                    if(grid[r][col] == value){
-                        invalidSquares.add(r);
-                        invalidSquares.add(col);
-                    }
-                }
-                break;
-            }
-            default:{
-                for(int subrow = row; subrow < row+3; subrow++){
-                    for(int subcol = col; subcol < col+3; subcol++){
-                        if(grid[subrow][subcol] == value){
-                            invalidSquares.add(subrow);
-                            invalidSquares.add(subcol);
-                        }
-                    }
-                }
-                break;
-            }
-        }
-    }
-
-    private boolean checkBoardValidity(int[][] grid){
-        //check rows
-        for (int row = 0; row < grid.length; row++) {
-            HashSet<Integer> temp = new HashSet<>();
-            for (int col = 0; col < grid.length; col++) {
-                if (temp.contains(grid[row][col])) {
-                    findInvalidSquares(grid,grid[row][col],row,col,"row");
-                    return false;
-                }
-                if (grid[row][col] != 0) {
-                    temp.add(grid[row][col]);
-                }
-            }
-        }
-
-        //check columns
-        for(int col = 0; col < grid.length; col++){
-            HashSet<Integer> temp = new HashSet<>();
-            for (int row = 0; row < grid.length; row++) {
-                if (temp.contains(grid[row][col])) {
-                    findInvalidSquares(grid,grid[row][col],row,col,"col");
-                    return false;
-                }
-                if (grid[row][col] != 0) {
-                    temp.add(grid[row][col]);
-                }
-            }
-        }
-
-        //check boxes
-        for(int row = 0; row < 9; row+=3){
-            for(int col = 0; col < 9; col+=3){
-                HashSet<Integer> temp = new HashSet<>();
-                for(int subrow = row; subrow < row+3; subrow++){
-                    for(int subcol = col; subcol < col+3; subcol++){
-                        if(temp.contains(grid[subrow][subcol])){
-                            findInvalidSquares(grid,grid[subrow][subcol],row,col,"box");
-                            return false;
-                        }
-                        if(grid[subrow][subcol] != 0){
-                            temp.add(grid[subrow][subcol]);
-                        }
-                    }
-                }
-            }
-        }
-
-        invalidSquares.clear();
-        return true;
     }
 
     private String arrayToString(int[][] array){

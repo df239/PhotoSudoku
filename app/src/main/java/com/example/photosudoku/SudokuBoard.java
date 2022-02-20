@@ -17,6 +17,8 @@ import androidx.annotation.Nullable;
 import com.example.photosudoku.sudoku.Sudoku;
 import com.example.photosudoku.sudoku.solvingSteps.Beginning;
 import com.example.photosudoku.sudoku.solvingSteps.ISolvingStep;
+import com.example.photosudoku.utils.SudokuDisplayHelper;
+import com.example.photosudoku.utils.Validator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -122,8 +124,8 @@ public class SudokuBoard extends View {
         cellSelectColorPaint.setAntiAlias(true);
 
         if(this.currentPage.equals("solvingPage")){
-            Sudoku sudoku = Solving_page.sudoku;
-            ISolvingStep step = sudoku.steps.get(Solving_page.stepIndex);
+            Sudoku sudoku = SudokuDisplayHelper.currentSudoku;
+            ISolvingStep step = sudoku.steps.get(SudokuDisplayHelper.stepIndex);
             int[][] grid = step.getGrid();
             HashMap<String,List<Integer>> candidates = step.getCandidates();
             //Log.d("CameraActivity",candidates.toString());
@@ -144,7 +146,7 @@ public class SudokuBoard extends View {
                     if (grid[row][col] != 0){
                         drawNumber(grid[row][col],row,col, isToBeHighlighted(row, col, highlightedSquares), sudoku.original[row][col] != 0);
                     }
-                    else if(this.handPickedNumbers.size() == 0 && Solving_page.candidatesVisible){
+                    else if(this.handPickedNumbers.size() == 0 && SudokuDisplayHelper.candidatesVisible){
                         String key = Integer.toString(row)+col;
                         drawCandidates(row,col, Objects.requireNonNull(candidates.get(key)));
                     }
@@ -156,11 +158,11 @@ public class SudokuBoard extends View {
         }
         else if(this.currentPage.equals("displayPage")){
             Log.d("CameraActivity","drawingOnDisplayPage");
-            ArrayList<Integer> invalidSquares = SudokuDisplayPage.invalidSquares;
+            ArrayList<Integer> invalidSquares = Validator.invalidSquares;
             for(int i = 0; i < invalidSquares.size(); i+=2){
                 drawHighlightedCell(canvas,invalidSquares.get(i),invalidSquares.get(i+1),cellHighlightColorPaint);
             }
-            int[][] grid = SudokuDisplayPage.sudoku;
+            int[][] grid = SudokuDisplayHelper.original;
             if(this.selectedRow != -1 && this.selectedCol != -1){
                 drawHighlightedCell(canvas,this.selectedRow,this.selectedCol, cellSelectColorPaint);
             }

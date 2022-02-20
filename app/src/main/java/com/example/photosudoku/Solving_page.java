@@ -32,6 +32,7 @@ import com.example.photosudoku.sudoku.solvingSteps.ISolvingStep;
 import com.example.photosudoku.sudoku.solvingSteps.NakedPair;
 import com.example.photosudoku.sudoku.solvingSteps.NakedSingle;
 import com.example.photosudoku.sudoku.solvingSteps.PointingCandidates;
+import com.example.photosudoku.utils.SudokuDisplayHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,12 +52,12 @@ public class Solving_page extends AppCompatActivity {
 
     SudokuBoard sudokuBoard;
 
-    public static int[][] original;
-    public static Sudoku sudoku;
+    private int[][] original;
+    //public static Sudoku sudoku;
     int[][] solution;
     List<ISolvingStep> steps;
-    public static int stepIndex = 0;
-    public static boolean candidatesVisible = true;
+    //public static int stepIndex = 0;
+    //public static boolean candidatesVisible = true;
 
     private static String TAG = "CameraActivity";
 
@@ -99,12 +100,12 @@ public class Solving_page extends AppCompatActivity {
 
         sudokuBoard = findViewById(R.id.sudokuBoard);
 
-        stepIndex = 0;
-        String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
+        SudokuDisplayHelper.stepIndex = 0;
+        String message = (SudokuDisplayHelper.stepIndex + 1) + " - "  + this.steps.get(SudokuDisplayHelper.stepIndex).getTitle() + "\n" + this.steps.get(SudokuDisplayHelper.stepIndex).getMessage();
         messageView.setText(message);
 
         toggleCandidatesButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            candidatesVisible = isChecked;
+            SudokuDisplayHelper.candidatesVisible = isChecked;
             sudokuBoard.invalidate();
         });
     }
@@ -234,40 +235,40 @@ public class Solving_page extends AppCompatActivity {
     }
 
     private void solveSudoku(int[][] matrix){
-        sudoku = new Sudoku(matrix);
+        SudokuDisplayHelper.currentSudoku = new Sudoku(matrix);
 
         int noChangeCounter = 0;
-        while(!sudoku.solved()){
+        while(!SudokuDisplayHelper.currentSudoku.solved()){
             if (noChangeCounter == 1){
                 //System.out.println("Could not solve. Using backtracking:");
-                this.solution = Solver.solveBacktracking(sudoku);
+                this.solution = Solver.solveBacktracking(SudokuDisplayHelper.currentSudoku);
                 break;
             }
-            if(Solver.solveNakedSingles(sudoku)){
+            if(Solver.solveNakedSingles(SudokuDisplayHelper.currentSudoku)){
                 continue;
             }
-            if(Solver.solveHiddenSingles(sudoku)){
+            if(Solver.solveHiddenSingles(SudokuDisplayHelper.currentSudoku)){
                 continue;
             }
-            if(Solver.solvePointingCandidates(sudoku)){
+            if(Solver.solvePointingCandidates(SudokuDisplayHelper.currentSudoku)){
                 continue;
             }
-            if(Solver.solveNakedPair(sudoku)){
+            if(Solver.solveNakedPair(SudokuDisplayHelper.currentSudoku)){
                 continue;
             }
-            if(Solver.solveHiddenPair(sudoku)){
+            if(Solver.solveHiddenPair(SudokuDisplayHelper.currentSudoku)){
                 continue;
             }
             noChangeCounter++;
         }
 
-        this.solution = sudoku.grid;
-        this.steps = sudoku.steps;
+        this.solution = SudokuDisplayHelper.currentSudoku.grid;
+        this.steps = SudokuDisplayHelper.currentSudoku.steps;
     }
 
     public void solveButtonClick(){
-        stepIndex = steps.size() - 1;
-        String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
+        SudokuDisplayHelper.stepIndex = steps.size() - 1;
+        String message = (SudokuDisplayHelper.stepIndex + 1) + " - "  + this.steps.get(SudokuDisplayHelper.stepIndex).getTitle() + "\n" + this.steps.get(SudokuDisplayHelper.stepIndex).getMessage();
         messageView.setText(message);
         this.sudokuBoard.clearHandpickedValues();
         sudokuBoard.invalidate();
@@ -276,30 +277,30 @@ public class Solving_page extends AppCompatActivity {
     }
 
     public void nextButtonClick(){
-        if(stepIndex < steps.size() - 1){
-            stepIndex ++;
-            String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
+        if(SudokuDisplayHelper.stepIndex < steps.size() - 1){
+            SudokuDisplayHelper.stepIndex ++;
+            String message = (SudokuDisplayHelper.stepIndex + 1) + " - "  + this.steps.get(SudokuDisplayHelper.stepIndex).getTitle() + "\n" + this.steps.get(SudokuDisplayHelper.stepIndex).getMessage();
             messageView.setText(message);
             //rewriteSudokuBoard(this.steps.get(stepIndex));
             //rewriteGrid(this.steps.get(stepIndex));
             sudokuBoard.invalidate();
         }
         else{
-            stepIndex = steps.size() - 1;
+            SudokuDisplayHelper.stepIndex = steps.size() - 1;
         }
     }
 
     public void prevButtonClick(){
-        if(stepIndex > 0){
-            stepIndex --;
-            String message = (stepIndex + 1) + " - "  + this.steps.get(stepIndex).getTitle() + "\n" + this.steps.get(stepIndex).getMessage();
+        if(SudokuDisplayHelper.stepIndex > 0){
+            SudokuDisplayHelper.stepIndex --;
+            String message = (SudokuDisplayHelper.stepIndex + 1) + " - "  + this.steps.get(SudokuDisplayHelper.stepIndex).getTitle() + "\n" + this.steps.get(SudokuDisplayHelper.stepIndex).getMessage();
             messageView.setText(message);
             //rewriteSudokuBoard(this.steps.get(stepIndex));
             //rewriteGrid(this.steps.get(stepIndex));
             sudokuBoard.invalidate();
         }
         else{
-            stepIndex = 0;
+            SudokuDisplayHelper.stepIndex = 0;
         }
     }
 
@@ -313,7 +314,7 @@ public class Solving_page extends AppCompatActivity {
         int col = this.sudokuBoard.getSelectedCol();
 
         if (row != -1 && col != -1){
-            sudokuBoard.addCompletedSquare(row,col,sudoku.solution[row][col]);
+            sudokuBoard.addCompletedSquare(row,col,SudokuDisplayHelper.currentSudoku.solution[row][col]);
 
             this.prevButton.setEnabled(false);
             this.nextButton.setEnabled(false);
