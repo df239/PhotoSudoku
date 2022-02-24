@@ -7,6 +7,7 @@ import com.example.photosudoku.sudoku.SudokuUtils;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -189,5 +190,30 @@ public class SudokuTest {
         assertEquals(8, row0.getCellDifference(cell00,cell11).size());
         assertEquals(8, col0.getCellDifference(cell00,cell11).size());
         assertEquals(7, box0.getCellDifference(cell00,cell11).size());
+    }
+
+    @Test
+    public void cell_remove_candidates_test(){
+        Sudoku sudoku = new Sudoku(TestingSamples.sample1);
+        Cell cell = sudoku.getCellMatrix()[4][4];
+        List<Integer> initialCandidates = cell.getCandidates();
+        cell.removeCandidates(Arrays.asList(2,7,9));
+        List<Integer> afterRemoval = cell.getCandidates();
+        assertNotEquals(initialCandidates,afterRemoval);
+        assertEquals(initialCandidates.size() - 3, afterRemoval.size());
+    }
+
+    @Test
+    public void cell_shared_candidates_test(){
+        Sudoku sudoku = new Sudoku(TestingSamples.sample1);
+        Cell cell45 = sudoku.getCellMatrix()[4][5];
+        Cell cell16 = sudoku.getCellMatrix()[1][6];
+        Cell cell26 = sudoku.getCellMatrix()[2][6];
+        Cell cell40 = sudoku.getCellMatrix()[0][4];
+
+        assertEquals(0, cell45.getSharedCandidatesWith(cell16).size());
+        assertEquals(2, cell40.getSharedCandidatesWith(cell45).size());
+        assertEquals(1, cell16.getSharedCandidatesWith(cell40).size());
+        assertEquals(cell26.getCandidates().size(), cell26.getSharedCandidatesWith(cell16).size());
     }
 }

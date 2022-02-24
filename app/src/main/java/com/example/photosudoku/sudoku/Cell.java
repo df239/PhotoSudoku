@@ -82,7 +82,7 @@ public class Cell {
     }
 
     public List<Integer> getCandidates(){
-        return this.candidates;
+        return new ArrayList<>(this.candidates);
     }
 
     public HashSet<Integer> getSharedCandidatesWith(Cell cell){
