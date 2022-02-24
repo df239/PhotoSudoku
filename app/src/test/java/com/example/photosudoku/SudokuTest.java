@@ -2,7 +2,10 @@ package com.example.photosudoku;
 
 import android.util.Log;
 
+import com.example.photosudoku.sudoku.Cell;
+import com.example.photosudoku.sudoku.House;
 import com.example.photosudoku.sudoku.Sudoku;
+import com.example.photosudoku.sudoku.SudokuUtils;
 
 import org.junit.Test;
 
@@ -71,6 +74,23 @@ public class SudokuTest {
         for(int i = 0; i < candidateAmounts.length; i++){
             int len = sudoku3.getCellMatrix()[candidatePlaces[2*i]][candidatePlaces[2*i+1]].getCandidates().size();
             assertEquals(candidateAmounts[i],len);
+        }
+    }
+
+    @Test
+    public void update_candidates_test(){
+        Sudoku sudoku = new Sudoku(TestingSamples.sample1);
+        int rowIdx = 4;
+        int colIdx = 4;
+        int boxIdx = SudokuUtils.getBox(rowIdx,colIdx);
+        int value = 7;
+        if(sudoku.getRow(rowIdx).getCandidates().contains(value) || sudoku.getCol(colIdx).getCandidates().contains(value) || sudoku.getBox(boxIdx).getCandidates().contains(value)){
+            Cell cell = sudoku.getCellMatrix()[rowIdx][colIdx];
+            cell.setValue(value);
+            sudoku.updateCellCandidates(cell);
+            assertFalse(sudoku.getRow(rowIdx).getCandidates().contains(value));
+            assertFalse(sudoku.getCol(colIdx).getCandidates().contains(value));
+            assertFalse(sudoku.getBox(boxIdx).getCandidates().contains(value));
         }
     }
 }
