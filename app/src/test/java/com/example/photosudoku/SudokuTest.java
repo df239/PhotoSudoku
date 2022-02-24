@@ -1,7 +1,5 @@
 package com.example.photosudoku;
 
-import android.util.Log;
-
 import com.example.photosudoku.sudoku.Cell;
 import com.example.photosudoku.sudoku.House;
 import com.example.photosudoku.sudoku.Sudoku;
@@ -92,5 +90,104 @@ public class SudokuTest {
             assertFalse(sudoku.getCol(colIdx).getCandidates().contains(value));
             assertFalse(sudoku.getBox(boxIdx).getCandidates().contains(value));
         }
+    }
+
+    @Test
+    public void add_cells_to_house_test(){
+        House house = new House("row");
+        assertEquals(0, house.getGroup().size());
+        Cell cell = new Cell(2,3,4);
+        Cell cell0 = new Cell(0,1,2);
+        house.add(cell);
+        assertEquals(1,house.getGroup().size());
+        house.add(cell0);
+        assertEquals(2,house.getGroup().size());
+        assertTrue(house.contains(cell.getValue()));
+        assertFalse(house.contains(cell0.getValue()));
+    }
+
+    @Test
+    public void check_house_candidates(){
+        Sudoku sudoku = new Sudoku(TestingSamples.sample1);
+        House row4 = sudoku.getRow(4);
+        List<Integer> rowCandidates = Arrays.asList(2,3,4,6,7,8,9);
+        assertEquals(new HashSet<Integer>(rowCandidates), row4.getCandidates());
+
+        House col6 = sudoku.getCol(6);
+        List<Integer> colCandidates = Arrays.asList(1,4,6,7,8,9);
+        assertEquals(new HashSet<Integer>(colCandidates),col6.getCandidates());
+
+        House box3 = sudoku.getBox(2);
+        List<Integer> boxCandidates = Arrays.asList(1,3,6,8);
+        assertEquals(new HashSet<Integer>(boxCandidates),box3.getCandidates());
+    }
+
+    @Test
+    public void get_house_cross_section_test(){
+        Sudoku sudoku = new Sudoku(TestingSamples.sample1);
+        House row5 = sudoku.getRow(5);
+        House box5 = sudoku.getBox(5);
+        House col6 = sudoku.getCol(6);
+
+        assertEquals(2, row5.getCrossSection(box5, true).size());
+        assertEquals(0, row5.getCrossSection(col6, true).size());
+        assertEquals(2, box5.getCrossSection(row5, true).size());
+        assertEquals(2, box5.getCrossSection(col6, true).size());
+        assertEquals(0, col6.getCrossSection(row5, true).size());
+        assertEquals(2, col6.getCrossSection(box5, true).size());
+
+        assertEquals(3, row5.getCrossSection(box5, false).size());
+        assertEquals(1, row5.getCrossSection(col6, false).size());
+        assertEquals(3, box5.getCrossSection(row5, false).size());
+        assertEquals(3, box5.getCrossSection(col6, false).size());
+        assertEquals(1, col6.getCrossSection(row5, false).size());
+        assertEquals(3, col6.getCrossSection(box5, false).size());
+
+        House row6 = sudoku.getRow(6);
+        House box6 = sudoku.getBox(6);
+        House col7 = sudoku.getCol(7);
+
+        assertEquals(0, row5.getCrossSection(row6, true).size());
+        assertEquals(0, row6.getCrossSection(row5, true).size());
+        assertEquals(0, box5.getCrossSection(box6, true).size());
+        assertEquals(0, box6.getCrossSection(box5, true).size());
+        assertEquals(0, col6.getCrossSection(col7, true).size());
+        assertEquals(0, col7.getCrossSection(col6, true).size());
+
+        assertEquals(0, row5.getCrossSection(row6, false).size());
+        assertEquals(0, row6.getCrossSection(row5, false).size());
+        assertEquals(0, box5.getCrossSection(box6, false).size());
+        assertEquals(0, box6.getCrossSection(box5, false).size());
+        assertEquals(0, col6.getCrossSection(col7, false).size());
+        assertEquals(0, col7.getCrossSection(col6, false).size());
+    }
+
+    @Test
+    public void get_cell_diff_between_houses_test(){
+        Sudoku sudoku = new Sudoku(TestingSamples.sample1);
+        House row0 = sudoku.getRow(0);
+        House col0 = sudoku.getCol(0);
+        House box0 = sudoku.getBox(0);
+
+        assertEquals(8,row0.getCellDifference(col0.getGroup()).size());
+        assertEquals(6,row0.getCellDifference(box0.getGroup()).size());
+        assertEquals(8,col0.getCellDifference(row0.getGroup()).size());
+        assertEquals(6,col0.getCellDifference(box0.getGroup()).size());
+        assertEquals(6,box0.getCellDifference(row0.getGroup()).size());
+        assertEquals(6,box0.getCellDifference(col0.getGroup()).size());
+
+        House box4 = sudoku.getBox(4);
+        assertEquals(9, row0.getCellDifference(box4.getGroup()).size());
+        assertEquals(9, col0.getCellDifference(box4.getGroup()).size());
+        assertEquals(9, box0.getCellDifference(box4.getGroup()).size());
+        assertEquals(9, box4.getCellDifference(row0.getGroup()).size());
+        assertEquals(9, box4.getCellDifference(col0.getGroup()).size());
+        assertEquals(9, box4.getCellDifference(box0.getGroup()).size());
+
+        Cell cell00 = sudoku.getCellMatrix()[0][0];
+        Cell cell11 = sudoku.getCellMatrix()[1][1];
+        assertEquals(8, row0.getCellDifference(cell00,cell11).size());
+        assertEquals(8, col0.getCellDifference(cell00,cell11).size());
+        assertEquals(7, box0.getCellDifference(cell00,cell11).size());
     }
 }

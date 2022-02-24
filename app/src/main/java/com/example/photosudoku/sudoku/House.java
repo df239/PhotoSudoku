@@ -44,18 +44,31 @@ public class House {
 
     public HashSet<Integer> getCandidates(){
         HashSet<Integer> temp = new HashSet<Integer>();
-        temp.addAll(this.candidates);
+        for(Cell c: this.group) {
+            if (!c.solved()) {
+                temp.addAll(c.getCandidates());
+            }
+        }
         return temp;
     }
 
-    public HashSet<Cell> getCrossSection(House house){
+    public HashSet<Cell> getCrossSection(House house, boolean countUnsolvedOnly){
         HashSet<Cell> set = new HashSet<Cell>();
         for (Cell c : house.getGroup()){
-            if (!c.solved() && this.group.contains(c)){
+            if(countUnsolvedOnly){
+                if (!c.solved() && this.group.contains(c)){
+                    set.add(c);
+                }
+            }
+            else if(this.group.contains(c)){
                 set.add(c);
             }
         }
         return set;
+    }
+
+    public HashSet<Cell> getCrossSection(House house){
+        return this.getCrossSection(house, true);
     }
 
     public HashSet<Cell> getCellDifference(Collection<Cell> collection){
