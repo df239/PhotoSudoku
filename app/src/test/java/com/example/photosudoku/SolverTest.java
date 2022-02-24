@@ -58,4 +58,26 @@ public class SolverTest {
         assertFalse(Solver.solvePointingCandidates(sudokuF2));
     }
 
+    @Test
+    public void naked_pairs_test(){
+        Sudoku sudoku1 = new Sudoku(TestingSamples.nakedPair1);
+        assertTrue(Solver.solveNakedPair(sudoku1));
+        Sudoku sudoku2 = new Sudoku(TestingSamples.nakedPair2);
+        assertTrue(Solver.solveNakedPair(sudoku2));
+        Sudoku sudoku3 = new Sudoku(TestingSamples.nakedPair3);  //contains two naked pairs, therefore it should assert true twice
+        assertTrue(Solver.solveNakedPair(sudoku3));
+        assertTrue(Solver.solveNakedPair(sudoku3));
+        Sudoku sudoku4 = new Sudoku(TestingSamples.nakedPair4);
+        assertTrue(Solver.solveNakedPair(sudoku4));
+
+        Sudoku sudokuEmpty = new Sudoku(TestingSamples.empty);
+        assertFalse(Solver.solveNakedPair(sudokuEmpty));
+        Sudoku sudokuF1 = new Sudoku(TestingSamples.backtrack1);
+        assertFalse(Solver.solveNakedPair(sudokuF1));
+        Sudoku sudokuF2 = new Sudoku(TestingSamples.nakedPair5F);
+        assertFalse(Solver.solveNakedPair(sudokuF2));
+        Sudoku sudokuF3 = new Sudoku(TestingSamples.nakedPair6F);
+        assertFalse(Solver.solveNakedPair(sudokuF3));
+    }
+
 }
