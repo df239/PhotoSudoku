@@ -18,7 +18,7 @@ public class CellGroup {
         return set;
     }
 
-    public HashSet<Integer> getSharedCandidates(){
+    public HashSet<Integer> getSharedCandidatesBetweenAny(){
         HashSet<Integer> set = new HashSet<>();
         HashSet<Integer> candidates = this.getCandidates();
         for (int candidate : candidates){

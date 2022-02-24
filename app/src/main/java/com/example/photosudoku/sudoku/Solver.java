@@ -171,7 +171,7 @@ public class Solver {
 
     private static boolean removePointingCandidates(House box, House group, Sudoku input){
         CellGroup crossSection = new CellGroup(box.getCrossSection(group));
-        HashSet<Integer> sharedCandidates = crossSection.getSharedCandidates();
+        HashSet<Integer> sharedCandidates = crossSection.getSharedCandidatesBetweenAny();
         if (crossSection.size() > 1 && sharedCandidates.size() != 0){
             CellGroup groupExclusive = new CellGroup(group.getCellDifference(crossSection.getCells()));
             CellGroup boxExclusive = new CellGroup(box.getCellDifference(crossSection.getCells()));

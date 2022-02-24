@@ -1,14 +1,15 @@
 package com.example.photosudoku;
 
 import com.example.photosudoku.sudoku.Cell;
+import com.example.photosudoku.sudoku.CellGroup;
 import com.example.photosudoku.sudoku.House;
 import com.example.photosudoku.sudoku.Sudoku;
 import com.example.photosudoku.sudoku.SudokuUtils;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -203,17 +204,84 @@ public class SudokuTest {
         assertEquals(initialCandidates.size() - 3, afterRemoval.size());
     }
 
+    //test passes when run individually, but fails when run in bulk ???
     @Test
     public void cell_shared_candidates_test(){
         Sudoku sudoku = new Sudoku(TestingSamples.sample1);
         Cell cell45 = sudoku.getCellMatrix()[4][5];
         Cell cell16 = sudoku.getCellMatrix()[1][6];
         Cell cell26 = sudoku.getCellMatrix()[2][6];
-        Cell cell40 = sudoku.getCellMatrix()[0][4];
+        Cell cell04 = sudoku.getCellMatrix()[0][4];
 
         assertEquals(0, cell45.getSharedCandidatesWith(cell16).size());
-        assertEquals(2, cell40.getSharedCandidatesWith(cell45).size());
-        assertEquals(1, cell16.getSharedCandidatesWith(cell40).size());
+        assertEquals(2, cell04.getSharedCandidatesWith(cell45).size());
+        assertEquals(1, cell16.getSharedCandidatesWith(cell04).size());
         assertEquals(cell26.getCandidates().size(), cell26.getSharedCandidatesWith(cell16).size());
+    }
+
+    @Test
+    public void cell_group_get_candidates(){
+        Sudoku sudoku = new Sudoku(TestingSamples.sample1);
+        Cell cell00 = sudoku.getCellMatrix()[0][0]; //solved
+        Cell cell01 = sudoku.getCellMatrix()[0][1];
+        Cell cell10 = sudoku.getCellMatrix()[1][0];
+        Cell cell11 = sudoku.getCellMatrix()[1][1];
+
+        CellGroup cg1 = new CellGroup(Arrays.asList(cell01,cell10,cell11));
+        assertEquals(new HashSet<>(Arrays.asList(1,4,5,7,8)), cg1.getCandidates());
+
+        CellGroup cg2 = new CellGroup(Arrays.asList(cell00,cell01));
+        assertEquals(new HashSet<>(Arrays.asList(5,7)), cg2.getCandidates());
+
+        CellGroup cg3 = new CellGroup(Collections.singletonList(cell00));
+        assertEquals(new HashSet<>(), cg3.getCandidates());
+    }
+
+    @Test
+    public void cell_group_get_shared_candidates(){
+        Sudoku sudoku = new Sudoku(TestingSamples.sample1);
+        Cell cell00 = sudoku.getCellMatrix()[0][0]; //solved
+        Cell cell01 = sudoku.getCellMatrix()[0][1];
+        Cell cell10 = sudoku.getCellMatrix()[1][0];
+        Cell cell11 = sudoku.getCellMatrix()[1][1];
+        Cell cell21 = sudoku.getCellMatrix()[2][1];
+
+        CellGroup cg1 = new CellGroup(Arrays.asList(cell01,cell10,cell11));
+        assertEquals(new HashSet<>(Arrays.asList(4,7)), cg1.getSharedCandidatesBetweenAny());
+
+        CellGroup cg2 = new CellGroup(Arrays.asList(cell10,cell11));
+        assertEquals(new HashSet<>(Arrays.asList(4,7)), cg2.getSharedCandidatesBetweenAny());
+
+        CellGroup cg3 = new CellGroup(Arrays.asList(cell10,cell21));
+        assertEquals(new HashSet<>(), cg3.getSharedCandidatesBetweenAny());
+
+        CellGroup cg4 = new CellGroup(Arrays.asList(cell01,cell10,cell11,cell21));
+        assertEquals(new HashSet<>(Arrays.asList(4,5,7,8)), cg4.getSharedCandidatesBetweenAny());
+
+        CellGroup cg5 = new CellGroup(Arrays.asList(cell00,cell11));
+        assertEquals(new HashSet<>(), cg5.getSharedCandidatesBetweenAny());
+    }
+
+    @Test
+    public void cell_group_shares_candidates_test(){
+        Sudoku sudoku = new Sudoku(TestingSamples.sample1);
+        Cell cell00 = sudoku.getCellMatrix()[0][0]; //solved
+        Cell cell01 = sudoku.getCellMatrix()[0][1];
+        Cell cell10 = sudoku.getCellMatrix()[1][0];
+        Cell cell11 = sudoku.getCellMatrix()[1][1];
+        Cell cell08 = sudoku.getCellMatrix()[0][8];
+        Cell cell28 = sudoku.getCellMatrix()[2][8];
+
+        CellGroup cg1 = new CellGroup(Arrays.asList(cell10,cell11));
+        assertTrue(cg1.sharesAnyCandidateWith(cell01.getCandidates()));
+        assertFalse(cg1.sharesAnyCandidateWith(cell00.getCandidates()));
+        assertFalse(cg1.sharesAnyCandidateWith(cell08.getCandidates()));
+
+        CellGroup cg2 = new CellGroup(Arrays.asList(cell01,cell08));
+        assertTrue(cg1.sharesAnyCandidateWith(cg2.getCandidates()));
+
+        CellGroup cg3 = new CellGroup(Arrays.asList(cell08,cell28));
+        CellGroup cg4 = new CellGroup(Arrays.asList(cell10,cell01));
+        assertFalse(cg4.sharesAnyCandidateWith(cg3.getCandidates()));
     }
 }
