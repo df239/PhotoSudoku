@@ -160,7 +160,7 @@ public class TestingSamples {
     // NAKED PAIRS
     //--------------------
 
-    //naked pair (3,9) in the first row - OK
+    //naked pair (3,9) in the first row
     public static int[][] nakedPair1 = {
             {1,0,0,0,0,2,0,0,8},
             {0,0,0,0,0,0,0,0,0},
@@ -173,7 +173,7 @@ public class TestingSamples {
             {0,0,0,6,0,0,0,0,0}
     };
 
-    //naked pair (3,9) in the first row plus cell of (6,7) in the first row - OK
+    //naked pair (3,9) in the first row plus cell of (6,7) in the first row
     public static int[][] nakedPair2 = {
             {1,0,0,0,0,2,0,0,8},
             {0,0,0,0,0,0,0,0,5},
@@ -238,5 +238,50 @@ public class TestingSamples {
             {0,0,0,0,0,0,0,5,0},
             {0,0,0,6,0,0,0,0,0}
     };
+
+    //--------------------
+    // HIDDEN PAIRS
+    //--------------------
+
+    // hidden pair (3,9) in the first row
+    public static int[][] hiddenPair1 = {
+            {1,0,0,0,0,2,0,0,8},
+            {0,0,0,0,0,0,0,0,0},
+            {0,6,2,9,3,0,4,0,0},
+            {5,0,0,7,9,0,0,0,0},
+            {0,0,0,0,0,0,9,7,0},
+            {0,0,3,0,0,0,0,0,0},
+            {0,0,0,0,0,0,3,0,0},
+            {0,0,0,0,0,0,0,0,0},
+            {0,0,9,0,0,0,0,0,0}
+    };
+
+    // hidden pair (3,9) in the first row, which uncovers hidden pair (7,6) - should succeed twice
+    public static int[][] hiddenPair2 = {
+            {1,0,0,0,0,2,0,0,8},
+            {0,0,0,0,0,0,0,0,0},
+            {0,0,2,9,3,6,4,0,0},
+            {5,0,0,7,9,0,0,0,0},
+            {0,0,0,0,0,0,9,7,0},
+            {0,0,3,0,0,0,0,0,0},
+            {0,0,0,0,7,0,3,0,0},
+            {0,0,0,0,0,0,0,0,0},
+            {0,0,9,0,0,0,0,0,0}
+    };
+
+    // hidden pair (3,9) in the first row and a 9 in one other cell - should fail
+    public static int[][] hiddenPair3F = {
+            {1,0,0,0,0,2,0,0,8},
+            {0,0,0,0,0,0,0,0,0},
+            {0,6,2,5,3,0,4,0,0},
+            {5,0,0,7,9,0,0,0,0},
+            {0,0,0,0,0,0,9,7,0},
+            {0,0,3,0,0,0,0,0,0},
+            {0,0,0,0,0,0,3,0,0},
+            {0,9,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0}
+    };
+
+
 
 }

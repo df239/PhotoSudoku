@@ -80,4 +80,20 @@ public class SolverTest {
         assertFalse(Solver.solveNakedPair(sudokuF3));
     }
 
+    @Test
+    public void hidden_pairs_test(){
+        Sudoku sudoku1 = new Sudoku(TestingSamples.hiddenPair1);
+        assertTrue(Solver.solveHiddenPair(sudoku1));
+        Sudoku sudoku2 = new Sudoku(TestingSamples.hiddenPair2);
+        assertTrue(Solver.solveHiddenPair(sudoku2));
+        assertTrue(Solver.solveHiddenPair(sudoku2));
+
+        Sudoku sudokuEmpty = new Sudoku(TestingSamples.empty);
+        assertFalse(Solver.solveHiddenPair(sudokuEmpty));
+        Sudoku sudokuF1 = new Sudoku(TestingSamples.backtrack1);
+        assertFalse(Solver.solveHiddenPair(sudokuF1));
+        Sudoku sudokuF2 = new Sudoku(TestingSamples.hiddenPair3F);
+        assertFalse(Solver.solveHiddenPair(sudokuF2));
+    }
+
 }
