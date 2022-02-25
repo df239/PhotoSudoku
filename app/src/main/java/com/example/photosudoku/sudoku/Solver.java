@@ -180,14 +180,14 @@ public class Solver {
                     for (Cell c : groupExclusive.getCells()){
                         c.removeCandidate(sharedCandidate);
                     }
-                    input.steps.add(new PointingCandidates(sharedCandidate,group,box,crossSection.getCells(),input.grid,input.getCellMatrix()));
+                    input.steps.add(new PointingCandidates(sharedCandidate,group,box,crossSection.getCellsWithCandidate(sharedCandidate),input.grid,input.getCellMatrix()));
                     return true;
                 }
                 else if (!groupExclusive.getCandidates().contains(sharedCandidate) && boxExclusive.getCandidates().contains(sharedCandidate)){
                     for (Cell c : boxExclusive.getCells()){
                         c.removeCandidate(sharedCandidate);
                     }
-                    input.steps.add(new PointingCandidates(sharedCandidate,box,group,crossSection.getCells(),input.grid,input.getCellMatrix()));
+                    input.steps.add(new PointingCandidates(sharedCandidate,box,group,crossSection.getCellsWithCandidate(sharedCandidate),input.grid,input.getCellMatrix()));
                     return true;
                 }
             }

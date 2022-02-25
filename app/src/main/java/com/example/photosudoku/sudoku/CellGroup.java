@@ -50,6 +50,16 @@ public class CellGroup {
         return this.group;
     }
 
+    public HashSet<Cell> getCellsWithCandidate(int candidate){
+        HashSet<Cell> set = new HashSet<>();
+        for(Cell c : this.getCells()){
+            if(c.containsCandidate(candidate)){
+                set.add(c);
+            }
+        }
+        return set;
+    }
+
     public int size(){
         return this.group.size();
     }
