@@ -14,7 +14,7 @@ public class ImageProcessingTest implements ProcessingTaskHandler {
 
     @Test
     public void scanning_from_photo_test(){
-        
+
     }
 
     @Override
@@ -24,6 +24,8 @@ public class ImageProcessingTest implements ProcessingTaskHandler {
         }
     }
 
+    //http://www.java2s.com/example/android/graphics/convert-string-to-bitmap.html
+    //https://stackoverflow.com/questions/22532136/android-how-to-create-a-bitmap-from-a-string
     public static Bitmap convertStringToBitmap(String string) {
         byte[] byteArray1;
         byteArray1 = Base64.decode(string, Base64.DEFAULT);
@@ -32,6 +34,7 @@ public class ImageProcessingTest implements ProcessingTaskHandler {
         return bmp;
     }
 
+    //https://onlineimagetools.com/convert-bmp-to-base64
     private static final String sudokuString1 =
             "Qk2KCA8AAAAAAIoAAAB8AAAA4QEAAAACAAABACAAAwAAAAAIDwAAAA\n" +
             "AAAAAAAAAAAAAAAAAAAAD/AAD/AAD/AAAAAAAA/0JHUnOAwvUoYLgeFSCF6wFAMzMTgGZmJkBmZg\n" +
