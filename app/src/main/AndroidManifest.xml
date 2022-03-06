@@ -15,11 +15,10 @@
         android:theme="@style/Theme.PhotoSudoku">
         <activity
             android:name=".Solving_page"
-            android:parentActivityName=".CameraPage"
+            android:parentActivityName=".SudokuDisplayPage"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".SudokuDisplayPage"
-            android:noHistory="true"
             android:parentActivityName=".CameraPage"
             android:screenOrientation="portrait"/>
         <activity

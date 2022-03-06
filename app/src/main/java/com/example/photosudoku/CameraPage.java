@@ -64,6 +64,7 @@ import java.util.concurrent.Executor;
 public class CameraPage extends AppCompatActivity implements PropertyChangeListener, SurfaceHolder.Callback, ProcessingTaskHandler {
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+    ProcessCameraProvider cameraProvider;
     PreviewView previewView;
     TextView textview2;
     ImageView imageView;
@@ -80,6 +81,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
     Paint paint;
 
     long startMeasureTime=0;
+    private boolean appPaused = false;
 
     public static final String BitmapKey = "Bitmap";
 
@@ -118,10 +120,12 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                     bar.dismiss();
                     Intent sudokuDisplayIntent = new Intent(CameraPage.this,SudokuDisplayPage.class);
                     int[][] sudoku = (int[][])task.getObject();
-                    sudokuDisplayIntent.putExtra(SudokuDisplayPage.SUDOKU_KEY,sudoku);
-                    sudokuDisplayIntent.putExtra("duration",duration);
+                    if(!appPaused){
+                        sudokuDisplayIntent.putExtra(SudokuDisplayPage.SUDOKU_KEY,sudoku);
+                        sudokuDisplayIntent.putExtra("duration",duration);
 //                    sudokuDisplayIntent.putExtra(BitmapKey,(Bitmap)task.getObject());
-                    startActivity(sudokuDisplayIntent);
+                        startActivity(sudokuDisplayIntent);
+                    }
                     t=null;
                 }
                 else if(msg.what == ProcessingTask.STATE_LOCATING_SUDOKU || msg.what == ProcessingTask.STATE_READING_NUMBERS){
@@ -144,12 +148,18 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
         holder.addCallback(this);
 
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         //matches camera process to a single camera process provider
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
         //adds a task to the process camera provider
         cameraProviderFuture.addListener(() -> {
             try{
-                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                cameraProvider = cameraProviderFuture.get();
                 startCameraX(cameraProvider);
             }catch(ExecutionException e){
                 e.printStackTrace();
@@ -157,6 +167,14 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                 e.printStackTrace();
             }
         }, getExecutor());
+        this.appPaused = false;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.appPaused = true;
+        cameraProvider.unbindAll();
     }
 
     //return executor that will run enqueued tasks on the main thread associated with the context

@@ -1,13 +1,16 @@
 package com.example.photosudoku;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TableLayout;
@@ -29,6 +32,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     TableLayout table;
     SudokuBoard sudokuBoard;
     ConstraintLayout mainLayout;
+    SudokuDisplayHelper helper;
 
     private int[][] sudoku;
     //public static ArrayList<Integer> invalidSquares;
@@ -41,6 +45,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("CameraActivity",savedInstanceState != null ? savedInstanceState.toString() : "null");
 
         setContentView(R.layout.activity_sudoku_display_page);
 
@@ -50,12 +55,26 @@ public class SudokuDisplayPage extends AppCompatActivity {
         mainLayout = (ConstraintLayout)findViewById(R.id.sudokuDisplayLayout);
         sudokuBoard = findViewById(R.id.sudokuBoard_displayPage);
 
+        helper = new ViewModelProvider(this).get(SudokuDisplayHelper.class);
+
         Intent intent = getIntent();
 
 //        Bitmap bmp = (Bitmap)intent.getParcelableExtra(CameraPage.BitmapKey);
 //        imageView.setImageBitmap(bmp);
 
-        sudoku = (int[][])intent.getSerializableExtra(SUDOKU_KEY);
+        if(intent.getSerializableExtra(SUDOKU_KEY) != null){
+            sudoku = (int[][])intent.getSerializableExtra(SUDOKU_KEY);
+        }
+        else if(savedInstanceState != null && savedInstanceState.getSerializable(SUDOKU_KEY) != null){
+            sudoku = (int[][])savedInstanceState.getSerializable(SUDOKU_KEY);
+        }
+        else if(helper.getOriginal() != null){
+            sudoku = helper.getOriginal();
+        }
+        else{
+            sudoku = new int[9][9];
+        }
+
         SudokuDisplayHelper.original = sudoku;
         duration = (long)intent.getLongExtra("duration",0);
         //createSudokuUI(this.sudoku);
@@ -66,6 +85,18 @@ public class SudokuDisplayPage extends AppCompatActivity {
         //textView.setText(str);
         //invalidSquares = new ArrayList<>();
         this.boardValid = Validator.checkBoardValidity(sudoku);
+    }
+
+    @Override
+    protected void onRestart() {
+        this.sudoku = helper.getOriginal();
+        super.onRestart();
+    }
+
+    @Override
+    protected void onStop() {
+        helper.setOriginal(this.sudoku);
+        super.onStop();
     }
 
     public void openSolvingScreen(View view){
