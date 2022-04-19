@@ -38,6 +38,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.mlkit.common.MlKit.initialize;
+
 public class ImageProcessingThread extends Thread{
 
     //String OCRresult = "";
@@ -66,6 +68,7 @@ public class ImageProcessingThread extends Thread{
         rotation = rotationDegrees;
         this.originalPage = originalPage;
         this.context = context;
+        initialize(context);
         //recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
     }
 
@@ -189,9 +192,11 @@ public class ImageProcessingThread extends Thread{
         temp.copyTo(mat);
         Utils.matToBitmap(mat,bitmap);
         //Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(7,7),3);
+        //Utils.matToBitmap(mat,bitmap);
+        //Imgproc.Canny(mat,mat,20,70);
+        //Utils.matToBitmap(mat,bitmap);
         Imgproc.adaptiveThreshold(mat,mat, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 2);
         Utils.matToBitmap(mat,bitmap);
-        //Imgproc.Canny(mat,mat,150,150);
         Imgproc.dilate(mat,mat,new Mat(3,3,0));
         Utils.matToBitmap(mat,bitmap);
         Imgproc.erode(mat,mat,new Mat(2,2,0));
