@@ -76,6 +76,7 @@ public class Solving_page extends AppCompatActivity {
         toggleMessageButton = (Button)findViewById(R.id.toggleMessageButton);
         toggleCandidatesButton = (ToggleButton)findViewById(R.id.toggleCandidatesButton);
 
+        //process the 2D array of digits provided by the Edit / Sudoku display page
         Intent intent = getIntent();
         int[][] sudoku = (int[][])intent.getSerializableExtra(SudokuDisplayPage.SUDOKU_KEY);
         original = new int[9][9];
@@ -92,11 +93,11 @@ public class Solving_page extends AppCompatActivity {
         solveButton.setOnClickListener(v -> solveButtonClick());
 
         //createSudokuUI(sudoku);
-        long startTime = System.nanoTime();
+        //long startTime = System.nanoTime();
         solveSudoku(sudoku);
-        long endTime = System.nanoTime();
-        String output = TimeUnit.NANOSECONDS.toMicros(endTime - startTime) +" μs";
-        textView.setText(output);
+        //long endTime = System.nanoTime();
+        //String output = TimeUnit.NANOSECONDS.toMicros(endTime - startTime) +" μs";
+        //textView.setText(output);
 
         sudokuBoard = findViewById(R.id.sudokuBoard);
 
@@ -110,6 +111,99 @@ public class Solving_page extends AppCompatActivity {
         });
     }
 
+    private void solveSudoku(int[][] matrix){
+        SudokuDisplayHelper.currentSudoku = new Sudoku(matrix);
+
+        int noChangeCounter = 0;
+        //iterate over all solving techniques, if all fail use backtracking to solve
+        while(!SudokuDisplayHelper.currentSudoku.solved()){
+            if (noChangeCounter == 1){
+                //System.out.println("Could not solve. Using backtracking:");
+                SudokuDisplayHelper.currentSudoku.solution = Solver.solveBacktracking(SudokuDisplayHelper.currentSudoku);
+                break;
+            }
+            if(Solver.solveNakedSingles(SudokuDisplayHelper.currentSudoku)){
+                continue;
+            }
+            if(Solver.solveHiddenSingles(SudokuDisplayHelper.currentSudoku)){
+                continue;
+            }
+            if(Solver.solvePointingCandidates(SudokuDisplayHelper.currentSudoku)){
+                continue;
+            }
+            if(Solver.solveNakedPair(SudokuDisplayHelper.currentSudoku)){
+                continue;
+            }
+            if(Solver.solveHiddenPair(SudokuDisplayHelper.currentSudoku)){
+                continue;
+            }
+            noChangeCounter++;
+        }
+
+        this.solution = SudokuDisplayHelper.currentSudoku.grid;
+        this.steps = SudokuDisplayHelper.currentSudoku.steps;
+    }
+
+    //show complete solution / the last solving step
+    public void solveButtonClick(){
+        SudokuDisplayHelper.stepIndex = steps.size() - 1;
+        String message = (SudokuDisplayHelper.stepIndex + 1) + " - "  + this.steps.get(SudokuDisplayHelper.stepIndex).getTitle() + "\n" + this.steps.get(SudokuDisplayHelper.stepIndex).getMessage();
+        messageView.setText(message);
+        this.sudokuBoard.clearHandpickedValues();
+        sudokuBoard.invalidate();
+        this.prevButton.setEnabled(true);
+        this.nextButton.setEnabled(true);
+    }
+
+    //show the next solving step
+    public void nextButtonClick(){
+        if(SudokuDisplayHelper.stepIndex < steps.size() - 1){
+            SudokuDisplayHelper.stepIndex ++;
+            String message = (SudokuDisplayHelper.stepIndex + 1) + " - "  + this.steps.get(SudokuDisplayHelper.stepIndex).getTitle() + "\n" + this.steps.get(SudokuDisplayHelper.stepIndex).getMessage();
+            messageView.setText(message);
+            //rewriteSudokuBoard(this.steps.get(stepIndex));
+            //rewriteGrid(this.steps.get(stepIndex));
+            sudokuBoard.invalidate();
+        }
+        else{
+            SudokuDisplayHelper.stepIndex = steps.size() - 1;
+        }
+    }
+
+    //show the previous solving step
+    public void prevButtonClick(){
+        if(SudokuDisplayHelper.stepIndex > 0){
+            SudokuDisplayHelper.stepIndex --;
+            String message = (SudokuDisplayHelper.stepIndex + 1) + " - "  + this.steps.get(SudokuDisplayHelper.stepIndex).getTitle() + "\n" + this.steps.get(SudokuDisplayHelper.stepIndex).getMessage();
+            messageView.setText(message);
+            //rewriteSudokuBoard(this.steps.get(stepIndex));
+            //rewriteGrid(this.steps.get(stepIndex));
+            sudokuBoard.invalidate();
+        }
+        else{
+            SudokuDisplayHelper.stepIndex = 0;
+        }
+    }
+
+    public void toggleMessageVisible(View view){
+        if(this.messageView.getVisibility() == View.VISIBLE) this.messageView.setVisibility(View.INVISIBLE);
+        else this.messageView.setVisibility(View.VISIBLE);
+    }
+
+    //show the digit in the selected square and disable next/previous step buttons
+    public void solveParticularSquare(View view){
+        int row = this.sudokuBoard.getSelectedRow();
+        int col = this.sudokuBoard.getSelectedCol();
+
+        if (row != -1 && col != -1){
+            sudokuBoard.addCompletedSquare(row,col,SudokuDisplayHelper.currentSudoku.solution[row][col]);
+
+            this.prevButton.setEnabled(false);
+            this.nextButton.setEnabled(false);
+        }
+    }
+
+    /*
     private void createSudokuUI(int[][] sudoku){
         TableRow.LayoutParams rowParams = new TableRow.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT,0.11f);
 
@@ -144,6 +238,7 @@ public class Solving_page extends AppCompatActivity {
             }
         }
     }
+
 
     private Drawable getCellBorder(int row, int col){
         int rowRem = row % 3;
@@ -234,90 +329,5 @@ public class Solving_page extends AppCompatActivity {
         }
     }
 
-    private void solveSudoku(int[][] matrix){
-        SudokuDisplayHelper.currentSudoku = new Sudoku(matrix);
-
-        int noChangeCounter = 0;
-        while(!SudokuDisplayHelper.currentSudoku.solved()){
-            if (noChangeCounter == 1){
-                //System.out.println("Could not solve. Using backtracking:");
-                this.solution = Solver.solveBacktracking(SudokuDisplayHelper.currentSudoku);
-                break;
-            }
-            if(Solver.solveNakedSingles(SudokuDisplayHelper.currentSudoku)){
-                continue;
-            }
-            if(Solver.solveHiddenSingles(SudokuDisplayHelper.currentSudoku)){
-                continue;
-            }
-            if(Solver.solvePointingCandidates(SudokuDisplayHelper.currentSudoku)){
-                continue;
-            }
-            if(Solver.solveNakedPair(SudokuDisplayHelper.currentSudoku)){
-                continue;
-            }
-            if(Solver.solveHiddenPair(SudokuDisplayHelper.currentSudoku)){
-                continue;
-            }
-            noChangeCounter++;
-        }
-
-        this.solution = SudokuDisplayHelper.currentSudoku.grid;
-        this.steps = SudokuDisplayHelper.currentSudoku.steps;
-    }
-
-    public void solveButtonClick(){
-        SudokuDisplayHelper.stepIndex = steps.size() - 1;
-        String message = (SudokuDisplayHelper.stepIndex + 1) + " - "  + this.steps.get(SudokuDisplayHelper.stepIndex).getTitle() + "\n" + this.steps.get(SudokuDisplayHelper.stepIndex).getMessage();
-        messageView.setText(message);
-        this.sudokuBoard.clearHandpickedValues();
-        sudokuBoard.invalidate();
-        this.prevButton.setEnabled(true);
-        this.nextButton.setEnabled(true);
-    }
-
-    public void nextButtonClick(){
-        if(SudokuDisplayHelper.stepIndex < steps.size() - 1){
-            SudokuDisplayHelper.stepIndex ++;
-            String message = (SudokuDisplayHelper.stepIndex + 1) + " - "  + this.steps.get(SudokuDisplayHelper.stepIndex).getTitle() + "\n" + this.steps.get(SudokuDisplayHelper.stepIndex).getMessage();
-            messageView.setText(message);
-            //rewriteSudokuBoard(this.steps.get(stepIndex));
-            //rewriteGrid(this.steps.get(stepIndex));
-            sudokuBoard.invalidate();
-        }
-        else{
-            SudokuDisplayHelper.stepIndex = steps.size() - 1;
-        }
-    }
-
-    public void prevButtonClick(){
-        if(SudokuDisplayHelper.stepIndex > 0){
-            SudokuDisplayHelper.stepIndex --;
-            String message = (SudokuDisplayHelper.stepIndex + 1) + " - "  + this.steps.get(SudokuDisplayHelper.stepIndex).getTitle() + "\n" + this.steps.get(SudokuDisplayHelper.stepIndex).getMessage();
-            messageView.setText(message);
-            //rewriteSudokuBoard(this.steps.get(stepIndex));
-            //rewriteGrid(this.steps.get(stepIndex));
-            sudokuBoard.invalidate();
-        }
-        else{
-            SudokuDisplayHelper.stepIndex = 0;
-        }
-    }
-
-    public void toggleMessageVisible(View view){
-        if(this.messageView.getVisibility() == View.VISIBLE) this.messageView.setVisibility(View.INVISIBLE);
-        else this.messageView.setVisibility(View.VISIBLE);
-    }
-
-    public void solveParticularSquare(View view){
-        int row = this.sudokuBoard.getSelectedRow();
-        int col = this.sudokuBoard.getSelectedCol();
-
-        if (row != -1 && col != -1){
-            sudokuBoard.addCompletedSquare(row,col,SudokuDisplayHelper.currentSudoku.solution[row][col]);
-
-            this.prevButton.setEnabled(false);
-            this.nextButton.setEnabled(false);
-        }
-    }
+    */
 }

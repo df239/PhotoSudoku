@@ -51,7 +51,7 @@ public class ImageProcessingThread extends Thread{
     int[][] sudokuResult;
     Bitmap processed;
 
-    private PropertyChangeSupport observableSupport;
+   // private PropertyChangeSupport observableSupport;
 
 //    public ImageProcessingThread(Bitmap originalBitmap, int rotationDegrees, PropertyChangeListener listener){
 //        super();
@@ -68,7 +68,7 @@ public class ImageProcessingThread extends Thread{
         rotation = rotationDegrees;
         this.originalPage = originalPage;
         this.context = context;
-        initialize(context);
+        //initialize(context);
         //recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
     }
 
@@ -103,6 +103,7 @@ public class ImageProcessingThread extends Thread{
     @Override
     public void run() {
         try{
+            //instantiate and send processing task informing about locating a sudoku on an image
             new ProcessingTask(originalPage,context.getString(R.string.locating_sudoku)).handleDecodeState(ProcessingTask.STATE_LOCATING_SUDOKU);
             Bitmap rotated = rotateImage(original,rotation);
             Bitmap processed = processImage(rotated);
@@ -110,16 +111,21 @@ public class ImageProcessingThread extends Thread{
 
 //            new ProcessingTask(originalPage,processed).handleDecodeState(ProcessingTask.STATE_COMPLETE);
 
+            //processing task about reading the located sudoku
             new ProcessingTask(originalPage,context.getString(R.string.reading_numbers)).handleDecodeState(ProcessingTask.STATE_READING_NUMBERS);
             int[][] sudokuMatrix = getMatrixFromBitmap(processed);
+
+            //processing task that carries the read 2D array representing the sudoku puzzle
             new ProcessingTask(originalPage,sudokuMatrix).handleDecodeState(ProcessingTask.STATE_COMPLETE);
             sudokuResult = sudokuMatrix;
         }
         catch (Exception e){
+            //processing task with an error message
             new ProcessingTask(originalPage,e.getMessage()).handleDecodeState(ProcessingTask.STATE_ERROR);
         }
     }
 
+    /*
     public void addPropertyChangeListener(PropertyChangeListener listener){
         observableSupport.addPropertyChangeListener(listener);
     }
@@ -127,7 +133,9 @@ public class ImageProcessingThread extends Thread{
     private void notifyListeners(String varName, Object oldVal, Object newVal){
         observableSupport.firePropertyChange(varName,oldVal,newVal);
     }
+    */
 
+    //rotates image if necessary so that OCR can recognize the digits later
     private Bitmap rotateImage(Bitmap bitmap, int rotation){
         Mat mat = new Mat();
         Utils.bitmapToMat(bitmap,mat);
@@ -164,16 +172,17 @@ public class ImageProcessingThread extends Thread{
         return bmp;
     }
 
+    //performs the core computer vision algorithms on the image necessary to find the sudoku on it
     private Bitmap processImage(Bitmap bitmap) throws Exception{
         Mat mat = new Mat();
         Utils.bitmapToMat(bitmap,mat);
 
         //Mat original = new Mat();
         //Utils.bitmapToMat(bitmap,original);
-        int targetWidth = (int)(bitmap.getWidth()*0.75);
-        int targetHeight = (int)(bitmap.getHeight());
+        //int targetWidth = (int)(bitmap.getWidth()*0.75);
+        //int targetHeight = (int)(bitmap.getHeight());
         //org.opencv.core.Rect roi = new org.opencv.core.Rect((int)(targetWidth*0.2),0,  targetWidth,targetHeight);
-        Bitmap tempBitmap = Bitmap.createBitmap(targetWidth,targetHeight, Bitmap.Config.ARGB_8888);
+        //Bitmap tempBitmap = Bitmap.createBitmap(targetWidth,targetHeight, Bitmap.Config.ARGB_8888);
         //Mat mat = new Mat(original,roi);
 
 
@@ -186,23 +195,23 @@ public class ImageProcessingThread extends Thread{
         //image processing
         //https://www.pyimagesearch.com/2020/08/10/opencv-sudoku-solver-and-ocr/
         Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2GRAY);
-        Utils.matToBitmap(mat,bitmap);
+        //Utils.matToBitmap(mat,bitmap);
         Mat temp = new Mat();
         Imgproc.bilateralFilter(mat,temp,7,70,100);
         temp.copyTo(mat);
-        Utils.matToBitmap(mat,bitmap);
+        //Utils.matToBitmap(mat,bitmap);
         //Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(7,7),3);
         //Utils.matToBitmap(mat,bitmap);
         //Imgproc.Canny(mat,mat,20,70);
         //Utils.matToBitmap(mat,bitmap);
         Imgproc.adaptiveThreshold(mat,mat, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 2);
-        Utils.matToBitmap(mat,bitmap);
+        //Utils.matToBitmap(mat,bitmap);
         Imgproc.dilate(mat,mat,new Mat(3,3,0));
-        Utils.matToBitmap(mat,bitmap);
+        //Utils.matToBitmap(mat,bitmap);
         Imgproc.erode(mat,mat,new Mat(2,2,0));
-        Utils.matToBitmap(mat,bitmap);
+        //Utils.matToBitmap(mat,bitmap);
         Core.bitwise_not(mat,mat);
-        Utils.matToBitmap(mat,bitmap);
+        //Utils.matToBitmap(mat,bitmap);
         //Imgproc.dilate(mat,mat,new Mat(2,2,0));
 
         //contour detection
@@ -236,16 +245,18 @@ public class ImageProcessingThread extends Thread{
 
         if(maxCurve.total() != 4) throw new Exception(context.getString(R.string.sudoku_not_located_error));
 
-//        //largestContour = new MatOfPoint2f(contours.get(maxAreaIdx));
+        //largestContour = new MatOfPoint2f(contours.get(maxAreaIdx));
         Mat copy2 = copy.clone();
-        Mat copy_black = mat.clone();
+        //Mat copy_black = mat.clone();
         Imgproc.drawContours(copy2,contours,maxAreaIdx,new Scalar(255,0,0),20);
-        Utils.matToBitmap(copy2,bitmap);
+        //Utils.matToBitmap(copy2,bitmap);
         Imgproc.drawContours(copy2,contours,maxAreaIdx,new Scalar(255,0,0),20);
-        Utils.matToBitmap(copy_black,bitmap);
-//        //https://stackoverflow.com/questions/17361693/cant-get-opencvs-warpperspective-to-work-on-android
-//        //https://stackoverflow.com/questions/17637730/android-opencv-getperspectivetransform-and-warpperspective
-//        //https://www.pyimagesearch.com/2014/08/25/4-point-opencv-getperspective-transform-example/
+        //Utils.matToBitmap(copy_black,bitmap);
+        //https://stackoverflow.com/questions/17361693/cant-get-opencvs-warpperspective-to-work-on-android
+        //https://stackoverflow.com/questions/17637730/android-opencv-getperspectivetransform-and-warpperspective
+        //https://www.pyimagesearch.com/2014/08/25/4-point-opencv-getperspective-transform-example/
+
+        //find the corner points and transform the image to be a square only containing the sudoku grid
         List<Point> inputPoints = orderPoints(maxCurve.toList());
         //Log.d(TAG,inputPoints.toString());
         int resultWidth = (int)(inputPoints.get(0).x - inputPoints.get(1).x);
@@ -263,6 +274,7 @@ public class ImageProcessingThread extends Thread{
         if (resultHeight > resultValue)
             resultValue = resultHeight;
 
+        //creating lists necessary to correctly determine the dimensions of the resulting square and how to tranform the original image
         List<Point> outputPoints = new ArrayList<Point>();
         outputPoints.add(new Point(resultValue,0));
         outputPoints.add(new Point(0,0));
@@ -290,6 +302,7 @@ public class ImageProcessingThread extends Thread{
 //        return bitmap;
     }
 
+    //sort corner points to always appear in the same order regardless of the angle the photo was taken
     private List<Point> orderPoints(List<Point> points){
         List<Point> ordered = new ArrayList<Point>();
         for(int i = 0; i < 4; i++){ordered.add(new Point());}
@@ -313,8 +326,9 @@ public class ImageProcessingThread extends Thread{
         return ordered;
     }
 
+    //perform the OCR on the cut out image
     private int[][] getMatrixFromBitmap(Bitmap bitmap) throws Exception {
-
+        //perform the image processing again, this time with different parameters in some methods
         Mat input = new Mat();
         Utils.bitmapToMat(bitmap,input);
         Mat mat = new Mat(input.rows(), input.cols(), input.type());
@@ -345,6 +359,7 @@ public class ImageProcessingThread extends Thread{
         Utils.matToBitmap(mat,bitmap);
         */
 
+        //calculations to determine the width and height of an individual square and also area that should be checked for the contents of the square
         int[][] sudokuMatrix = new int[9][9];
 
         int width = bitmap.getWidth();
@@ -367,15 +382,18 @@ public class ImageProcessingThread extends Thread{
         List<Integer> xcoords = new ArrayList<Integer>();
         List<Integer> ycoords = new ArrayList<Integer>();
         List<String> values = new ArrayList<String>();
+        //reserve up to 5 threads to speed up the OCR
         ExecutorService service = Executors.newFixedThreadPool(5);
 
         boolean valFound = false;
         try{
             for (row = 0; row < 9; row++){
                 for (col = 0; col < 9; col++){
+                    //select an area in the center of the current sudoku square that has 50% width and height (declared several lives above)
                     Rect centerroi = new Rect(Wninth * col + Wdisplacement, Hninth * row + Hdisplacement, Wactual, Hactual);
                     Mat centerMat = new Mat(mat,centerroi);
 
+                    //check if the square contains more than 5% or white pixels, which means it contains a number and is not empty
                     double nonZero = Core.countNonZero(centerMat);
                     int size = centerMat.rows()*centerMat.cols();
                     if (nonZero / size > 0.05){
@@ -392,6 +410,7 @@ public class ImageProcessingThread extends Thread{
                         int finalRow = row;
                         int finalCol = col;
 
+                        //assign the OCR on the current square to an available thred from the thread pool
                         service.submit(()->{
                             String str = null;
                             try {
@@ -409,9 +428,12 @@ public class ImageProcessingThread extends Thread{
 
             //String[] strings = tasks.get(0).getResult().getText().trim().split("\\W+");
             service.shutdown();
+            //leave max 8 seconds for the OCR to finish completely
             if(!service.awaitTermination(8, TimeUnit.SECONDS)) service.shutdownNow();
             for (int i = 0; i < values.size(); i++) {
                 //Text result = Tasks.await(recognizer.process(image));
+
+                //add the recognized digit to the 2D sudoku array of integers, and catch certain edge cases
                 String str = values.get(i);
                 if(str.equals("A")){sudokuMatrix[xcoords.get(i)][ycoords.get(i)] = 4; valFound = true;}
                 else if (str.equals("I") || str.equals("l")){sudokuMatrix[xcoords.get(i)][ycoords.get(i)] = 1; valFound = true;}

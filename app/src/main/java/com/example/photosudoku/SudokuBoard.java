@@ -57,6 +57,7 @@ public class SudokuBoard extends View {
 
         this.handPickedNumbers = new ArrayList<int[]>();
 
+        //load attributes from the .xml file for the SudokuBoard
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.SudokuBoard,0,0);
         try{
             boardColor = a.getInteger(R.styleable.SudokuBoard_boardColor,0);
@@ -71,6 +72,7 @@ public class SudokuBoard extends View {
         }
     }
 
+    // select/deselect the tapped sudoku square
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
@@ -96,6 +98,7 @@ public class SudokuBoard extends View {
         }
     }
 
+    //set sudoku board dimenstions to always be square no matter the device
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -105,6 +108,7 @@ public class SudokuBoard extends View {
         setMeasuredDimension(dimension,dimension);
     }
 
+    //draw the sudoku board
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -123,24 +127,32 @@ public class SudokuBoard extends View {
         cellSelectColorPaint.setColor(cellSelectColor);
         cellSelectColorPaint.setAntiAlias(true);
 
+        //there is different configuration of the sudoku board depending on the page where it is located
         if(this.currentPage.equals("solvingPage")){
             Sudoku sudoku = SudokuDisplayHelper.currentSudoku;
             ISolvingStep step = sudoku.steps.get(SudokuDisplayHelper.stepIndex);
             int[][] grid = step.getGrid();
             HashMap<String,List<Integer>> candidates = step.getCandidates();
             //Log.d("CameraActivity",candidates.toString());
-            Log.d("CameraActivity",step.getTitle());
+            //Log.d("CameraActivity",step.getTitle());
             int[] highlightedSquares = step.getAffectedSquares();
+
+            //first highlight the squares that the current solving step has affected
             if(highlightedSquares.length > 0){
                 for(int i = 0; i < highlightedSquares.length; i += 2){
                     drawHighlightedCell(canvas,highlightedSquares[i],highlightedSquares[i+1], cellHighlightColorPaint);
                 }
             }
+
+            //highlight the square selected by the user
             if(this.selectedRow != -1 && this.selectedCol != -1){
                 drawHighlightedCell(canvas,this.selectedRow,this.selectedCol, cellSelectColorPaint);
             }
+
+            //draw the lines on a sudoku board
             canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
             drawBoard(canvas);
+            //draw numbers & candidates for each cell according to the current solving step
             for (int row = 0; row < 9; row++){
                 for (int col = 0; col < 9; col++){
                     if (grid[row][col] != 0){
@@ -152,6 +164,7 @@ public class SudokuBoard extends View {
                     }
                 }
             }
+            //draw numbers for the cells that have been selected by the user
             for(int[] arr : this.handPickedNumbers){
                 drawNumber(arr[2],arr[0],arr[1],false,false);
             }
@@ -159,15 +172,23 @@ public class SudokuBoard extends View {
         else if(this.currentPage.equals("displayPage")){
             Log.d("CameraActivity","drawingOnDisplayPage");
             ArrayList<Integer> invalidSquares = Validator.invalidSquares;
+
+            //highlight invalid cells
             for(int i = 0; i < invalidSquares.size(); i+=2){
                 drawHighlightedCell(canvas,invalidSquares.get(i),invalidSquares.get(i+1),cellHighlightColorPaint);
             }
             int[][] grid = SudokuDisplayHelper.original;
+
+            //higlight selected square for editing
             if(this.selectedRow != -1 && this.selectedCol != -1){
                 drawHighlightedCell(canvas,this.selectedRow,this.selectedCol, cellSelectColorPaint);
             }
+
+            //draw the lines on a sudoku board
             canvas.drawRect(0,0,getWidth(),getHeight(),boardColorPaint);
             drawBoard(canvas);
+
+            //draw the numbers
             for (int row = 0; row < 9; row++){
                 for (int col = 0; col < 9; col++){
                     if (grid[row][col] != 0) {
@@ -180,6 +201,7 @@ public class SudokuBoard extends View {
 
     }
 
+    //calculate if a cell is to be highlighted based on the affected squares provided by a solving step
     private boolean isToBeHighlighted(int row, int col, int[]highlighted){
         for(int i = 0; i < highlighted.length; i += 2){
             if(highlighted[i] == row && highlighted[i+1] == col){
@@ -190,6 +212,7 @@ public class SudokuBoard extends View {
     }
 
     private void drawBoard(Canvas canvas){
+        //draw vertical lines
         for (int col = 0; col < 10; col++){
             if(col%3 == 0){
                 boardColorPaint.setStrokeWidth(10);
@@ -199,6 +222,7 @@ public class SudokuBoard extends View {
             canvas.drawLine(cellSize * col, 0, cellSize * col, getWidth(), boardColorPaint);
         }
 
+        //draw horizontal lines
         for (int row = 0; row < 10; row++){
             if(row%3 == 0){
                 boardColorPaint.setStrokeWidth(10);
@@ -223,6 +247,7 @@ public class SudokuBoard extends View {
         if(original) letterColorPaint.setTypeface(Typeface.DEFAULT_BOLD);
         else letterColorPaint.setTypeface(Typeface.DEFAULT);
 
+        //calculate the position of the number to appear in the middle of the square
         float width, height;
         letterColorPaint.getTextBounds(text, 0, text.length(), letterPaintBounds);
         width = letterColorPaint.measureText(text);
@@ -241,6 +266,8 @@ public class SudokuBoard extends View {
         float width, height;
         width = candidatePaint.measureText(sampleText);
         height = candidateBounds.height();
+
+        //calculate the position of the candidate so that it correctly occupies its ninth of the square
         for (int candidate : candidates){
             float x,y;
             if(candidate % 3 == 1){ // column 1: 1,4,7

@@ -61,13 +61,12 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
-public class CameraPage extends AppCompatActivity implements PropertyChangeListener, SurfaceHolder.Callback, ProcessingTaskHandler {
+public class CameraPage extends AppCompatActivity implements SurfaceHolder.Callback, ProcessingTaskHandler {
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     ProcessCameraProvider cameraProvider;
     PreviewView previewView;
     TextView textview2;
-    ImageView imageView;
     Snackbar bar;
     ConstraintLayout cameraPageLayout;
 
@@ -85,6 +84,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
 
     public static final String BitmapKey = "Bitmap";
 
+    //initialize OpenCV
     private static String TAG = "CameraActivity";
     static{
         if(OpenCVLoader.initDebug()){
@@ -110,28 +110,33 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
 //        imageView = (ImageView)findViewById(R.id.imageView2);
         bar = Snackbar.make(cameraPageLayout,getString(R.string.processing),Snackbar.LENGTH_INDEFINITE);
 
+        //handler for handlig asynchronous ImageProcessingThread triggered by selecting a picture from the gallery
         handler = new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(@NonNull Message msg) {
                 ProcessingTask task = (ProcessingTask)msg.obj;
                 if(msg.what == ProcessingTask.STATE_COMPLETE){
-                    long endMeasureTime = System.nanoTime();
-                    long duration = endMeasureTime - startMeasureTime;
+                    //progress to Sudoku Display/Edit Page
+
+                    //long endMeasureTime = System.nanoTime();
+                    //long duration = endMeasureTime - startMeasureTime;
                     bar.dismiss();
                     Intent sudokuDisplayIntent = new Intent(CameraPage.this,SudokuDisplayPage.class);
                     int[][] sudoku = (int[][])task.getObject();
                     if(!appPaused){
                         sudokuDisplayIntent.putExtra(SudokuDisplayPage.SUDOKU_KEY,sudoku);
-                        sudokuDisplayIntent.putExtra("duration",duration);
+                        //sudokuDisplayIntent.putExtra("duration",duration);
 //                    sudokuDisplayIntent.putExtra(BitmapKey,(Bitmap)task.getObject());
                         startActivity(sudokuDisplayIntent);
                     }
                     t=null;
                 }
                 else if(msg.what == ProcessingTask.STATE_LOCATING_SUDOKU || msg.what == ProcessingTask.STATE_READING_NUMBERS){
+                    //show processing progress in the Snackbar
                     bar.setText((String)task.getObject());
                 }
                 else if(msg.what == ProcessingTask.STATE_ERROR){
+                    //show error message in the Snackbar and terminate processing
                     Snackbar.make(cameraPageLayout,(String)task.getObject(),Snackbar.LENGTH_LONG).show();
                     bar.dismiss();
                     t=null;
@@ -140,20 +145,18 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
             }
         };
 
-        //Create the bounding box
+        //Create the square overlay
         surfaceView = findViewById(R.id.overlay);
         surfaceView.setZOrderOnTop(true);
         holder = surfaceView.getHolder();
         holder.setFormat(PixelFormat.TRANSPARENT);
         holder.addCallback(this);
-
-
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        //initialize CameraX
         //matches camera process to a single camera process provider
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
         //adds a task to the process camera provider
@@ -210,6 +213,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
             if(t==null){
                 int rotation = image.getImageInfo().getRotationDegrees();
 
+                //convert image to bitmap and crop it according to the square overlay, but with some picture left behind the square
                 Bitmap photo = toBitmap(image);
                 DisplayMetrics displaymetrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -235,6 +239,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
                 int boxWidth = right - left;
                 Bitmap temp = Bitmap.createBitmap(photo,left,top,boxWidth,boxHeight);
 
+                //start image processing
                 t = new ImageProcessingThread(temp,rotation,CameraPage.this, getApplicationContext());
                 bar.setDuration(Snackbar.LENGTH_INDEFINITE);
                 bar.show();
@@ -254,6 +259,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
 
 
     //https://gist.github.com/moshimore/dfe5cf0216a520a8fef55ebe58a7ebe4
+    //convert ImageProxy to bitmap
     private Bitmap toBitmap(ImageProxy image) {
         ImageProxy.PlaneProxy planeProxy = image.getPlanes()[0];
         ByteBuffer buffer = planeProxy.getBuffer();
@@ -301,15 +307,6 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
 
     }
 */
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if(evt.getNewValue() instanceof int[][]){
-            int[][] sudoku = (int[][])evt.getNewValue();
-        }
-        else if (evt.getNewValue() instanceof Bitmap){
-            imageView.setImageBitmap((Bitmap)evt.getNewValue());
-        }
-    }
 
 
     /*
@@ -351,6 +348,7 @@ public class CameraPage extends AppCompatActivity implements PropertyChangeListe
     }
 
     //https://medium.com/@sdptd20/exploring-ocr-capabilities-of-ml-kit-using-camera-x-9949633af0fe
+    //draw the square overlay
     private void DrawFocusRect(int color) {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);

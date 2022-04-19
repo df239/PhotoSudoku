@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.photosudoku.CameraPage;
 
+//class that carries the information such as state and data about a currently undergoing processing task in the ImageProcessingThread
 //inspiration: https://stuff.mit.edu/afs/sipb/project/android/docs/training/multiple-threads/communicate-ui.html
 public class ProcessingTask {
     private final Object taskObject;
@@ -22,6 +23,7 @@ public class ProcessingTask {
         taskObject = obj;
     }
 
+    //by calling this method from the class implementing ProcessingTaksHanler, the handler receives the task content
     public void handleDecodeState(int state){
         handler.handleProcessingTask(this, state);
     }

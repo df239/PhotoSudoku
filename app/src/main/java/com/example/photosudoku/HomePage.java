@@ -44,6 +44,7 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
         }
     );
 
+    //initialize OpenCV
     private static String TAG = "CameraActivity";
     static{
         if(OpenCVLoader.initDebug()){
@@ -58,6 +59,7 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //ensure that the android toolbar at the top seems transparent
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
@@ -71,11 +73,13 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
 
         bar = Snackbar.make(mainLaout,getString(R.string.processing),Snackbar.LENGTH_INDEFINITE);
 
+        //handler for handlig asynchronous ImageProcessingThread triggered by selecting a picture from the gallery
         handler = new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(@NonNull Message msg) {
                 ProcessingTask task = (ProcessingTask)msg.obj;
                 if(msg.what == ProcessingTask.STATE_COMPLETE){
+                    //progress to Sudoku Display/Edit Page
                     bar.dismiss();
                     isProcessingImage = false;
                     Intent sudokuDisplayIntent = new Intent(HomePage.this,SudokuDisplayPage.class);
@@ -85,9 +89,11 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
                     t=null;
                 }
                 else if(msg.what == ProcessingTask.STATE_LOCATING_SUDOKU || msg.what == ProcessingTask.STATE_READING_NUMBERS){
+                    //show processing progress in the Snackbar
                     bar.setText((String)task.getObject());
                 }
                 else if(msg.what == ProcessingTask.STATE_ERROR){
+                    //show error message in the Snackbar and terminate processing
                     Snackbar.make(mainLaout,(String)task.getObject(),Snackbar.LENGTH_LONG).show();
                     isProcessingImage = false;
                     bar.dismiss();
@@ -120,6 +126,7 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
         }
     }
 
+    //callback on processing image selected from the gallery
     private void processLoadedImage(Uri uri){
         this.isProcessingImage = true;
         Bitmap bitmap = null;
@@ -129,6 +136,7 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
             bar.setText(e.getMessage());
             bar.show();
         }
+        //start image processing
         t = new ImageProcessingThread(bitmap,90,HomePage.this, getApplicationContext());
         bar.setDuration(Snackbar.LENGTH_INDEFINITE);
         bar.show();
@@ -136,6 +144,7 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
 
     }
 
+    //method from ProcessingTaskHanlder interface
     @Override
     public void handleProcessingTask(ProcessingTask task, int state) {
         Message message = handler.obtainMessage(state,task);

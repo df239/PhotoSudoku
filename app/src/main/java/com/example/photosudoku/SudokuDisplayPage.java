@@ -62,6 +62,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
 //        Bitmap bmp = (Bitmap)intent.getParcelableExtra(CameraPage.BitmapKey);
 //        imageView.setImageBitmap(bmp);
 
+        //setup activity with data provided by the previous activity
         if(intent.getSerializableExtra(SUDOKU_KEY) != null){
             sudoku = (int[][])intent.getSerializableExtra(SUDOKU_KEY);
         }
@@ -99,6 +100,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
         super.onStop();
     }
 
+    //validate sudoku and open the Solving Page
     public void openSolvingScreen(View view){
         if(this.boardValid){
             Intent intent = new Intent(this,Solving_page.class);
@@ -111,6 +113,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
         }
     }
 
+    //Buttons for adding a specific digit onto the board
     public void buttonOneClick(View view){
         if (sudokuBoard.getSelectedCol() != -1 && sudokuBoard.getSelectedCol() != -1){
             sudoku[sudokuBoard.getSelectedRow()][sudokuBoard.getSelectedCol()] = 1;
@@ -191,6 +194,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
         }
     }
 
+    /*
     private String arrayToString(int[][] array){
         StringBuilder sb = new StringBuilder();
         for (int[] row : array){
@@ -218,7 +222,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
             TableRow tableRow = new TableRow(this);
             table.addView(tableRow);
             for (int col = 0; col < 9; col++){
-                /*
+
                 EditText cell = new EditText(this);
                 cell.setEms(1);
                 cell.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -236,7 +240,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
                 if (sudoku[row][col] != 0){
                     cell.setText(String.valueOf(sudoku[row][col]));
                 }
-                */
+
             }
         }
     }
@@ -277,4 +281,5 @@ public class SudokuDisplayPage extends AppCompatActivity {
 
         return ContextCompat.getDrawable(this,R.drawable.thin_cell_border);
     }
+    */
 }
