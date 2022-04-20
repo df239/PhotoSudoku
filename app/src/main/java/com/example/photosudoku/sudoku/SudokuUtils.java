@@ -2,6 +2,7 @@ package com.example.photosudoku.sudoku;
 
 public class SudokuUtils {
 
+    //return box index based on row and column of a cell
     public static int getBox(int row, int col){
         if(row/3 == 0){
             if(col/3 == 0) return 0;

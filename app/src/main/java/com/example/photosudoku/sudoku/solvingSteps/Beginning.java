@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Beginning implements ISolvingStep{
+    //this step represents the very first untouched state of a sudoku puzzle
 
     private int[][] grid;
     private HashMap<String, List<Integer>> candidates;

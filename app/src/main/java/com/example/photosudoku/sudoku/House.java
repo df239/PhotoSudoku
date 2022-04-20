@@ -5,11 +5,12 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class House {
+    //class representing a row, column or a box
     private HashSet<Cell> group;
     private HashSet<Integer> solvedValues;
     private HashSet<Integer> candidates;
 
-    public final String TYPE;
+    public final String TYPE;  //row, column or box
 
     public House(String houseType) {
         this.TYPE = houseType;
@@ -33,15 +34,7 @@ public class House {
         return this.group;
     }
 
-//    public void updateCandidates(){
-//        this.candidates.clear();
-//        for(Cell c : this.group){
-//            if(!c.solved()){
-//                this.candidates.addAll(c.candidates);
-//            }
-//        }
-//    }
-
+    //get the set of all candidates of this House
     public HashSet<Integer> getCandidates(){
         HashSet<Integer> temp = new HashSet<Integer>();
         for(Cell c: this.group) {
@@ -52,6 +45,7 @@ public class House {
         return temp;
     }
 
+    //get a group of cells that are at an intersection with another House
     public HashSet<Cell> getCrossSection(House house, boolean countUnsolvedOnly){
         HashSet<Cell> set = new HashSet<Cell>();
         for (Cell c : house.getGroup()){
@@ -71,6 +65,7 @@ public class House {
         return this.getCrossSection(house, true);
     }
 
+    //get a group of cells that belong to this House, but do not belong to the provided collection
     public HashSet<Cell> getCellDifference(Collection<Cell> collection){
         HashSet<Cell> set = new HashSet<Cell>();
         for (Cell c : this.group){
@@ -81,6 +76,7 @@ public class House {
         return set;
     }
 
+    //get a group of cells that belong to this House, but do not belong to the provided cells
     public HashSet<Cell> getCellDifference(Cell... cells){
         return this.getCellDifference(Arrays.asList(cells));
     }

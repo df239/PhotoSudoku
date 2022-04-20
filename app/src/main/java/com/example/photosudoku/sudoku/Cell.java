@@ -2,16 +2,17 @@ package com.example.photosudoku.sudoku;
 import java.util.*;
 
 public class Cell {
+    //class that represents one square in a sudoku
     private int value;
     private boolean isSolved;
     private boolean isBiValue;
 
+    //indexes of the cell's row, column and box
     public final int ROW;
     public final int COL;
     public final int BOX;
 
     private List<Integer> candidates;
-    //private HashSet<Integer> forbiddenValues;
 
     public Cell(int value, int row, int col){
         this.value = value;
@@ -27,7 +28,6 @@ public class Cell {
                 this.candidates.add(val);
             }
         }
-        //this.forbiddenValues = new HashSet<Integer>();
     }
 
 
@@ -54,16 +54,11 @@ public class Cell {
         return false;
     }
 
+    //solves this cell with a value
     public void setValue(int value) {
         this.value = value;
         this.isSolved = true;
         this.candidates.clear();
-    }
-
-    public void unsolve(){
-        this.value = 0;
-        this.isSolved = false;
-        this.candidates = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
     }
 
     public boolean removeCandidate(int candidate){
@@ -85,6 +80,7 @@ public class Cell {
         return new ArrayList<>(this.candidates);
     }
 
+    //returns a set of candidates that this cell shares with the provided cell
     public HashSet<Integer> getSharedCandidatesWith(Cell cell){
         HashSet<Integer> shared = new HashSet<>();
         for (int candidate : cell.getCandidates()){

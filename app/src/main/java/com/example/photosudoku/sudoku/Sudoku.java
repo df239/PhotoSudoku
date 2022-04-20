@@ -27,6 +27,7 @@ public class Sudoku {
         this.boxes = new ArrayList<House>();
         steps = new ArrayList<>();
 
+        //create lists of rows, columns and boxes
         for(int i = 0; i < 9; i++) {
             this.rows.add(new House("row"));
             this.cols.add(new House("column"));
@@ -38,6 +39,7 @@ public class Sudoku {
         this.steps.add(new Beginning(this.sudoku));
     }
 
+    //populate sudoku with inputted digits
     private Cell[][] buildSudoku(int[][] grid){
         Cell[][] matrix = new Cell[grid.length][grid.length];
         for(int x = 0; x < grid.length; x++){
@@ -56,6 +58,7 @@ public class Sudoku {
         return matrix;
     }
 
+    //update candidates of all cells, so that a candidate does not appear in a row, column or a box, where such number is already solved
     public void updateCellCandidates() {
         for(int row = 0; row < this.grid.length; row++) {
             for(int col = 0; col < this.grid.length; col++) {
@@ -110,19 +113,6 @@ public class Sudoku {
         return this.sudoku;
     }
 
-    public boolean isValuePossible(int value, Cell cell){
-        if(this.rows.get(cell.ROW).contains(value)){
-            return false;
-        }
-        else if(this.cols.get(cell.COL).contains(value)){
-            return false;
-        }
-        else if(this.boxes.get(cell.BOX).contains(value)){
-            return false;
-        }
-        return true;
-    }
-
     public House getRow(int row){
         return this.rows.get(row);
     }
@@ -135,6 +125,7 @@ public class Sudoku {
         return this.boxes.get(box);
     }
 
+    //check if all numbers have been filled in
     public boolean solved(){
         for (int row = 0; row < 9; row++){
             for (int col = 0; col < 9; col++){

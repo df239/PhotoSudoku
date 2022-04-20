@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Validator {
+    //array of indexes (tuples of row,col) of invalid squares or squares that should be highlighted in red
     public static ArrayList<Integer> invalidSquares = new ArrayList<>();
 
     public static boolean checkBoardValidity(int[][] grid){
@@ -52,6 +53,7 @@ public class Validator {
                 }
             }
         }
+        //if the board is valid, no squares should be highlighted in red
         invalidSquares.clear();
         return true;
     }

@@ -18,77 +18,56 @@ public class Solver {
     }
 
     private static boolean backtrack(int row, int col){
-        if (row == 9 - 1 && col == 9)
-            return true;
+        if (row == 9 - 1 && col == 9) return true;
 
-        if (col == 9) {
+        if (col == 9){
             row++;
             col = 0;
         }
 
-        if (matrix[row][col] != 0)
-            return backtrack(row, col + 1);
+        if (matrix[row][col] != 0) return backtrack(row, col + 1);
 
-        for (int num = 1; num < 10; num++) {
-            if (isSafe(matrix, row, col, num)) {
+        for (int num = 1; num < 10; num++){
+            if (isSafe(matrix, row, col, num)){
                 matrix[row][col] = num;
-                if (backtrack(row, col + 1))
-                    return true;
+                if (backtrack(row, col + 1)) return true;
             }
             matrix[row][col] = 0;
         }
         return false;
     }
 
+    //check if a number can be placed in a cell
     static boolean isSafe(int[][] grid, int row, int col, int num){
-        for (int x = 0; x <= 8; x++)
-            if (grid[row][x] == num)
-                return false;
+        for (int x = 0; x <= 8; x++){
+            if (grid[row][x] == num) return false;
+        }
 
-        for (int x = 0; x <= 8; x++)
-            if (grid[x][col] == num)
-                return false;
+        for (int x = 0; x <= 8; x++){
+            if (grid[x][col] == num) return false;
+        }
 
-        int startRow = row - row % 3, startCol
-                = col - col % 3;
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 3; j++)
-                if (grid[i + startRow][j + startCol] == num)
-                    return false;
-
+        int startRow = row - row % 3;
+        int startCol = col - col % 3;
+        for (int i = 0; i < 3; i++){
+            for (int j = 0; j < 3; j++){
+                if (grid[i + startRow][j + startCol] == num) return false;
+            }
+        }
         return true;
     }
 
 
-//    private static boolean backtrack(int[][] grid, Sudoku sudoku){
-//        for (int row = 0; row < 9; row++){
-//            for (int col = 0; col < 9; col++){
-//                Cell c = sudoku.getCellMatrix()[row][col];
-//                if (grid[row][col] != 0){
-//                    for (int val = 1; val <= 9; val++){
-//                        if(sudoku.isValuePossible(val,c)){
-//                            grid[row][col] = val;
-//                            return backtrack(grid,sudoku);
-//                            grid[row][col] = 0;
-//                        }
-//                    }
-//                    return grid;
-//                }
-//            }
-//        }
-//    }
-
     // =-=-=-=-= NAKED SINGLES =-=-=-=-= //
     public static boolean solveNakedSingles(Sudoku input) {
-        boolean changeMade = false;
         Cell[][] grid = input.getCellMatrix();
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid.length; col++) {
                 Cell c = grid[row][col];
+                //if there is only one candidate in a cell, then it must be the correct solution for that cell
                 if(!c.solved() && c.getCandidates().size() == 1) {
                     int candidate = c.getCandidates().get(0);
                     c.setValue(candidate);
-                    //input.grid[row][col]=candidate;
                     input.updateCellCandidates(c);
                     input.steps.add(new NakedSingle(candidate,row,col,input.grid,input.getCellMatrix()));
 
@@ -101,7 +80,6 @@ public class Solver {
 
     // =-=-=-=-= HIDDEN SINGLES =-=-=-=-= //
     public static boolean solveHiddenSingles(Sudoku input){
-        boolean changeMade = false;
         Cell[][] grid = input.getCellMatrix();
         for (int row = 0; row < grid.length; row++){
             for (int col = 0; col <grid.length; col++){
@@ -128,9 +106,9 @@ public class Solver {
 
         groupCandidates = getGroupCandidates(house.getGroup(),currentCell);
         cellCandidates.removeAll(groupCandidates);
-        if(cellCandidates.toArray().length == 1){
+        //if one candidate cannot be anywhere else in the same House, then it must be the solution for this cell
+        if(cellCandidates.size() == 1){
             currentCell.setValue((Integer) cellCandidates.toArray()[0]);
-            //input.grid[row][col]=(Integer) cellCandidates.toArray()[0];
             input.updateCellCandidates(currentCell);
             input.steps.add(new HiddenSingle((int)cellCandidates.toArray()[0], row, col, house.TYPE, grid, input.getCellMatrix()));
             return true;
@@ -138,6 +116,7 @@ public class Solver {
         return false;
     }
 
+    //get the collection of candidates of all cells in the group except for the provided cell
     private static HashSet<Integer> getGroupCandidates(HashSet<Cell> group, Cell cell){
         HashSet<Integer> output = new HashSet<Integer>();
         for (Cell c : group){
@@ -153,6 +132,8 @@ public class Solver {
         for (int boxIndex = 0; boxIndex < 9; boxIndex++){
             House box = input.getBox(boxIndex);
             int rowStart = (boxIndex / 3) * 3;
+
+            //iterate over boxes and rows/columns separately, because we always compare the intersection between a box and a row/column
             for (int rowIndex = rowStart; rowIndex < rowStart + 3; rowIndex++){
                 if (removePointingCandidates(box, input.getRow(rowIndex), input)){
                     return true;
@@ -170,13 +151,17 @@ public class Solver {
     }
 
     private static boolean removePointingCandidates(House box, House group, Sudoku input){
+        //get the intersection of a house and a row/column
         CellGroup crossSection = new CellGroup(box.getCrossSection(group));
         HashSet<Integer> sharedCandidates = crossSection.getSharedCandidatesBetweenAny();
         if (crossSection.size() > 1 && sharedCandidates.size() != 0){
+            //create groups of cells that are exclusive for row/column and box to see if a candidate appears elsewehere than the intersection
             CellGroup groupExclusive = new CellGroup(group.getCellDifference(crossSection.getCells()));
             CellGroup boxExclusive = new CellGroup(box.getCellDifference(crossSection.getCells()));
             for (int sharedCandidate : sharedCandidates){
                 if (groupExclusive.getCandidates().contains(sharedCandidate) && !boxExclusive.getCandidates().contains(sharedCandidate)){
+                    //if a candidate only appears in the intersection and the row/column, then it can be removed from all candidates of cells in that row/column
+                    //because it must be in one of the intersecting cells within the box
                     for (Cell c : groupExclusive.getCells()){
                         c.removeCandidate(sharedCandidate);
                     }
@@ -184,6 +169,8 @@ public class Solver {
                     return true;
                 }
                 else if (!groupExclusive.getCandidates().contains(sharedCandidate) && boxExclusive.getCandidates().contains(sharedCandidate)){
+                    //if a candidate only appears in the intersection and the box, then it can be removed from all candidates of cells in that box
+                    //because it must be in one of the intersecting cells within the row/column
                     for (Cell c : boxExclusive.getCells()){
                         c.removeCandidate(sharedCandidate);
                     }
@@ -212,6 +199,7 @@ public class Solver {
     }
 
     private static boolean findNakedPairInsideGroup(House group, Sudoku input){
+        //find all cells that have exactly two candidates
         List<Cell> bivalueCells = new ArrayList<Cell>();
         for (Cell cell : group.getGroup()){
             if (!cell.solved() && cell.biValue()){
@@ -221,6 +209,8 @@ public class Solver {
         if(bivalueCells.size() == 2){
             Cell temp = bivalueCells.get(0);
             if (temp.getCandidates().containsAll(bivalueCells.get(1).getCandidates())){
+                //if there are two cells with exactly two candidates in a House AND those candidates are the same,
+                //attempt to remove those candidates from all other cells in the House
                 if(removeCandidatesOutsideOfPair(group.getGroup(),temp.getCandidates(),bivalueCells)){
                     input.steps.add(new NakedPair(temp,bivalueCells.get(1),group, input.grid, input.getCellMatrix()));
                     return true;
@@ -228,6 +218,8 @@ public class Solver {
             }
         }
         else if(bivalueCells.size() > 2){
+            //first find a pair of bi-value cells with the exact same candidates and
+            //attempt to remove those candidates from all other cells in the House
             for(int x = 0; x < bivalueCells.size(); x++){
                 Cell tempX = bivalueCells.get(x);
                 for (int y = x + 1; y < bivalueCells.size(); y++){
@@ -276,6 +268,7 @@ public class Solver {
 
     private static boolean findHiddenPairInsideGroup(House group, Sudoku input){
         ArrayList<Cell> cells = new ArrayList<Cell>(group.getGroup());
+        //for each unsolved pair of cells in the House, check if they contain a pair of candidates that do not appear in any other cell in the House
         for(int i = 0; i < 8; i++){
             Cell c1 = cells.get(i);
             if (!c1.solved()){
@@ -289,6 +282,8 @@ public class Solver {
                                 for (int y = x + 1; y < shared.size(); y++){
                                     List<Integer> candidatePair = Arrays.asList(shared.get(x), shared.get(y));
                                     if (!othersInGroup.sharesAnyCandidateWith(candidatePair)){
+                                        //if two cells share a pair of candidates AND those candidates do not appear in any other cell in the House
+                                        //AND are not a naked pair, then remove all other candidates from those two cells except the said pair of candidates
                                         if (c1.getCandidates().size() > 2 || c2.getCandidates().size() > 2){
                                             removeCandidatesFromCellExcept(candidatePair,c1);
                                             removeCandidatesFromCellExcept(candidatePair,c2);
