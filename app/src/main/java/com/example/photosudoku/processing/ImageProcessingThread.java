@@ -196,13 +196,16 @@ public class ImageProcessingThread extends Thread{
         //https://www.pyimagesearch.com/2020/08/10/opencv-sudoku-solver-and-ocr/
         Imgproc.cvtColor(mat,mat,Imgproc.COLOR_RGB2GRAY);
         //Utils.matToBitmap(mat,bitmap);
+
+        //Mat gaussCanny = mat.clone();
+        //Imgproc.GaussianBlur(gaussCanny,gaussCanny,new org.opencv.core.Size(5,5),9);
+        //Utils.matToBitmap(gaussCanny,bitmap);
+        //Imgproc.Canny(gaussCanny,gaussCanny,40,70);
+        //Utils.matToBitmap(gaussCanny,bitmap);
+
         Mat temp = new Mat();
-        Imgproc.bilateralFilter(mat,temp,7,70,100);
+        Imgproc.bilateralFilter(mat,temp,9,75,75);
         temp.copyTo(mat);
-        //Utils.matToBitmap(mat,bitmap);
-        //Imgproc.GaussianBlur(mat,mat,new org.opencv.core.Size(7,7),3);
-        //Utils.matToBitmap(mat,bitmap);
-        //Imgproc.Canny(mat,mat,20,70);
         //Utils.matToBitmap(mat,bitmap);
         Imgproc.adaptiveThreshold(mat,mat, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY, 11, 2);
         //Utils.matToBitmap(mat,bitmap);
@@ -212,7 +215,6 @@ public class ImageProcessingThread extends Thread{
         //Utils.matToBitmap(mat,bitmap);
         Core.bitwise_not(mat,mat);
         //Utils.matToBitmap(mat,bitmap);
-        //Imgproc.dilate(mat,mat,new Mat(2,2,0));
 
         //contour detection
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
@@ -288,13 +290,13 @@ public class ImageProcessingThread extends Thread{
         Imgproc.warpPerspective(mat, outputMat, perspectiveTransform, new Size(resultValue, resultValue));
         //Imgproc.erode(mat,mat,new Mat(5,5,0));
         Bitmap output = Bitmap.createBitmap(resultValue,resultValue,Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(outputMat,output);
+        //Utils.matToBitmap(outputMat,output);
 
 //        Bitmap output = Bitmap.createBitmap(contourRect.width,contourRect.height,Bitmap.Config.ARGB_8888);
 //        Mat outputMat = new Mat(copy,contourRect);
 
         Imgproc.warpPerspective(copy, outputMat, perspectiveTransform, new Size(resultValue, resultValue));
-        Utils.matToBitmap(outputMat,output);
+        //Utils.matToBitmap(outputMat,output);
         return output;
 
 
