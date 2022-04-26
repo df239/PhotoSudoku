@@ -296,7 +296,7 @@ public class ImageProcessingThread extends Thread{
 //        Mat outputMat = new Mat(copy,contourRect);
 
         Imgproc.warpPerspective(copy, outputMat, perspectiveTransform, new Size(resultValue, resultValue));
-        //Utils.matToBitmap(outputMat,output);
+        Utils.matToBitmap(outputMat,output);
         return output;
 
 

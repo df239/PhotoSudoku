@@ -126,6 +126,10 @@ public class HomePage extends AppCompatActivity implements ProcessingTaskHandler
         }
     }
 
+    public void OpenLicenses(View view){
+        startActivity(new Intent(this,LicensePage.class));
+    }
+
     //callback on processing image selected from the gallery
     private void processLoadedImage(Uri uri){
         this.isProcessingImage = true;

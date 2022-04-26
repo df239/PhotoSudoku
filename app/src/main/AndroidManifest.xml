@@ -14,17 +14,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PhotoSudoku">
         <activity
+            android:name=".LicensePage"
+            android:parentActivityName=".HomePage"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".Solving_page"
             android:parentActivityName=".SudokuDisplayPage"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SudokuDisplayPage"
             android:parentActivityName=".CameraPage"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".CameraPage"
             android:parentActivityName=".HomePage"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".HomePage"
             android:screenOrientation="portrait">
