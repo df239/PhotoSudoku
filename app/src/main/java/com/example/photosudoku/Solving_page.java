@@ -72,7 +72,7 @@ public class Solving_page extends AppCompatActivity {
         prevButton = (ImageButton)findViewById(R.id.prevButton);
         solveButton = (Button)findViewById(R.id.solveButton);
         messageView = (TextView)findViewById(R.id.messageView);
-        textView = (TextView)findViewById(R.id.tempView);
+        //textView = (TextView)findViewById(R.id.tempView);
         toggleMessageButton = (Button)findViewById(R.id.toggleMessageButton);
         toggleCandidatesButton = (ToggleButton)findViewById(R.id.toggleCandidatesButton);
 

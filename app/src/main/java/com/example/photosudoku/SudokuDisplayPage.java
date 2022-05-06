@@ -49,7 +49,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
 
         setContentView(R.layout.activity_sudoku_display_page);
 
-        textView = (TextView)findViewById(R.id.tempText);
+        //textView = (TextView)findViewById(R.id.tempText);
 
         //table = (TableLayout)findViewById(R.id.sudokuTable);
         mainLayout = (ConstraintLayout)findViewById(R.id.sudokuDisplayLayout);
@@ -80,7 +80,7 @@ public class SudokuDisplayPage extends AppCompatActivity {
         duration = (long)intent.getLongExtra("duration",0);
         //createSudokuUI(this.sudoku);
         String output = TimeUnit.NANOSECONDS.toMillis(duration) +" ms";
-        textView.setText(output);
+        //textView.setText(output);
 
         //String str = arrayToString(sudoku);
         //textView.setText(str);
