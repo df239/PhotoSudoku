@@ -1,5 +1,7 @@
 package com.example.photosudoku;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
@@ -95,15 +97,22 @@ public class CameraPage extends AppCompatActivity implements SurfaceHolder.Callb
         }
     }
 
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+        registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            // if the user did not allow to use the camera, return to the previous page
+            if (!isGranted) {
+                this.finish();
+            }
+        });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         setContentView(R.layout.activity_camera_page);
 
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED){
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, 100);
-        }
+
 
         previewView = (PreviewView)findViewById(R.id.previewView);
         cameraPageLayout = (ConstraintLayout)findViewById(R.id.cameraPageLayout);
@@ -156,28 +165,36 @@ public class CameraPage extends AppCompatActivity implements SurfaceHolder.Callb
     @Override
     protected void onResume() {
         super.onResume();
-        //initialize CameraX
-        //matches camera process to a single camera process provider
-        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-        //adds a task to the process camera provider
-        cameraProviderFuture.addListener(() -> {
-            try{
-                cameraProvider = cameraProviderFuture.get();
-                startCameraX(cameraProvider);
-            }catch(ExecutionException e){
-                e.printStackTrace();
-            }catch(InterruptedException e){
-                e.printStackTrace();
-            }
-        }, getExecutor());
-        this.appPaused = false;
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
+            //initialize CameraX
+            //matches camera process to a single camera process provider
+            cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+            //adds a task to the process camera provider
+            cameraProviderFuture.addListener(() -> {
+                try{
+                    cameraProvider = cameraProviderFuture.get();
+                    startCameraX(cameraProvider);
+                }catch(ExecutionException e){
+                    e.printStackTrace();
+                }catch(InterruptedException e){
+                    e.printStackTrace();
+                }
+            }, getExecutor());
+            this.appPaused = false;
+        }
+        else{
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         this.appPaused = true;
-        cameraProvider.unbindAll();
+        if(cameraProvider != null){
+            cameraProvider.unbindAll();
+        }
     }
 
     //return executor that will run enqueued tasks on the main thread associated with the context
